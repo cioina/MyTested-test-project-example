@@ -1,0 +1,54 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+<PropertyGroup>
+    <Description>Blog for ASP.NET Core framework.</Description>
+    <Copyright>2023 Alexei Cioina</Copyright>
+    <AssemblyTitle>BlogAngular.Web</AssemblyTitle>
+    <VersionPrefix>8.0.0</VersionPrefix>
+    <Authors>Alexei Cioina</Authors>
+    <TargetFramework>net8.0</TargetFramework>
+    <LangVersion>11.0</LangVersion>
+    <NoWarn>$(NoWarn);CS1591</NoWarn>
+	<Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <GenerateDocumentationFile>fale</GenerateDocumentationFile>
+    <AssemblyName>BlogAngular.Web</AssemblyName>
+    <AssemblyOriginatorKeyFile>../../../MyTested/tools/Key.snk</AssemblyOriginatorKeyFile>
+    <SignAssembly>true</SignAssembly>
+    <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
+    <PackageId>BlogAngular.Web</PackageId>
+    <PackageTags>aspnetcore;</PackageTags>
+    <PackageProjectUrl>https://github.com/cioina</PackageProjectUrl>
+    <PackageLicenseFile>LICENSE</PackageLicenseFile>
+    <PackageRequireLicenseAcceptance>false</PackageRequireLicenseAcceptance>
+    <RepositoryType>git</RepositoryType>
+    <RepositoryUrl>https://github.com/cioina</RepositoryUrl>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+    <RootNamespace>BlogAngular</RootNamespace>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+  </PropertyGroup>
+
+	<ItemGroup>
+		<ProjectCapability Include="DynamicFileNesting" />
+		<ProjectCapability Include="ConfigurableFileNesting" />
+		<ProjectCapability Include="ConfigurableFileNestingFeatureEnabled" />
+	</ItemGroup>
+
+  <ItemGroup>
+		<FrameworkReference Include="Microsoft.AspNetCore.App" />
+	</ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
+    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.0" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="8.0.3" />
+    <PackageReference Include="Serilog.AspNetCore" Version="8.0.1" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\MyTested\vendor\MediatR\MediatR.csproj" />
+		<ProjectReference Include="..\BlogAngular.Application\BlogAngular.Application.csproj" />
+	</ItemGroup>
+
+</Project>

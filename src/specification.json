@@ -1,0 +1,1348 @@
+{
+  "x-generator": "NSwag v14.0.3.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))",
+  "openapi": "3.0.0",
+  "info": {
+    "title": "BlogAngular API",
+    "version": "1.0.0"
+  },
+  "paths": {
+    "/api/v{version}/Articles": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_Articles",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleTagsListingCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlesResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/All": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_All",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleTagsListingCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticlesResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/Create": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_Create",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleCreateCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/Edit/{id}": {
+      "put": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_Edit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 3
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleEditCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/Details/{id}": {
+      "get": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_Details",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ArticleResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/Delete/{id}": {
+      "delete": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_Delete",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Articles/LinkTags": {
+      "post": {
+        "tags": [
+          "Articles"
+        ],
+        "operationId": "Articles_LinkTags",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ArticleTagsCreateCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Identity": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_LoginPassword",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginPasswordCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Identity/Login": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_Login",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserLoginCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Identity/Register": {
+      "post": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_Register",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserRegisterCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Identity/Update": {
+      "put": {
+        "tags": [
+          "Identity"
+        ],
+        "operationId": "Identity_Update",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserUpdateCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Profile/{id}": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "operationId": "Profile_Index",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/ProfileResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Tags": {
+      "get": {
+        "tags": [
+          "Tags"
+        ],
+        "operationId": "Tags_Tags",
+        "parameters": [
+          {
+            "name": "Limit",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "Offset",
+            "in": "query",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 2
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 3
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagsResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Tags/Create": {
+      "post": {
+        "tags": [
+          "Tags"
+        ],
+        "operationId": "Tags_Create",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagCreateCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 1
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Tags/Edit/{id}": {
+      "put": {
+        "tags": [
+          "Tags"
+        ],
+        "operationId": "Tags_Edit",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 3
+          }
+        ],
+        "requestBody": {
+          "x-name": "command",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/TagEditCommand"
+              }
+            }
+          },
+          "required": true,
+          "x-position": 2
+        },
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/TagResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Tags/Delete/{id}": {
+      "delete": {
+        "tags": [
+          "Tags"
+        ],
+        "operationId": "Tags_Delete",
+        "parameters": [
+          {
+            "name": "Id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            },
+            "x-position": 1
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 2
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/Version": {
+      "get": {
+        "tags": [
+          "Version"
+        ],
+        "operationId": "Version_Index",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            },
+            "x-position": 1
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VersionResponseEnvelope"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "ArticlesResponseEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedResponseModelOfArticleResponseModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "articles": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/ArticleResponseModel"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "ArticleResponseModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          },
+          "slug": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "createdAt": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "tagList": {
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "published": {
+            "type": "boolean"
+          }
+        }
+      },
+      "PaginatedResponseModelOfArticleResponseModel": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ArticleTagsListingCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArticleTagsListingRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ArticleTagsListingRequestEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "filter": {
+            "$ref": "#/components/schemas/ArticleTagsListingRequestModel"
+          }
+        }
+      },
+      "ArticleTagsListingRequestModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "createdAtAsc": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "published": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "limit": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "offset": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "ArticleResponseEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "article": {
+            "$ref": "#/components/schemas/ArticleResponseModel"
+          }
+        }
+      },
+      "ArticleCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArticleRequestCommandOfArticleCreateCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ArticleRequestCommandOfArticleCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "article": {
+                "$ref": "#/components/schemas/ArticleCommandOfArticleCreateCommand"
+              }
+            }
+          }
+        ]
+      },
+      "ArticleCommandOfArticleCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "published": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "EntityCommandOfInteger": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "ArticleEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArticleRequestCommandOfArticleEditCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ArticleRequestCommandOfArticleEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "article": {
+                "$ref": "#/components/schemas/ArticleCommandOfArticleEditCommand"
+              }
+            }
+          }
+        ]
+      },
+      "ArticleCommandOfArticleEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              },
+              "slug": {
+                "type": "string"
+              },
+              "description": {
+                "type": "string"
+              },
+              "published": {
+                "type": "boolean"
+              }
+            }
+          }
+        ]
+      },
+      "ArticleTagsCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/ArticleTagsCreateRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ArticleTagsCreateRequestEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "articleTags": {
+            "$ref": "#/components/schemas/ArticleTagsCreateRequestModel"
+          }
+        }
+      },
+      "ArticleTagsCreateRequestModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "articleId": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "tags": {
+            "type": "array",
+            "nullable": true,
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          }
+        }
+      },
+      "UserResponseEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserResponseModel"
+          }
+        }
+      },
+      "UserResponseModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "username": {
+            "type": "string"
+          },
+          "token": {
+            "type": "string"
+          }
+        }
+      },
+      "LoginPasswordCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserUpdateRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "UserUpdateRequestEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserUpdateRequestModel"
+          }
+        }
+      },
+      "UserUpdateRequestModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "password": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "UserLoginCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserLoginRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "UserLoginRequestEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserRequestModel"
+          }
+        }
+      },
+      "UserRequestModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "password": {
+            "type": "string"
+          }
+        }
+      },
+      "UserRegisterCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserRegisterRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "UserRegisterRequestEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "user": {
+            "$ref": "#/components/schemas/UserRegisterRequestModel"
+          }
+        }
+      },
+      "UserRegisterRequestModel": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserRequestModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "username": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "UserUpdateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/UserUpdateRequestEnvelope"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "ProfileResponseEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "profile": {
+            "$ref": "#/components/schemas/ProfileResponseModel"
+          }
+        }
+      },
+      "ProfileResponseModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "username": {
+            "type": "string",
+            "nullable": true
+          },
+          "bio": {
+            "type": "string",
+            "nullable": true
+          },
+          "image": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      },
+      "TagsResponseEnvelope": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/PaginatedResponseModelOfTagResponseModel"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tags": {
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/TagResponseModel"
+                }
+              }
+            }
+          }
+        ]
+      },
+      "TagResponseModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "PaginatedResponseModelOfTagResponseModel": {
+        "type": "object",
+        "x-abstract": true,
+        "additionalProperties": false,
+        "properties": {
+          "total": {
+            "type": "integer",
+            "format": "int32"
+          }
+        }
+      },
+      "TagResponseEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "tag": {
+            "$ref": "#/components/schemas/TagResponseModel"
+          }
+        }
+      },
+      "TagCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TagRequestCommandOfTagCreateCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "TagRequestCommandOfTagCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tag": {
+                "$ref": "#/components/schemas/TagCommandOfTagCreateCommand"
+              }
+            }
+          }
+        ]
+      },
+      "TagCommandOfTagCreateCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "TagEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/TagRequestCommandOfTagEditCommand"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false
+          }
+        ]
+      },
+      "TagRequestCommandOfTagEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "tag": {
+                "$ref": "#/components/schemas/TagCommandOfTagEditCommand"
+              }
+            }
+          }
+        ]
+      },
+      "TagCommandOfTagEditCommand": {
+        "allOf": [
+          {
+            "$ref": "#/components/schemas/EntityCommandOfInteger"
+          },
+          {
+            "type": "object",
+            "additionalProperties": false,
+            "properties": {
+              "title": {
+                "type": "string"
+              }
+            }
+          }
+        ]
+      },
+      "VersionResponseEnvelope": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "version": {
+            "$ref": "#/components/schemas/VersionResponseModel"
+          }
+        }
+      },
+      "VersionResponseModel": {
+        "type": "object",
+        "additionalProperties": false,
+        "properties": {
+          "hash": {
+            "type": "string",
+            "nullable": true
+          }
+        }
+      }
+    }
+  }
+}

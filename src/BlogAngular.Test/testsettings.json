@@ -1,0 +1,9 @@
+﻿{
+  "ApplicationSettings": {
+    "SecurityTokenDescriptorKey": "test1223dfgdfkffpie",
+    "SecurityTokenDescriptorExpiresInMinutes": 10,
+    "MaxFailedAccessAttempts": 5,
+    "DefaultLockoutTimeSpanInMinutes": 0,
+    "ExperimentalIpAddress": "0.0.0.1"
+  }
+}
