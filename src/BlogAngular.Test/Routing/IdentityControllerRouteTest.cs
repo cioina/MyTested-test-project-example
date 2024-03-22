@@ -27,8 +27,7 @@ action itself, or you must set the request properties so that they will pass thr
     //In real life returns 422
     public const string FromBaseDomainException =
 @"When calling {0} action in {1} expected no exception but AggregateException (containing 
-{2} with 'Exception of type 'BlogAngular.Domain.Blog.Exceptions.{2}' 
-was thrown.' message) was thrown without being caught.";
+{2} with 'Queried object {3} was not found, Key: {4}' message) was thrown without being caught.";
     //In real life returns 422
     public const string DifferenceException =
 @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 

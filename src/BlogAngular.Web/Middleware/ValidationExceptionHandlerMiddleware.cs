@@ -2,7 +2,6 @@
 
 using Application.Common.Exceptions;
 using Application.Common.Models;
-using Domain.Common;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
@@ -53,9 +52,9 @@ public class ValidationExceptionHandlerMiddleware
         {
             var error = exception.Message;
 
-            if (exception is BaseDomainException baseDomainException)
+            if (exception is Ardalis.GuardClauses.NotFoundException or ArgumentException)
             {
-                error = baseDomainException.Error;
+                error = exception.Message;
                 code = HttpStatusCode.UnprocessableEntity;
             }
             else if (exception.Source == "Microsoft.EntityFrameworkCore.Relational" &&

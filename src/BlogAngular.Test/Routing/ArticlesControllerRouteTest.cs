@@ -154,7 +154,7 @@ public class ArticlesControllerRouteTest
                 .RestrictingForAuthorizedRequests())
             .AndAlso()
             .ShouldReturn();
-        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "InvalidTagException"));
+        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "tag", 3));
 
     [Theory]
     [MemberData(nameof(ValidData))]
@@ -206,7 +206,7 @@ public class ArticlesControllerRouteTest
                 .RestrictingForAuthorizedRequests())
             .AndAlso()
             .ShouldReturn();
-        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "InvalidArticleException"));
+        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "ArticleId", 6));
 
 
     [Theory]
@@ -923,6 +923,64 @@ public class ArticlesControllerRouteTest
 
     [Theory]
     [MemberData(nameof(ValidData))]
+    public void Create_article_with_same_title_and_slug_should_return_validation_error(
+    string fullName,
+    string email,
+    string password,
+    string name,
+    string title,
+    string slug,
+    string description)
+    => Test.AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+    () =>
+    {
+        MyMvc
+         .Pipeline()
+         .ShouldMap(request => request
+           .WithMethod(HttpMethod.Post)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/articles/create")
+           .WithJsonBody(
+                  string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
+                      string.Format("{0}{1}", title, 1),
+                      string.Format("{0}{1}", slug, 1),
+                      string.Format("{0}{1}", description, 4))
+           )
+         )
+         .To<ArticlesController>(c => c.Create(new()
+         {
+             ArticleJson = new()
+             {
+                 Title = string.Format("{0}{1}", title, 1),
+                 Slug = string.Format("{0}{1}", slug, 1),
+                 Description = string.Format("{0}{1}", description, 4)
+             }
+         }))
+         .Which(controller => controller
+           .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                  email,
+                  fullName,
+                  password,
+                  name,
+                  title,
+                  slug,
+                  description,
+                  DateOnly.FromDateTime(DateTime.Today),
+                  false)))
+         .ShouldHave()
+         .ActionAttributes(attrs => attrs
+              .RestrictingForHttpMethod(HttpMethod.Post)
+              .RestrictingForAuthorizedRequests())
+         .AndAlso()
+         .ShouldReturn();
+    }, new Dictionary<string, string[]>
+    {
+            { "ArticleJson.Title", new[] { "'Article Json Title' must be unique." } },
+            { "ArticleJson.Slug", new[] { "'Article Json Slug' must be unique." } },
+    });
+
+    [Theory]
+    [MemberData(nameof(ValidData))]
     public void Create_article_with_max_chars_should_return_validation_error(
      string fullName,
      string email,
@@ -1177,6 +1235,131 @@ public class ArticlesControllerRouteTest
 
     [Theory]
     [MemberData(nameof(ValidData))]
+    public void Edit_same_article_with_same_title_should_return_success_with_data(
+     string fullName,
+     string email,
+     string password,
+     string name,
+     string title,
+     string slug,
+     string description)
+     => MyMvc
+      .Pipeline()
+      .ShouldMap(request => request
+        .WithMethod(HttpMethod.Put)
+        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+        .WithLocation("api/v1.0/articles/edit/2")
+        .WithJsonBody(
+               string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
+                   string.Format("{0}{1}", title, 2),
+                   string.Format("{0}{1}", slug, 2),
+                   string.Format("{0}{1}", description, 4))
+        )
+      )
+      .To<ArticlesController>(c => c.Edit(2, new()
+      {
+          ArticleJson = new()
+          {
+              Title = string.Format("{0}{1}", title, 2),
+              Slug = string.Format("{0}{1}", slug, 2),
+              Description = string.Format("{0}{1}", description, 4),
+          }
+      }))
+      .Which(controller => controller
+        .WithData(StaticTestData.GetArticlesTagsUsers(3,
+               email,
+               fullName,
+               password,
+               name,
+               title,
+               slug,
+               description,
+               DateOnly.FromDateTime(DateTime.Today),
+               false)))
+      .ShouldHave()
+      .ActionAttributes(attrs => attrs
+           .RestrictingForHttpMethod(HttpMethod.Put)
+           .RestrictingForAuthorizedRequests())
+      .AndAlso()
+      .ShouldReturn()
+      .ActionResult(result => result.Result(new ArticleResponseEnvelope
+      {
+          ArticleJson = new()
+          {
+              Id = 2,
+              Title = string.Format("{0}{1}", title, 2),
+              Slug = string.Format("{0}{1}", slug, 2),
+              Description = string.Format("{0}{1}", description, 4),
+              CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
+              Published = false
+          }
+      }))
+      .AndAlso()
+      .ShouldPassForThe<ActionAttributes>(attributes =>
+      {
+          Assert.Equal(5, attributes.Count());
+      });
+
+    [Theory]
+    [MemberData(nameof(ValidData))]
+    public void Edit_article_with_same_title_and_slug_should_return_validation_error(
+     string fullName,
+     string email,
+     string password,
+     string name,
+     string title,
+     string slug,
+     string description)
+     => Test.AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+     () =>
+     {
+         MyMvc
+               .Pipeline()
+               .ShouldMap(request => request
+                 .WithMethod(HttpMethod.Put)
+                 .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                 .WithLocation("api/v1.0/articles/edit/2")
+                 .WithJsonBody(
+                        string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
+                            string.Format("{0}{1}", title, 1),
+                            string.Format("{0}{1}", slug, 1),
+                            string.Format("{0}{1}", description, 4))
+                 )
+               )
+               .To<ArticlesController>(c => c.Edit(2, new()
+               {
+                   ArticleJson = new()
+                   {
+                       Title = string.Format("{0}{1}", title, 1),
+                       Slug = string.Format("{0}{1}", slug, 1),
+                       Description = string.Format("{0}{1}", description, 4),
+                   }
+               }))
+               .Which(controller => controller
+                 .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                        email,
+                        fullName,
+                        password,
+                        name,
+                        title,
+                        slug,
+                        description,
+                        DateOnly.FromDateTime(DateTime.Today),
+                        false)))
+               .ShouldHave()
+               .ActionAttributes(attrs => attrs
+                    .RestrictingForHttpMethod(HttpMethod.Put)
+                    .RestrictingForAuthorizedRequests())
+               .AndAlso()
+               .ShouldReturn();
+     }, new Dictionary<string, string[]>
+     {
+         { "ArticleJson.Title", new[] { "'Article Json Title' must be unique." } },
+         { "ArticleJson.Slug", new[] { "'Article Json Slug' must be unique." } },
+     });
+
+    [Theory]
+    [MemberData(nameof(ValidData))]
     public void Edit_article_with_max_chars_should_return_validation_error(
      string fullName,
      string email,
@@ -1344,7 +1527,7 @@ public class ArticlesControllerRouteTest
               .RestrictingForAuthorizedRequests())
          .AndAlso()
          .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "ArticlesController", "InvalidArticleException"));
+    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "ArticlesController", "NotFoundException", "request", 5));
 
 
     [Theory]
@@ -1464,7 +1647,7 @@ public class ArticlesControllerRouteTest
                .RestrictingForAuthorizedRequests())
           .AndAlso()
           .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Details", "ArticlesController", "InvalidArticleException"));
+    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Details", "ArticlesController", "NotFoundException", "request", 6));
 
     [Theory]
     [MemberData(nameof(ValidData))]

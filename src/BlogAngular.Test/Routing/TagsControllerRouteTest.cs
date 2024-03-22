@@ -651,7 +651,7 @@ public class TagsControllerRouteTest
               .RestrictingForAuthorizedRequests())
          .AndAlso()
          .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "InvalidTagException"));
+    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "NotFoundException", "request", 5));
 
 
     [Theory]
