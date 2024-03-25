@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Data;
+#if DEBUG
 
 using Application.Common;
 using Domain.Blog.Models;
@@ -13,6 +14,7 @@ using Microsoft.IdentityModel.Tokens;
 using MyTested.AspNetCore.Mvc.Internal.Services;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -53,7 +55,7 @@ public static class StaticTestData
         Thread workerThread = new(workerObject.DoWork);
         workerThread.Start();
         _waitHandle.WaitOne();
-        var result = CreateJwtBearer(string.Format("{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddSeconds(1), AdministratorRoleName, "0.0.0.1");
+        var result = CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddSeconds(1), AdministratorRoleName, "0.0.0.1");
         workerObject.RequestStop();
 
         return result;
@@ -63,7 +65,7 @@ public static class StaticTestData
         string email,
         int i)
     {
-        return CreateJwtBearer(string.Format("{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
+        return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
     }
 
     public static string GetJwtBearerAdministratorRole(
@@ -91,7 +93,7 @@ public static class StaticTestData
             .GetSection(nameof(ApplicationSettings))
             .GetValue<string>(nameof(ApplicationSettings.ExperimentalIpAddress))!;
 
-        return CreateJwtBearer(string.Format("{0}{1}", email, i), secret, DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
+        return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), secret, DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
     }
 
     private static string CreateJwtBearer(
@@ -130,7 +132,7 @@ public static class StaticTestData
         JsonWebTokenHandler jwtSecurityTokenHandler = new();
         var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
 
-        return string.Format("{0} {1}", JwtBearerDefaults.AuthenticationScheme, token);
+        return string.Format(CultureInfo.InvariantCulture, "{0} {1}", JwtBearerDefaults.AuthenticationScheme, token);
     }
 
     public static IEnumerable<object> GetUsers(
@@ -146,11 +148,11 @@ public static class StaticTestData
             .Select(i =>
             {
                 var user = new User(
-                         string.Format("{0}{1}", email, i),
-                         string.Format("{0}{1}", userName, i)
+                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i),
+                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", userName, i)
                      );
 
-                userManager.AddPasswordAsync(user, string.Format("{0}{1}", password, i));
+                userManager.AddPasswordAsync(user, string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, i));
 
                 return user;
 
@@ -165,7 +167,7 @@ public static class StaticTestData
          .Select(i =>
          {
              return new Tag(
-                 string.Format("{0}{1}", name, i)
+                 string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i)
              );
          }).ToList();
 
@@ -190,9 +192,9 @@ public static class StaticTestData
              .Select(i =>
              {
                  return new Article(
-                     string.Format("{0}{1}", title, i),
-                     string.Format("{0}{1}", slug, i),
-                     string.Format("{0}{1}", description, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
                      date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                      published
 
@@ -221,11 +223,11 @@ public static class StaticTestData
              .Select(i =>
              {
                  var user = new User(
-                          string.Format("{0}{1}", email, i),
-                          string.Format("{0}{1}", userName, i)
+                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i),
+                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", userName, i)
                       );
 
-                 userManager.AddPasswordAsync(user!, string.Format("{0}{1}", password, i));
+                 userManager.AddPasswordAsync(user!, string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, i));
 
                  return user;
 
@@ -246,7 +248,7 @@ public static class StaticTestData
          .Range(1, count)
          .Select(async i =>
          {
-             var user = await userManager.FindByEmailAsync(string.Format("{0}{1}", email, i));
+             var user = await userManager.FindByEmailAsync(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i));
              await userManager.AddToRoleAsync(user!, AdministratorRoleName);
 
              return user;
@@ -276,9 +278,9 @@ public static class StaticTestData
              .Select(i =>
              {
                  return new Article(
-                     string.Format("{0}{1}", title, i),
-                     string.Format("{0}{1}", slug, i),
-                     string.Format("{0}{1}", description, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
                      date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                      published
 
@@ -290,4 +292,4 @@ public static class StaticTestData
     }
 
 }
-
+#endif

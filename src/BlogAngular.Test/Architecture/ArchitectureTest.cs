@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Architecture;
+#if DEBUG
 
 using Application;
 using Domain;
@@ -47,7 +48,4 @@ public class ArchitectureTest
     }
 
 }
-
-
-
-
+#endif

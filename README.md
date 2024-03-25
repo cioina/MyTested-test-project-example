@@ -6,12 +6,21 @@ The compiled code of our .NET Core 8 application is on [our GitHub repository](h
 
 ## MyTested Library Out of The Box
 
-I found out about MyTested for the first time from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Tests/Controllers/AddressesControllerTests.cs) repository. At the same time, I found out about `Jwt Authentication` implementation from same [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Web/Server/Infrastructure/Extensions/ServiceCollectionExtensions.cs) repository and from [aspnetcore-realworld-example](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/StartupExtensions.cs) repository. Both `Jwt Authentication` implementations did not work with original [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) library, so I decided to find out why. I do not know who engineered MyTested, but I was not able to fully understand how it works. I was able only to add some small pieces of code to make MyTested and my own `Jwt Authentication` implementation work and not to break any original MyTested tests. But, what MyTested can do out of the box? The best answer is in [MusicStore](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc/tree/development/samples/MusicStore/MusicStore.Test) testing project. For the API controller, [here](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Test/Routing/FrontEndRouteTest.cs) is an example:
+I found out about MyTested for the first time from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Tests/Controllers/AddressesControllerTests.cs)  and [CarRentalSystem](https://github.com/kalintsenkov/CarRentalSystem/blob/master/src/Startup/Specs/IdentityController.Specs.cs) repositories. At the same time, I found out about `Jwt Authentication` implementation from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Web/Server/Infrastructure/Extensions/ServiceCollectionExtensions.cs) and [RealWorld](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/StartupExtensions.cs) repositories. Both `Jwt Authentication` implementations did not work with original [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) library, so I decided to find out why. I do not know who engineered MyTested, but I was not able to fully understand how it works. I was able only to add some small pieces of code to make MyTested and my own `Jwt Authentication` implementation work and not to break any original MyTested tests. But, what MyTested can do out of the box? The best answer is in [MusicStore](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc/tree/development/samples/MusicStore/MusicStore.Test) testing project. For the API controller, [here](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Test/Routing/FrontEndRouteTest.cs) is an example:
 
 ```csharp
+namespace BlogAngular.Test.Routing;
+
+using Application.Common.Version;
+using MyTested.AspNetCore.Mvc;
+using Web.Features;
+using Xunit;
+
+public class FrontEndRouteTest
+{
     [Fact]
     public void VersionShouldBeRouted()
-        => MyMvc
+    => MyMvc
         .Pipeline()
         .ShouldMap(request => request
             .WithMethod(HttpMethod.Get)
@@ -19,10 +28,11 @@ I found out about MyTested for the first time from [BlazorShop](https://github.c
         .To<VersionController>(c => c.Index())
         .Which()
         .ShouldReturn()
-        .ActionResult(result => result.Result(new VersionResponseJsonProperty
+        .ActionResult(result => result.Result(new VersionResponseEnvelope
         {
             VersionJson = new VersionResponseModel()
         }));
+}
 ```
 
 ## Basic API Controller Testing

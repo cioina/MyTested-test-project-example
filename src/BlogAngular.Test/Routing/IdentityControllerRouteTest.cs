@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Routing;
+#if DEBUG
 
 using Application.Identity.Commands.Common;
 using Application.Identity.Commands.Login;
@@ -9,6 +10,7 @@ using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Test.Setups;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Test.Data;
 using Web.Features;
@@ -25,7 +27,7 @@ of the declared filters - ApiControllerAttribute (Controller), AuthorizeFilter (
 UnsupportedContentTypeFilter (Global). Either a filter is setting the response result before the 
 action itself, or you must set the request properties so that they will pass through the pipeline.";
     //In real life returns 422
-    public const string FromBaseDomainException =
+    public const string FromNotFoundException =
 @"When calling {0} action in {1} expected no exception but AggregateException (containing 
 {2} with 'Queried object {3} was not found, Key: {4}' message) was thrown without being caught.";
     //In real life returns 422
@@ -67,8 +69,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
         )
@@ -76,8 +78,8 @@ public class IdentityControllerRouteTest
         {
             UserJson = new()
             {
-                FullName = string.Format("{0}{1}", fullName, 1),
-                Password = string.Format("{0}{1}", password, 1),
+                FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
             }
         }));
 
@@ -96,12 +98,12 @@ public class IdentityControllerRouteTest
          .Pipeline()
          .ShouldMap(request => request
             .WithMethod(HttpMethod.Put)
-            .WithHeaderAuthorization(string.Format("{0}{1}", StaticTestData.GetJwtBearerAdministratorRole(email, 1), "a"))
+            .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}{1}", StaticTestData.GetJwtBearerAdministratorRole(email, 1), "a"))
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
          )
@@ -109,8 +111,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }));
 
@@ -131,12 +133,12 @@ public class IdentityControllerRouteTest
          .Pipeline()
          .ShouldMap(request => request
             .WithMethod(HttpMethod.Put)
-            .WithHeaderAuthorization(string.Format("{0}.{1}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+            .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
          )
@@ -144,8 +146,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }));
 
@@ -166,12 +168,12 @@ public class IdentityControllerRouteTest
          .Pipeline()
          .ShouldMap(request => request
             .WithMethod(HttpMethod.Put)
-            .WithHeaderAuthorization(string.Format("{0}.{1}.{2}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+            .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
          )
@@ -179,8 +181,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }));
 
@@ -203,8 +205,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
          )
@@ -212,8 +214,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }));
 
@@ -236,8 +238,8 @@ public class IdentityControllerRouteTest
              .WithLocation("api/v1.0/identity/update")
              .WithJsonBody(
                   string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                      string.Format("{0}{1}", password, 1),
-                      string.Format("{0}{1}", fullName, 1)
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                   )
              )
          )
@@ -245,8 +247,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }));
      }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/update", "Update", "IdentityController"));
@@ -268,8 +270,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}", password),
-                     string.Format("{0}", fullName)
+                     string.Format(CultureInfo.InvariantCulture, "{0}", password),
+                     string.Format(CultureInfo.InvariantCulture, "{0}", fullName)
                  )
             )
          )
@@ -308,8 +310,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 1),
-                     string.Format("{0}{1}", fullName, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
                  )
             )
          )
@@ -317,8 +319,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 1),
-                 Password = string.Format("{0}{1}", password, 1),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }))
           .Which(controller => controller
@@ -344,8 +346,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                     string.Format("{0}{1}", password, 4),
-                     string.Format("{0}{1}", fullName, 4)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
                  )
             )
          )
@@ -353,8 +355,8 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 4),
-                 Password = string.Format("{0}{1}", password, 4),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
              }
          }))
         .Which(controller => controller
@@ -375,9 +377,9 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 Email = string.Format("{0}{1}", email, 1),
-                 UserName = string.Format("{0}{1}", fullName, 4),
-                 Token = $"Token: {string.Format("{0}{1}", email, 1)}",
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                 UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                 Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
              }
          }))
          .AndAlso()
@@ -403,8 +405,8 @@ public class IdentityControllerRouteTest
                .WithLocation("api/v1.0/identity/update")
                .WithJsonBody(
                     string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                        string.Format("{0}{1}", password, 4),
-                        string.Format("{0}{1}", fullName, 4)
+                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
                     )
                )
             )
@@ -412,8 +414,8 @@ public class IdentityControllerRouteTest
             {
                 UserJson = new()
                 {
-                    FullName = string.Format("{0}{1}", fullName, 4),
-                    Password = string.Format("{0}{1}", password, 4),
+                    FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                    Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
                 }
             }))
             .Which(controller => controller
@@ -444,7 +446,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
-                     string.Format("{0}{1}", fullName, 4)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
                  )
             )
          )
@@ -452,7 +454,7 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 4),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
                  Password = null,
              }
          }))
@@ -474,9 +476,9 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 Email = string.Format("{0}{1}", email, 1),
-                 UserName = string.Format("{0}{1}", fullName, 4),
-                 Token = $"Token: {string.Format("{0}{1}", email, 1)}",
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                 UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                 Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
              }
          }))
          .AndAlso()
@@ -499,7 +501,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                     string.Format("{0}{1}", password, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                  )
             )
          )
@@ -508,7 +510,7 @@ public class IdentityControllerRouteTest
              UserJson = new()
              {
                  FullName = null,
-                 Password = string.Format("{0}{1}", password, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }))
         .Which(controller => controller
@@ -529,9 +531,9 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 Email = string.Format("{0}{1}", email, 1),
-                 UserName = string.Format("{0}{1}", fullName, 1),
-                 Token = $"Token: {string.Format("{0}{1}", email, 1)}",
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                 UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
              }
          }))
          .AndAlso()
@@ -592,7 +594,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                     string.Format("{0} ", password)
+                     string.Format(CultureInfo.InvariantCulture, "{0} ", password)
                  )
             )
          )
@@ -601,7 +603,7 @@ public class IdentityControllerRouteTest
              UserJson = new()
              {
                  FullName = null,
-                 Password = string.Format("{0} ", password)
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0} ", password)
              }
          }))
         .Which(controller => controller
@@ -635,7 +637,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/update")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
-                     string.Format("{0} ", fullName)
+                     string.Format(CultureInfo.InvariantCulture, "{0} ", fullName)
                  )
             )
          )
@@ -643,7 +645,7 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0} ", fullName),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0} ", fullName),
                  Password = null,
              }
          }))
@@ -681,7 +683,7 @@ public class IdentityControllerRouteTest
                .WithLocation("api/v1.0/identity/update")
                .WithJsonBody(
                 string.Format(@"{{""password"":""{0}""}}",
-                    string.Format("{0}{1}", password, 1)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                 ))
             )
             .To<IdentityController>(c => c.Update(new UserUpdateCommand
@@ -746,7 +748,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity")
             .WithJsonBody(
                  string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                     string.Format("{0}{1}", password, 1)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                  )
             )
          )
@@ -755,7 +757,7 @@ public class IdentityControllerRouteTest
              UserJson = new()
              {
                  FullName = null,
-                 Password = string.Format("{0}{1}", password, 1),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
              }
          }))
         .Which(controller => controller
@@ -776,9 +778,9 @@ public class IdentityControllerRouteTest
          {
              UserJson = new()
              {
-                 Email = string.Format("{0}{1}", email, 1),
-                 UserName = string.Format("{0}{1}", fullName, 1),
-                 Token = $"Token: {string.Format("{0}{1}", email, 1)}",
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                 UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                 Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
              }
          }))
          .AndAlso()
@@ -804,7 +806,7 @@ public class IdentityControllerRouteTest
              .WithLocation("api/v1.0/identity")
              .WithJsonBody(
                   string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                      string.Format("{0}{1}", password, 1)
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                   )
              )
           )
@@ -813,7 +815,7 @@ public class IdentityControllerRouteTest
               UserJson = new()
               {
                   FullName = null,
-                  Password = string.Format("{0}{1}", password, 1),
+                  Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
               }
           }))
           .Which(controller => controller
@@ -881,7 +883,7 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                     string.Format("{0}{1}", password, 2)
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2)
                 )
             ))
           .To<IdentityController>(c => c.LoginPassword(new LoginPasswordCommand
@@ -889,7 +891,7 @@ public class IdentityControllerRouteTest
               UserJson = new()
               {
                   FullName = null,
-                  Password = string.Format("{0}{1}", password, 2),
+                  Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
               }
           }))
          .Which(controller => controller
@@ -919,18 +921,18 @@ public class IdentityControllerRouteTest
         .WithLocation("api/v1.0/identity/register")
         .WithJsonBody(
             string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                string.Format("{0}{1}", email, 2),
-                string.Format("{0}{1}", password, 2),
-                string.Format("{0}{1}", fullName, 2)
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
             ))
      )
      .To<IdentityController>(c => c.Register(new UserRegisterCommand
      {
          UserJson = new()
          {
-             FullName = string.Format("{0}{1}", fullName, 2),
-             Email = string.Format("{0}{1}", email, 2),
-             Password = string.Format("{0}{1}", password, 2),
+             FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
+             Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+             Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
          }
      }))
      .Which(controller => controller
@@ -940,9 +942,9 @@ public class IdentityControllerRouteTest
      {
          UserJson = new()
          {
-             Email = string.Format("{0}{1}", email, 2),
-             UserName = string.Format("{0}{1}", fullName, 2),
-             Token = $"Token: {string.Format("{0}{1}", email, 2)}",
+             Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+             UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
+             Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2)}",
          }
      }))
      .AndAlso()
@@ -967,18 +969,18 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/register")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                    string.Format("{0}{1}", email, 4),
-                    string.Format("{0}{1}", password, 4),
-                    string.Format("{0}{1}", fullName, 2)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 4),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
                 ))
          )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 2),
-                 Email = string.Format("{0}{1}", email, 4),
-                 Password = string.Format("{0}{1}", password, 4),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 4),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
              }
          }))
          .Which(controller => controller
@@ -1005,18 +1007,18 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/register")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                    string.Format("{0}{1}", email, 2),
-                    string.Format("{0}{1}", password, 4),
-                    string.Format("{0}{1}", fullName, 4)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
                 ))
          )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 4),
-                 Email = string.Format("{0}{1}", email, 2),
-                 Password = string.Format("{0}{1}", password, 4),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
              }
          }))
          .Which(controller => controller
@@ -1043,18 +1045,18 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/register")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                    string.Format("{0}{1}", email, 2),
-                    string.Format("{0}{1}", password, 2),
-                    string.Format("{0} ", fullName)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
+                    string.Format(CultureInfo.InvariantCulture, "{0} ", fullName)
                 ))
          )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0} ", fullName),
-                 Email = string.Format("{0}{1}", email, 2),
-                 Password = string.Format("{0}{1}", password, 2),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0} ", fullName),
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
              }
          }))
          .Which(controller => controller
@@ -1081,18 +1083,18 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/register")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                    string.Format("{0}{1}", email, 2),
-                    string.Format("{0} ", password),
-                    string.Format("{0}{1}", fullName, 2)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                    string.Format(CultureInfo.InvariantCulture, "{0} ", password),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
                 ))
          )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
          {
              UserJson = new()
              {
-                 FullName = string.Format("{0}{1}", fullName, 2),
-                 Email = string.Format("{0}{1}", email, 2),
-                 Password = string.Format("{0} ", password),
+                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
+                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
+                 Password = string.Format(CultureInfo.InvariantCulture, "{0} ", password),
              }
          }))
          .Which(controller => controller
@@ -1119,9 +1121,9 @@ public class IdentityControllerRouteTest
              .WithLocation("api/v1.0/identity/register")
              .WithJsonBody(
                  string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                     string.Format("{0}", email),
-                     string.Format("{0}", password),
-                     string.Format("{0}", fullName)
+                     string.Format(CultureInfo.InvariantCulture, "{0}", email),
+                     string.Format(CultureInfo.InvariantCulture, "{0}", password),
+                     string.Format(CultureInfo.InvariantCulture, "{0}", fullName)
                  ))
           )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
@@ -1160,16 +1162,16 @@ public class IdentityControllerRouteTest
         .WithLocation("api/v1.0/identity/login")
         .WithJsonBody(
             string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                string.Format("{0}{1}", email, 1),
-                string.Format("{0}{1}", password, 1)
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
             ))
       )
       .To<IdentityController>(c => c.Login(new UserLoginCommand
       {
           UserJson = new()
           {
-              Email = string.Format("{0}{1}", email, 1),
-              Password = string.Format("{0}{1}", password, 1),
+              Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+              Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
           }
       }))
       .Which(controller => controller
@@ -1179,9 +1181,9 @@ public class IdentityControllerRouteTest
       {
           UserJson = new()
           {
-              Email = string.Format("{0}{1}", email, 1),
-              UserName = string.Format("{0}{1}", fullName, 1),
-              Token = $"Token: {string.Format("{0}{1}", email, 1)}",
+              Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+              UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+              Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
           }
       }))
       .AndAlso()
@@ -1210,16 +1212,16 @@ public class IdentityControllerRouteTest
                 .WithLocation("api/v1.0/identity/login")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""em"":""{0}"",""pass"":""{1}""}}}}",
-                        string.Format("{0}{1}", email, 1),
-                        string.Format("{0}{1}", password, 1)
+                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                     ))
               )
               .To<IdentityController>(c => c.Login(new UserLoginCommand
               {
                   UserJson = new()
                   {
-                      Email = string.Format("{0}{1}", email, 1),
-                      Password = string.Format("{0}{1}", password, 1),
+                      Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                      Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
                   }
               }));
         }, string.Format(DifferenceException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/login", "command", "UserLoginCommand.UserJson.Email"));
@@ -1240,8 +1242,8 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/login")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                    string.Format("{0}", email),
-                    string.Format("{0}", password)
+                    string.Format(CultureInfo.InvariantCulture, "{0}", email),
+                    string.Format(CultureInfo.InvariantCulture, "{0}", password)
                 ))
          )
          .To<IdentityController>(c => c.Login(new UserLoginCommand
@@ -1280,16 +1282,16 @@ public class IdentityControllerRouteTest
             .WithLocation("api/v1.0/identity/login")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                    string.Format("{0}{1}", email, 1),
-                    string.Format("{0}{1}", password, 1)
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
                 )
             ))
           .To<IdentityController>(c => c.Login(new UserLoginCommand
           {
               UserJson = new()
               {
-                  Email = string.Format("{0}{1}", email, 1),
-                  Password = string.Format("{0}{1}", password, 1),
+                  Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                  Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
               }
           }))
           .Which(controller => controller
@@ -1338,16 +1340,16 @@ public class IdentityControllerRouteTest
         .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
         .WithLocation($"api/v1.0/profile/{fullName}1")
       )
-      .To<ProfileController>(c => c.Index(string.Format("{0}{1}", fullName, 1)))
+      .To<ProfileController>(c => c.Index(string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)))
       .Which(controller => controller
         .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
       .ShouldReturn()
       .ActionResult(result => result.Result(new ProfileResponseEnvelope
       {
           ProfileJson = new ProfileResponseModel(
-              string.Format("{0}{1}", fullName, 1),
-              string.Format("{0}{1}", fullName, 1),
-              string.Format("{0}{1}", fullName, 1)
+              string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+              string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+              string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
           )
       }))
       .AndAlso()
@@ -1364,7 +1366,7 @@ public class IdentityControllerRouteTest
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format("U!{0}",  ValidMinPasswordLength)
+            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength)
         };
 
         yield return new object[]
@@ -1373,7 +1375,8 @@ public class IdentityControllerRouteTest
              //Must be valid email address
              $"{ValidMaxEmailLength}@a.bcde",
              //Password must contain Upper case, lower case, number, special symbols
-             string.Format("U!{0}", ValidMaxPasswordLength)
+             string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength)
         };
     }
 }
+#endif

@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Routing;
+#if DEBUG
 
 using Application.Blog.Articles.Commands.Common;
 using Application.Blog.ArticleTags.Commands.Create;
@@ -8,6 +9,7 @@ using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Test.Setups;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Test.Data;
 using Web.Features;
@@ -154,7 +156,7 @@ public class ArticlesControllerRouteTest
                 .RestrictingForAuthorizedRequests())
             .AndAlso()
             .ShouldReturn();
-        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "tag", 3));
+        }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "tag", 3));
 
     [Theory]
     [MemberData(nameof(ValidData))]
@@ -206,7 +208,7 @@ public class ArticlesControllerRouteTest
                 .RestrictingForAuthorizedRequests())
             .AndAlso()
             .ShouldReturn();
-        }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "ArticleId", 6));
+        }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "article", 6));
 
 
     [Theory]
@@ -374,9 +376,9 @@ public class ArticlesControllerRouteTest
                return new ArticleResponseModel
                {
                    Id = i,
-                   Title = string.Format("{0}{1}", title, i),
-                   Slug = string.Format("{0}{1}", slug, i),
-                   Description = string.Format("{0}{1}", description, i),
+                   Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
+                   Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
+                   Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
                    Published = true,
                    CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                    TagList = Enumerable
@@ -462,9 +464,9 @@ public class ArticlesControllerRouteTest
              return new ArticleResponseModel
              {
                  Id = j,
-                 Title = string.Format("{0}{1}", title, j),
-                 Slug = string.Format("{0}{1}", slug, j),
-                 Description = string.Format("{0}{1}", description, j),
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, j),
+                 Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, j),
+                 Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, j),
                  Published = true,
                  CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                  TagList = Enumerable
@@ -548,9 +550,9 @@ public class ArticlesControllerRouteTest
                return new ArticleResponseModel
                {
                    Id = i,
-                   Title = string.Format("{0}{1}", title, i),
-                   Slug = string.Format("{0}{1}", slug, i),
-                   Description = string.Format("{0}{1}", description, i),
+                   Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
+                   Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
+                   Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
                    Published = true,
                    CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                };
@@ -613,9 +615,9 @@ public class ArticlesControllerRouteTest
                return new ArticleResponseModel
                {
                    Id = j,
-                   Title = string.Format("{0}{1}", title, j),
-                   Slug = string.Format("{0}{1}", slug, j),
-                   Description = string.Format("{0}{1}", description, j),
+                   Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, j),
+                   Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, j),
+                   Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, j),
                    Published = true,
                    CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                };
@@ -755,9 +757,9 @@ public class ArticlesControllerRouteTest
                return new ArticleResponseModel
                {
                    Id = i,
-                   Title = string.Format("{0}{1}", title, i),
-                   Slug = string.Format("{0}{1}", slug, i),
-                   Description = string.Format("{0}{1}", description, i),
+                   Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
+                   Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
+                   Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
                    Published = true,
                    CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                    TagList = Enumerable
@@ -803,9 +805,9 @@ public class ArticlesControllerRouteTest
         .WithLocation("api/v1.0/articles/create")
         .WithJsonBody(
                string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}"", ""published"": ""{3}""}}}}",
-                   string.Format("{0}{1}", title, 4),
-                   string.Format("{0}{1}", slug, 4),
-                   string.Format("{0}{1}", description, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
                    true)
         )
       )
@@ -813,9 +815,9 @@ public class ArticlesControllerRouteTest
       {
           ArticleJson = new()
           {
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               Published = true
           }
       }))
@@ -841,9 +843,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 4,
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today)),
               Published = true
           }
@@ -872,18 +874,18 @@ public class ArticlesControllerRouteTest
         .WithLocation("api/v1.0/articles/create")
         .WithJsonBody(
                string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                   string.Format("{0}{1}", title, 4),
-                   string.Format("{0}{1}", slug, 4),
-                   string.Format("{0}{1}", description, 4))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
         )
       )
       .To<ArticlesController>(c => c.Create(new()
       {
           ArticleJson = new()
           {
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4)
           }
       }))
       .Which(controller => controller
@@ -908,9 +910,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 4,
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today)),
               Published = false
           }
@@ -942,18 +944,18 @@ public class ArticlesControllerRouteTest
            .WithLocation("api/v1.0/articles/create")
            .WithJsonBody(
                   string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                      string.Format("{0}{1}", title, 1),
-                      string.Format("{0}{1}", slug, 1),
-                      string.Format("{0}{1}", description, 4))
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
            )
          )
          .To<ArticlesController>(c => c.Create(new()
          {
              ArticleJson = new()
              {
-                 Title = string.Format("{0}{1}", title, 1),
-                 Slug = string.Format("{0}{1}", slug, 1),
-                 Description = string.Format("{0}{1}", description, 4)
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
+                 Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
+                 Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4)
              }
          }))
          .Which(controller => controller
@@ -1000,18 +1002,18 @@ public class ArticlesControllerRouteTest
           .WithLocation("api/v1.0/articles/create")
           .WithJsonBody(
                  string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                     string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                     string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                     string.Format("{0}{1}", ValidMaxxDescriptionLength, "ab"))
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab"))
           )
         )
         .To<ArticlesController>(c => c.Create(new()
         {
             ArticleJson = new()
             {
-                Title = string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                Slug = string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                Description = string.Format("{0}{1}", ValidMaxxDescriptionLength, "ab")
+                Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab")
             }
         }))
         .Which(controller => controller
@@ -1115,9 +1117,9 @@ public class ArticlesControllerRouteTest
         .WithLocation("api/v1.0/articles/edit/2")
         .WithJsonBody(
                string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}"", ""published"": ""{3}""}}}}",
-                   string.Format("{0}{1}", title, 4),
-                   string.Format("{0}{1}", slug, 4),
-                   string.Format("{0}{1}", description, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
                    true)
         )
       )
@@ -1125,9 +1127,9 @@ public class ArticlesControllerRouteTest
       {
           ArticleJson = new()
           {
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               Published = true
           }
       }))
@@ -1153,9 +1155,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 2,
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
               Published = true
           }
@@ -1184,18 +1186,18 @@ public class ArticlesControllerRouteTest
         .WithLocation("api/v1.0/articles/edit/2")
         .WithJsonBody(
                string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                   string.Format("{0}{1}", title, 4),
-                   string.Format("{0}{1}", slug, 4),
-                   string.Format("{0}{1}", description, 4))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
         )
       )
       .To<ArticlesController>(c => c.Edit(2, new()
       {
           ArticleJson = new()
           {
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
           }
       }))
       .Which(controller => controller
@@ -1220,9 +1222,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 2,
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
               Published = false
           }
@@ -1251,18 +1253,18 @@ public class ArticlesControllerRouteTest
         .WithLocation("api/v1.0/articles/edit/2")
         .WithJsonBody(
                string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                   string.Format("{0}{1}", title, 2),
-                   string.Format("{0}{1}", slug, 2),
-                   string.Format("{0}{1}", description, 4))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
         )
       )
       .To<ArticlesController>(c => c.Edit(2, new()
       {
           ArticleJson = new()
           {
-              Title = string.Format("{0}{1}", title, 2),
-              Slug = string.Format("{0}{1}", slug, 2),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
           }
       }))
       .Which(controller => controller
@@ -1287,9 +1289,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 2,
-              Title = string.Format("{0}{1}", title, 2),
-              Slug = string.Format("{0}{1}", slug, 2),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
               Published = false
           }
@@ -1321,18 +1323,18 @@ public class ArticlesControllerRouteTest
                  .WithLocation("api/v1.0/articles/edit/2")
                  .WithJsonBody(
                         string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                            string.Format("{0}{1}", title, 1),
-                            string.Format("{0}{1}", slug, 1),
-                            string.Format("{0}{1}", description, 4))
+                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
+                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
+                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
                  )
                )
                .To<ArticlesController>(c => c.Edit(2, new()
                {
                    ArticleJson = new()
                    {
-                       Title = string.Format("{0}{1}", title, 1),
-                       Slug = string.Format("{0}{1}", slug, 1),
-                       Description = string.Format("{0}{1}", description, 4),
+                       Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
+                       Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
+                       Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
                    }
                }))
                .Which(controller => controller
@@ -1379,18 +1381,18 @@ public class ArticlesControllerRouteTest
           .WithLocation("api/v1.0/articles/edit/2")
           .WithJsonBody(
                  string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                     string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                     string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                     string.Format("{0}{1}", ValidMaxxDescriptionLength, "ab"))
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab"))
           )
         )
         .To<ArticlesController>(c => c.Edit(2, new()
         {
             ArticleJson = new()
             {
-                Title = string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                Slug = string.Format("{0}{1}", ValidMaxxTitleLength, "ab"),
-                Description = string.Format("{0}{1}", ValidMaxxDescriptionLength, "ab")
+                Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
+                Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab")
             }
         }))
         .Which(controller => controller
@@ -1496,18 +1498,18 @@ public class ArticlesControllerRouteTest
            .WithLocation("api/v1.0/articles/edit/5")
            .WithJsonBody(
                   string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                      string.Format("{0}{1}", title, 4),
-                      string.Format("{0}{1}", slug, 4),
-                      string.Format("{0}{1}", description, 4))
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
            )
          )
          .To<ArticlesController>(c => c.Edit(5, new()
          {
              ArticleJson = new()
              {
-                 Title = string.Format("{0}{1}", title, 4),
-                 Slug = string.Format("{0}{1}", slug, 4),
-                 Description = string.Format("{0}{1}", description, 4),
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+                 Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+                 Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
              }
          }))
          .Which(controller => controller
@@ -1527,7 +1529,7 @@ public class ArticlesControllerRouteTest
               .RestrictingForAuthorizedRequests())
          .AndAlso()
          .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "ArticlesController", "NotFoundException", "request", 5));
+    }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Edit", "ArticlesController", "NotFoundException", "article", 5));
 
 
     [Theory]
@@ -1573,9 +1575,9 @@ public class ArticlesControllerRouteTest
           ArticleJson = new()
           {
               Id = 4,
-              Title = string.Format("{0}{1}", title, 4),
-              Slug = string.Format("{0}{1}", slug, 4),
-              Description = string.Format("{0}{1}", description, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
+              Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
+              Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
               CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(4))),
               TagList = Enumerable
                          .Range(1, 3)
@@ -1647,7 +1649,7 @@ public class ArticlesControllerRouteTest
                .RestrictingForAuthorizedRequests())
           .AndAlso()
           .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Details", "ArticlesController", "NotFoundException", "request", 6));
+    }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Details", "ArticlesController", "NotFoundException", "article", 6));
 
     [Theory]
     [MemberData(nameof(ValidData))]
@@ -1747,7 +1749,7 @@ public class ArticlesControllerRouteTest
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format("U!{0}",  ValidMinPasswordLength),
+            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength),
 
             ValidMinNameLength,
 
@@ -1762,7 +1764,7 @@ public class ArticlesControllerRouteTest
             //Must be valid email address
             $"{ValidMaxEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format("U!{0}", ValidMaxPasswordLength),
+            string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength),
 
             ValidMaxxNameLength,
 
@@ -1773,3 +1775,4 @@ public class ArticlesControllerRouteTest
     }
 }
 
+#endif

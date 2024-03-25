@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Routing;
+#if DEBUG
 
 using Application.Blog.Common;
 using Application.Blog.Tags.Commands.Common;
@@ -7,6 +8,7 @@ using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Test.Setups;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Test.Data;
 using Web.Features;
@@ -53,14 +55,14 @@ public class TagsControllerRouteTest
         .WithLocation("api/v1.0/tags/create")
         .WithJsonBody(
                string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                   string.Format("{0}{1}", name, 4))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
         )
       )
       .To<TagsController>(c => c.Create(new()
       {
           TagJson = new()
           {
-              Title = string.Format("{0}{1}", name, 4)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
           }
       }))
       .Which(controller => controller
@@ -92,7 +94,7 @@ public class TagsControllerRouteTest
           TagJson = new()
           {
               Id = 4,
-              Title = string.Format("{0}{1}", name, 4),
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4),
           }
       }))
       .AndAlso()
@@ -122,14 +124,14 @@ public class TagsControllerRouteTest
            .WithLocation("api/v1.0/tags/create")
            .WithJsonBody(
                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                      string.Format("{0}{1}", name, 4))
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
            )
          )
          .To<TagsController>(c => c.Create(new()
          {
              TagJson = new()
              {
-                 Title = string.Format("{0}{1}", name, 4)
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
              }
          }))
          .Which(controller => controller
@@ -175,14 +177,14 @@ public class TagsControllerRouteTest
                 .WithLocation("api/v1.0/tags/create")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format("{0}{1}", name, 4))
+                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
                 )
               )
               .To<TagsController>(c => c.Create(new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format("{0}{1}", name, 4)
+                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
                   }
               }))
               .Which(controller => controller
@@ -235,14 +237,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/create")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", name, 4))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
             )
           )
           .To<TagsController>(c => c.Create(new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", name, 4)
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
               }
           }));
 
@@ -276,14 +278,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/create")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", name, 4))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
             )
           )
           .To<TagsController>(c => c.Create(new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", name, 4)
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
               }
           }));
 
@@ -318,14 +320,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/create")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", name, 4))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
             )
           )
           .To<TagsController>(c => c.Create(new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", name, 4)
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
               }
           }));
 
@@ -406,14 +408,14 @@ public class TagsControllerRouteTest
            .WithLocation("api/v1.0/tags/create")
            .WithJsonBody(
                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                      string.Format("{0}{1}", ValidMaxxNameLength, "ab"))
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab"))
            )
          )
          .To<TagsController>(c => c.Create(new()
          {
              TagJson = new()
              {
-                 Title = string.Format("{0}{1}", ValidMaxxNameLength, "ab")
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab")
              }
          }))
          .Which(controller => controller
@@ -456,14 +458,14 @@ public class TagsControllerRouteTest
         .WithLocation("api/v1.0/tags/edit/2")
         .WithJsonBody(
                string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                   string.Format("{0}{1}", name, 4))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
         )
       )
       .To<TagsController>(c => c.Edit(2, new()
       {
           TagJson = new()
           {
-              Title = string.Format("{0}{1}", name, 4)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
           }
       }))
       .Which(controller => controller
@@ -488,7 +490,7 @@ public class TagsControllerRouteTest
           TagJson = new()
           {
               Id = 2,
-              Title = string.Format("{0}{1}", name, 4)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
           }
       }))
       .AndAlso()
@@ -571,14 +573,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", ValidMaxxNameLength, "ab"))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab"))
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", ValidMaxxNameLength, "ab")
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab")
               }
           }))
           .Which(controller => controller
@@ -624,14 +626,14 @@ public class TagsControllerRouteTest
            .WithLocation("api/v1.0/tags/edit/5")
            .WithJsonBody(
                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                      string.Format("{0}{1}", name, 4))
+                      string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
            )
          )
          .To<TagsController>(c => c.Edit(5, new()
          {
              TagJson = new()
              {
-                 Title = string.Format("{0}{1}", name, 4)
+                 Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
              }
          }))
          .Which(controller => controller
@@ -651,7 +653,7 @@ public class TagsControllerRouteTest
               .RestrictingForAuthorizedRequests())
          .AndAlso()
          .ShouldReturn();
-    }, string.Format(FromBaseDomainException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "NotFoundException", "request", 5));
+    }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "NotFoundException", "tag", 5));
 
 
     [Theory]
@@ -672,14 +674,14 @@ public class TagsControllerRouteTest
         .WithLocation("api/v1.0/tags/edit/2")
         .WithJsonBody(
                string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                   string.Format("{0}{1}", name, 2))
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2))
         )
       )
       .To<TagsController>(c => c.Edit(2, new()
       {
           TagJson = new()
           {
-              Title = string.Format("{0}{1}", name, 2)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2)
           }
       }))
       .Which(controller => controller
@@ -704,7 +706,7 @@ public class TagsControllerRouteTest
           TagJson = new()
           {
               Id = 2,
-              Title = string.Format("{0}{1}", name, 2)
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2)
           }
       }))
       .AndAlso()
@@ -734,14 +736,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", name, 1))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1))
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", name, 1)
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1)
               }
           }))
           .Which(controller => controller
@@ -788,14 +790,14 @@ public class TagsControllerRouteTest
             .WithLocation("api/v1.0/tags/create")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format("{0}{1}", name, 1))
+                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1))
             )
           )
           .To<TagsController>(c => c.Create(new()
           {
               TagJson = new()
               {
-                  Title = string.Format("{0}{1}", name, 1)
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1)
               }
           }))
           .Which(controller => controller
@@ -955,7 +957,7 @@ public class TagsControllerRouteTest
                   return new TagResponseModel
                   {
                       Id = i,
-                      Title = string.Format("{0}{1}", name, i),
+                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
                   };
               }).ToList(),
         }));
@@ -996,7 +998,7 @@ public class TagsControllerRouteTest
               return new TagResponseModel
               {
                   Id = i,
-                  Title = string.Format("{0}{1}", name, i),
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
               };
           }).ToList(),
         }));
@@ -1038,7 +1040,7 @@ public class TagsControllerRouteTest
               return new TagResponseModel
               {
                   Id = i,
-                  Title = string.Format("{0}{1}", name, i),
+                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
               };
           }).ToList(),
     }));
@@ -1051,7 +1053,7 @@ public class TagsControllerRouteTest
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format("U!{0}",  ValidMinPasswordLength),
+            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength),
 
             ValidMinNameLength,
 
@@ -1066,7 +1068,7 @@ public class TagsControllerRouteTest
             //Must be valid email address
             $"{ValidMaxEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format("U!{0}", ValidMaxPasswordLength),
+            string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength),
 
             ValidMaxxNameLength,
 
@@ -1077,3 +1079,4 @@ public class TagsControllerRouteTest
     }
 }
 
+#endif

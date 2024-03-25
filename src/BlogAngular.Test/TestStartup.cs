@@ -1,4 +1,5 @@
 namespace BlogAngular.Test;
+#if DEBUG
 
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -16,4 +17,4 @@ public class TestStartup : Startup
         base.ConfigureServices(services);
     }
 }
-
+#endif

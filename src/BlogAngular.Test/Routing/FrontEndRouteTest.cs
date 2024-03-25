@@ -1,4 +1,5 @@
 ﻿namespace BlogAngular.Test.Routing;
+#if DEBUG
 
 using Application.Common.Version;
 using MyTested.AspNetCore.Mvc;
@@ -22,7 +23,7 @@ public class FrontEndRouteTest
             VersionJson = new VersionResponseModel()
         }));
 }
-
+#endif
 
 
 

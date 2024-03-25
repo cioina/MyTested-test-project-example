@@ -54,7 +54,6 @@ public class ValidationExceptionHandlerMiddleware
 
             if (exception is Ardalis.GuardClauses.NotFoundException or ArgumentException)
             {
-                error = exception.Message;
                 code = HttpStatusCode.UnprocessableEntity;
             }
             else if (exception.Source == "Microsoft.EntityFrameworkCore.Relational" &&
