@@ -1,5 +1,5 @@
 {
-  "x-generator": "NSwag v14.0.3.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))",
+  "x-generator": "NSwag v14.0.4.0 (NJsonSchema v11.0.0.0 (Newtonsoft.Json v13.0.0.0))",
   "openapi": "3.0.0",
   "info": {
     "title": "BlogAngular API",
@@ -757,7 +757,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "articles": {
+              "models": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/ArticleResponseModel"
@@ -805,6 +805,12 @@
         "x-abstract": true,
         "additionalProperties": false,
         "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/ArticleResponseModel"
+            }
+          },
           "total": {
             "type": "integer",
             "format": "int32"
@@ -826,7 +832,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "filter": {
+          "articleTagsJson": {
             "$ref": "#/components/schemas/ArticleTagsListingRequestModel"
           }
         }
@@ -865,7 +871,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "article": {
+          "articleJson": {
             "$ref": "#/components/schemas/ArticleResponseModel"
           }
         }
@@ -890,7 +896,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "article": {
+              "articleJson": {
                 "$ref": "#/components/schemas/ArticleCommandOfArticleCreateCommand"
               }
             }
@@ -952,7 +958,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "article": {
+              "articleJson": {
                 "$ref": "#/components/schemas/ArticleCommandOfArticleEditCommand"
               }
             }
@@ -999,7 +1005,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "articleTags": {
+          "articleTagsJson": {
             "$ref": "#/components/schemas/ArticleTagsCreateRequestModel"
           }
         }
@@ -1026,7 +1032,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "user": {
+          "userJson": {
             "$ref": "#/components/schemas/UserResponseModel"
           }
         }
@@ -1038,7 +1044,7 @@
           "email": {
             "type": "string"
           },
-          "username": {
+          "userName": {
             "type": "string"
           },
           "token": {
@@ -1061,7 +1067,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "user": {
+          "userJson": {
             "$ref": "#/components/schemas/UserUpdateRequestModel"
           }
         }
@@ -1070,7 +1076,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "username": {
+          "fullName": {
             "type": "string",
             "nullable": true
           },
@@ -1095,7 +1101,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "user": {
+          "userJson": {
             "$ref": "#/components/schemas/UserRequestModel"
           }
         }
@@ -1127,7 +1133,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "user": {
+          "userJson": {
             "$ref": "#/components/schemas/UserRegisterRequestModel"
           }
         }
@@ -1141,7 +1147,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "username": {
+              "fullName": {
                 "type": "string"
               }
             }
@@ -1163,7 +1169,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "profile": {
+          "profileJson": {
             "$ref": "#/components/schemas/ProfileResponseModel"
           }
         }
@@ -1172,7 +1178,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "username": {
+          "userName": {
             "type": "string",
             "nullable": true
           },
@@ -1195,7 +1201,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "tags": {
+              "models": {
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/TagResponseModel"
@@ -1223,6 +1229,12 @@
         "x-abstract": true,
         "additionalProperties": false,
         "properties": {
+          "models": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/TagResponseModel"
+            }
+          },
           "total": {
             "type": "integer",
             "format": "int32"
@@ -1233,7 +1245,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "tag": {
+          "tagJson": {
             "$ref": "#/components/schemas/TagResponseModel"
           }
         }
@@ -1258,7 +1270,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "tag": {
+              "tagJson": {
                 "$ref": "#/components/schemas/TagCommandOfTagCreateCommand"
               }
             }
@@ -1301,7 +1313,7 @@
             "type": "object",
             "additionalProperties": false,
             "properties": {
-              "tag": {
+              "tagJson": {
                 "$ref": "#/components/schemas/TagCommandOfTagEditCommand"
               }
             }
@@ -1328,7 +1340,7 @@
         "type": "object",
         "additionalProperties": false,
         "properties": {
-          "version": {
+          "versionJson": {
             "$ref": "#/components/schemas/VersionResponseModel"
           }
         }

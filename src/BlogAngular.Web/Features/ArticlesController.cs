@@ -25,11 +25,7 @@ public class ArticlesController : ApiController
     [Authorize(AuthenticationSchemes = Bearer, Policy = BearerPolicy, Roles = AdministratorRoleName)]
     public async Task<ActionResult<ArticlesResponseEnvelope>> All(
         ArticleTagsListingCommand command)
-    {
-        command.ControllerContext = this.ControllerContext;
-
-        return await this.Send(command);
-    }
+        => await this.Send(command);
 
     [HttpPost]
     [Route(nameof(Create))]
@@ -67,5 +63,4 @@ public class ArticlesController : ApiController
     public async Task<ActionResult<int>> LinkTags(
         ArticleTagsCreateCommand command)
         => await this.Send(command);
-
 }

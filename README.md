@@ -2,7 +2,7 @@
 
 ## Introduction
 
-The compiled code of our .NET Core 8 application is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net). For this test project, which is part our application, we will use [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) - a well-known library for testing ASP.NET Core MVC. Here, we adapted the library to work with .NET Core 8 and API controllers with Bearer Header Authorization based on JWT token implementation provided by .NET Core. Our .NET Core 8 project is based on [BookStore](https://github.com/kalintsenkov/BookStore) repository and adapted to work with MyTested library.
+The compiled code of our .NET Core 8 application is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net). For this test project, which is part our application, we will use [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) - a well-known library for testing ASP.NET Core MVC. Here, we adapted the library to work with .NET Core 8 and API controllers with Bearer Header Authorization based on JWT token implementation provided by .NET Core. Our .NET Core 8 project is based on [BookStore](https://github.com/kalintsenkov/BookStore) repository and adapted to work with MyTested library. In addition, we used `NSwag.MSBuild` from [CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/Web/Web.csproj) to generate [specification.json](https://github.com/cioina/MyTested-test-project-example/blob/main/src/specification.json).
 
 ## MyTested Library Out of The Box
 
