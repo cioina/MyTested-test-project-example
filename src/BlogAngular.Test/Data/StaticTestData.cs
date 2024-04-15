@@ -2,9 +2,11 @@
 #if DEBUG
 
 using Application.Common;
+using AspNetCoreRateLimit;
 using Domain.Blog.Models;
 using Infrastructure.Identity;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -13,12 +15,14 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using MyTested.AspNetCore.Mvc.Internal.Services;
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using static Domain.Common.Models.ModelConstants.Identity;
 
 public static class StaticTestData
@@ -42,9 +46,86 @@ public static class StaticTestData
         }
     }
 
+    public static async Task<bool> InvokeIpRateLimitMiddleware()
+    {
+        bool result = true;
+
+        if (TestServiceProvider.Current.GetService(typeof(IMiddlewareFactory)) is IMiddlewareFactory middlewareFactory)
+        {
+            var middleware = middlewareFactory.Create(typeof(IpRateLimitMiddleware));
+            if (middleware != null)
+            {
+                var runningTasksIndex = new ConcurrentDictionary<string, string>();
+                try
+                {
+                    await Task.Run(
+                          async () =>
+                     {
+                         var httpContext = TestServiceProvider.Current.GetService<IHttpContextAccessor>()!.HttpContext!;
+                         var ipPolicyStore = TestServiceProvider.Current.GetService<IIpPolicyStore>();
+
+                         var ipps = await ipPolicyStore!.GetAsync("ippp").ConfigureAwait(false);
+                         if (ipps == null)
+                         {
+                             if (runningTasksIndex.TryAdd("ippp", "ippp"))
+                             {
+                                 await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
+                             }
+                         }
+                         var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
+
+                         var flag = true;
+                         if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var ip))
+                         {
+                             if (httpContext.Request.Headers.TryGetValue("X-Real-LIMIT", out var limit))
+                             {
+                                 flag = policy.IpRules.Any((a) => a.Ip == ip);
+                                 if (!flag)
+                                 {
+                                     if (runningTasksIndex.TryAdd(ip!, limit!))
+                                     {
+                                         policy.IpRules.Add(new IpRateLimitPolicy
+                                         {
+                                             Ip = ip,
+                                             Rules = new List<RateLimitRule>(new RateLimitRule[] {
+                                               new() {
+                                                   Endpoint = $"*:{httpContext.Request.Path}",
+                                                   Limit = int.Parse(limit!),
+                                                   Period = "1m" }})
+                                         });
+
+                                     }
+                                 }
+                             }
+                         }
+
+                         if (!flag)
+                         {
+                             await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
+                         }
+
+                         var middle = middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
+                         if (middle.IsFaulted || middle.IsCanceled)
+                         {
+                             result = false;
+                         }
+
+                     });
+
+                }
+                finally
+                {
+                    middlewareFactory.Release(middleware);
+                }
+            }
+
+        }
+        return result;
+    }
+
     public static string GetJwtBearerWithExpiredToken(
-        string email,
-        int i)
+    string email,
+    int i)
     {
         EventWaitHandle _waitHandle = new AutoResetEvent(false); // is signaled value change to true
                                                                  // start a thread which will after a small time set an event
@@ -162,14 +243,33 @@ public static class StaticTestData
     public static IEnumerable<object> GetTags(
     int count,
     string name)
-    => Enumerable
-         .Range(1, count)
-         .Select(i =>
-         {
-             return new Tag(
-                 string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i)
-             );
-         }).ToList();
+    {
+        return Enumerable
+             .Range(1, count)
+             .Select(i =>
+             {
+                 return new Tag(
+                     string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i)
+                 );
+             }).ToList();
+    }
+
+    public static IEnumerable<object> GetTagsWithRateLimitMiddleware(
+    int count,
+    string name)
+    {
+        var ipRateLimit = InvokeIpRateLimitMiddleware();
+
+        if (!ipRateLimit.Result)
+        {
+            throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
+                    {
+                        { "RequestBlockedBehaviorAsync", new []{"To many requests" } }
+                    });
+        }
+
+        return GetTags(count, name);
+    }
 
     public static IEnumerable<object> GetArticlesTagsUsers(
     int count,
@@ -291,5 +391,33 @@ public static class StaticTestData
         dbContext.SaveChanges();
     }
 
+    public static void GetAllWithRoleWithRateLimitMiddleware(
+    int count,
+    
+    string email,
+    string userName,
+    string password,
+    
+    string name,
+    
+    string title,
+    string slug,
+    string description,
+    DateOnly date,
+    bool published,
+    DbContext dbContext)
+    {
+        var ipRateLimit = InvokeIpRateLimitMiddleware();
+
+        if (!ipRateLimit.Result)
+        {
+            throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
+                    {
+                        { "RequestBlockedBehaviorAsync", new []{"To many requests" } }
+                    });
+        }
+
+        GetArticlesTagsUsersWithRole(count, email, userName, password, name, title, slug, description, date, published, dbContext);
+    }
 }
 #endif

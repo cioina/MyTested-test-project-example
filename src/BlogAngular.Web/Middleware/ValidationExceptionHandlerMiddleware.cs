@@ -2,7 +2,6 @@
 
 using Application.Common.Exceptions;
 using Application.Common.Models;
-using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
@@ -17,7 +16,7 @@ public class ValidationExceptionHandlerMiddleware
     public ValidationExceptionHandlerMiddleware(RequestDelegate next)
         => this.next = next;
 
-    public async Task Invoke(HttpContext context)
+    public async Task InvokeAsync(HttpContext context)
     {
         try
         {
@@ -82,11 +81,4 @@ public class ValidationExceptionHandlerMiddleware
                 NamingStrategy = new CamelCaseNamingStrategy(true, true)
             }
         });
-}
-
-public static class ValidationExceptionHandlerMiddlewareExtensions
-{
-    public static IApplicationBuilder UseValidationExceptionHandler(
-        this IApplicationBuilder builder)
-        => builder.UseMiddleware<ValidationExceptionHandlerMiddleware>();
 }

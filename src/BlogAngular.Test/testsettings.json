@@ -1,9 +1,35 @@
 ﻿{
+  "General": {
+    "ReplaceMemoryCache": true
+  },
+
   "ApplicationSettings": {
     "SecurityTokenDescriptorKey": "test1223dfgdfkffpie",
     "SecurityTokenDescriptorExpiresInMinutes": 10,
     "MaxFailedAccessAttempts": 5,
     "DefaultLockoutTimeSpanInMinutes": 0,
-    "ExperimentalIpAddress": "0.0.0.1"
+    "ExperimentalIpAddress": "::1"
+  },
+
+  "IpRateLimiting": {
+    "EnableEndpointRateLimiting": true,
+    "StackBlockedRequests": false,
+    "RealIpHeader": "X-Real-IP",
+    "HttpStatusCode": 429,
+    "IpWhitelist": [ "::1/10", "192.168.0.0/24" ],
+    "EndpointWhitelist": [ "get:/*.json", "get:/*.js", "get:/*.css", "get:/*.ico" ],
+    "ClientWhitelist": [ "ttt@email.com1" ],
+    "QuotaExceededResponse": {
+      "Content": "{{ \"message\": \"Whoa! Calm down, cowboy!\", \"details\": \"Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).\" }}",
+      "ContentType": "application/json"
+    },
+    "GeneralRules": [
+    ]
+  },
+
+  "IpRateLimitPolicies": {
+    "IpRules": [
+    ]
   }
+
 }
