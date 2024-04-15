@@ -264,7 +264,7 @@ public static class StaticTestData
         {
             throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "RequestBlockedBehaviorAsync", new []{"To many requests" } }
+                        { "RequestBlockedBehaviorAsync", new []{"Too many requests" } }
                     });
         }
 
@@ -413,7 +413,7 @@ public static class StaticTestData
         {
             throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "RequestBlockedBehaviorAsync", new []{"To many requests" } }
+                        { "RequestBlockedBehaviorAsync", new []{"Too many requests" } }
                     });
         }
 

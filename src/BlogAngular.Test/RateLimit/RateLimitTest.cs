@@ -38,7 +38,7 @@ public class RateLimitRouteTest
 
     [Theory]
     [MemberData(nameof(ValidData))]
-    public void Edit_tag_is_white_listed_should_return_success_with_data(
+    public void Edit_tag_with_client_whitelist_should_return_success_with_data(
      string fullName,
      string email,
      string password,
@@ -55,7 +55,78 @@ public class RateLimitRouteTest
              ["X-Real-LIMIT"] = "0"
          })
         .WithMethod(HttpMethod.Put)
-        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ttt@email.com", 1))
+        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
+        .WithLocation("api/v1.0/tags/edit/2")
+        .WithJsonBody(
+               string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                   string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+        )
+      )
+      .To<TagsController>(c => c.Edit(2, new()
+      {
+          TagJson = new()
+          {
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+          }
+      }))
+      .Which(controller => controller
+        .WithData(db => db
+          .WithEntities(entities => StaticTestData.GetAllWithRoleWithRateLimitMiddleware(
+             count: 3,
+
+             email: email,
+             userName: fullName,
+             password: password,
+
+             name: name,
+
+             title: title,
+             slug: slug,
+             description: description,
+             date: DateOnly.FromDateTime(DateTime.Today),
+             published: false,
+
+             dbContext: entities))))
+      .ShouldHave()
+      .ActionAttributes(attrs => attrs
+           .RestrictingForHttpMethod(HttpMethod.Put)
+           .RestrictingForAuthorizedRequests())
+      .AndAlso()
+      .ShouldReturn()
+      .ActionResult(result => result.Result(new TagResponseEnvelope
+      {
+          TagJson = new()
+          {
+              Id = 2,
+              Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+          }
+      }))
+      .AndAlso()
+      .ShouldPassForThe<ActionAttributes>(attributes =>
+      {
+          Assert.Equal(5, attributes.Count());
+      });
+
+    [Theory]
+    [MemberData(nameof(ValidData))]
+    public void Edit_tag_with_ip_whitelist_should_return_success_with_data(
+     string fullName,
+     string email,
+     string password,
+     string name,
+     string title,
+     string slug,
+     string description)
+     => MyMvc
+      .Pipeline()
+      .ShouldMap(request => request
+         .WithHeaders(new Dictionary<string, string>
+         {
+             ["X-Real-IP"] = "192.168.0.0",
+             ["X-Real-LIMIT"] = "0"
+         })
+        .WithMethod(HttpMethod.Put)
+        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
         .WithLocation("api/v1.0/tags/edit/2")
         .WithJsonBody(
                string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
@@ -157,7 +228,7 @@ public class RateLimitRouteTest
         }));
     }, new Dictionary<string, string[]>
     {
-        { "RequestBlockedBehaviorAsync", new[] { "To many requests" } },
+        { "RequestBlockedBehaviorAsync", new[] { "Too many requests" } },
     });
 
 

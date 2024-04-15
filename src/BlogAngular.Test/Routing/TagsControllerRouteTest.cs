@@ -454,7 +454,7 @@ public class TagsControllerRouteTest
       .Pipeline()
       .ShouldMap(request => request
         .WithMethod(HttpMethod.Put)
-        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ttt@email.com", 1))
+        .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
         .WithLocation("api/v1.0/tags/edit/2")
         .WithJsonBody(
                string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
