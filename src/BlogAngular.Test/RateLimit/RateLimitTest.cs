@@ -4,6 +4,8 @@
 using Application.Blog.Common;
 using Application.Blog.Tags.Commands.Common;
 using Application.Blog.Tags.Queries.Listing;
+using Application.Identity.Commands.Common;
+using Application.Identity.Commands.Login;
 using MyTested.AspNetCore.Mvc;
 using MyTested.AspNetCore.Mvc.Test.Setups;
 using System;
@@ -38,6 +40,61 @@ public class RateLimitRouteTest
 
     [Theory]
     [MemberData(nameof(ValidData))]
+    public void Login_user_with_endpoint_whitelist_should_return_success_with_token(
+     string fullName,
+     string email,
+     string password,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+     string name,
+     string title,
+     string slug,
+     string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+        )
+     => MyMvc
+      .Pipeline()
+      .ShouldMap(request => request
+         .WithHeaders(new Dictionary<string, string>
+         {
+             ["X-Real-IP"] = "9.8.8.0",
+             ["X-Real-LIMIT"] = "0"
+         })
+        .WithMethod(HttpMethod.Post)
+        .WithLocation("api/v1.0/identity/login")
+        .WithJsonBody(
+            string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+            ))
+      )
+      .To<IdentityController>(c => c.Login(new UserLoginCommand
+      {
+          UserJson = new()
+          {
+              Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+              Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+          }
+      }))
+      .Which(controller => controller
+        .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
+      .ShouldReturn()
+      .ActionResult(result => result.Result(new UserResponseEnvelope
+      {
+          UserJson = new()
+          {
+              Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+              UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+              Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+          }
+      }))
+      .AndAlso()
+      .ShouldPassForThe<ActionAttributes>(attributes =>
+      {
+          Assert.Equal(4, attributes.Count());
+      });
+
+    [Theory]
+    [MemberData(nameof(ValidData))]
     public void Edit_tag_with_client_whitelist_should_return_success_with_data(
      string fullName,
      string email,
@@ -51,7 +108,7 @@ public class RateLimitRouteTest
       .ShouldMap(request => request
          .WithHeaders(new Dictionary<string, string>
          {
-             ["X-Real-IP"] = "9.8.8.0",
+             ["X-Real-IP"] = "10.8.8.0",
              ["X-Real-LIMIT"] = "0"
          })
         .WithMethod(HttpMethod.Put)
@@ -71,7 +128,7 @@ public class RateLimitRouteTest
       }))
       .Which(controller => controller
         .WithData(db => db
-          .WithEntities(entities => StaticTestData.GetAllWithRoleWithRateLimitMiddleware(
+          .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
              count: 3,
 
              email: email,
@@ -142,7 +199,7 @@ public class RateLimitRouteTest
       }))
       .Which(controller => controller
         .WithData(db => db
-          .WithEntities(entities => StaticTestData.GetAllWithRoleWithRateLimitMiddleware(
+          .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
              count: 3,
 
              email: email,
@@ -201,7 +258,7 @@ public class RateLimitRouteTest
         .ShouldMap(request => request
            .WithHeaders(new Dictionary<string, string>
            {
-               ["X-Real-IP"] = "10.8.8.0",
+               ["X-Real-IP"] = "11.8.8.0",
                ["X-Real-LIMIT"] = "0"
            })
            .WithMethod(HttpMethod.Get)

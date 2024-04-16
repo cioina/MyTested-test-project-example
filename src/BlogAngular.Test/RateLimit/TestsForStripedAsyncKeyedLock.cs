@@ -1,22 +1,22 @@
 ﻿namespace BlogAngular.Test.StripedAsyncKeyedLocker;
 #if DEBUG
 
+using Application.Blog.Common;
+using Application.Blog.Tags.Queries.Listing;
+using AsyncKeyedLock;
 using FluentAssertions;
+using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
-using Xunit;
-using Xunit.Abstractions;
-using Application.Blog.Common;
-using Application.Blog.Tags.Queries.Listing;
-using MyTested.AspNetCore.Mvc;
-using System.Globalization;
 using Test.Data;
 using Web.Features;
-using AsyncKeyedLock;
-using System.Collections.Generic;
+using Xunit;
+using Xunit.Abstractions;
 
 /// <summary>
 /// Adapted from https://raw.githubusercontent.com/amoerie/keyed-semaphores/main/KeyedSemaphores.Tests/TestsForKeyedSemaphore.cs and https://raw.githubusercontent.com/amoerie/keyed-semaphores/main/KeyedSemaphores.Tests/TestsForKeyedSemaphoresCollection.cs
@@ -36,9 +36,9 @@ public class TestsForStripedAsyncKeyedLock
         public Async(ITestOutputHelper output) : base(output) { }
 
         [Theory]
-        //[InlineData(100, 100, 100, 10, 100)]
-        //[InlineData(15, 100, 10, 2, 10)]
-        [InlineData(50, 100, 50, 5, 50)]
+        [InlineData(91, 100, 100, 10, 100)]
+        [InlineData(11, 100, 10, 2, 10)]
+        [InlineData(46, 100, 50, 5, 50)]
         [InlineData(101, 100, 1, 1, 1)]
         public async Task ShouldApplyParallelismCorrectly(int id, int numberOfThreads, int numberOfKeys, int minParallelism,
             int maxParallelism)

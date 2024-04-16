@@ -1,6 +1,6 @@
 ﻿{
   "General": {
-    "ReplaceMemoryCache": true
+    "ReplaceMemoryCache": false
   },
 
   "ApplicationSettings": {
@@ -17,7 +17,7 @@
     "RealIpHeader": "X-Real-IP",
     "HttpStatusCode": 429,
     "IpWhitelist": [ "::1/10", "192.168.0.0/24" ],
-    "EndpointWhitelist": [ "get:/*.json", "get:/*.js", "get:/*.css", "get:/*.ico" ],
+    "EndpointWhitelist": [ "post:/api/v1.0/identity/login", "get:/*.json", "get:/*.js", "get:/*.css", "get:/*.ico" ],
     "ClientWhitelist": [ "ClientWhitelist@email.com1" ],
     "QuotaExceededResponse": {
       "Content": "{{ \"message\": \"Whoa! Calm down, cowboy!\", \"details\": \"Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).\" }}",

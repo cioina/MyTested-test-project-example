@@ -15,7 +15,6 @@ using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using MyTested.AspNetCore.Mvc.Internal.Services;
 using System;
-using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -55,7 +54,6 @@ public static class StaticTestData
             var middleware = middlewareFactory.Create(typeof(IpRateLimitMiddleware));
             if (middleware != null)
             {
-                var runningTasksIndex = new ConcurrentDictionary<string, string>();
                 try
                 {
                     await Task.Run(
@@ -64,44 +62,29 @@ public static class StaticTestData
                          var httpContext = TestServiceProvider.Current.GetService<IHttpContextAccessor>()!.HttpContext!;
                          var ipPolicyStore = TestServiceProvider.Current.GetService<IIpPolicyStore>();
 
-                         var ipps = await ipPolicyStore!.GetAsync("ippp").ConfigureAwait(false);
-                         if (ipps == null)
+                         if (await ipPolicyStore!.GetAsync("ippp").ConfigureAwait(false) == null)
                          {
-                             if (runningTasksIndex.TryAdd("ippp", "ippp"))
-                             {
-                                 await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
-                             }
+                             await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
                          }
                          var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
 
-                         var flag = true;
                          if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var ip))
                          {
                              if (httpContext.Request.Headers.TryGetValue("X-Real-LIMIT", out var limit))
                              {
-                                 flag = policy.IpRules.Any((a) => a.Ip == ip);
-                                 if (!flag)
+                                 if (policy.IpRules.TryAdd(ip!, new IpRateLimitPolicy
                                  {
-                                     if (runningTasksIndex.TryAdd(ip!, limit!))
-                                     {
-                                         policy.IpRules.Add(new IpRateLimitPolicy
-                                         {
-                                             Ip = ip,
-                                             Rules = new List<RateLimitRule>(new RateLimitRule[] {
+                                     Ip = ip,
+                                     Rules = new List<RateLimitRule>(new RateLimitRule[] {
                                                new() {
                                                    Endpoint = $"*:{httpContext.Request.Path}",
                                                    Limit = int.Parse(limit!),
                                                    Period = "1m" }})
-                                         });
-
-                                     }
+                                 }))
+                                 {
+                                     await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
                                  }
                              }
-                         }
-
-                         if (!flag)
-                         {
-                             await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
                          }
 
                          var middle = middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
@@ -111,14 +94,12 @@ public static class StaticTestData
                          }
 
                      });
-
                 }
                 finally
                 {
                     middlewareFactory.Release(middleware);
                 }
             }
-
         }
         return result;
     }
@@ -391,15 +372,15 @@ public static class StaticTestData
         dbContext.SaveChanges();
     }
 
-    public static void GetAllWithRoleWithRateLimitMiddleware(
+    public static void GetAllWithRateLimitMiddleware(
     int count,
-    
+
     string email,
     string userName,
     string password,
-    
+
     string name,
-    
+
     string title,
     string slug,
     string description,
