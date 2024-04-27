@@ -235,9 +235,93 @@ public class RateLimitRouteTest
           Assert.Equal(5, attributes.Count());
       });
 
+    //[Theory]
+    //[InlineData("ValidMinUserNameLength",
+    //        //Must be valid email address
+    //        "ValidMinEmailLength@a.bcde",
+    //         //Password must contain Upper case, lower case, number, special symbols
+    //         "!ValidMinPasswordLength",
+
+    //        "ValidMinNameLength",
+
+    //        "ValidMinTitleLength",
+    //        "ValidMinTitleLength",
+    //        "ValidMinDescriptionLength")]
+    //public void Edit_tag_with_client_whitelist_should_fail(
+    // string fullName,
+    // string email,
+    // string password,
+    // string name,
+    // string title,
+    // string slug,
+    // string description
+    // )
+    //=> Test.AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+    //() =>
+    //{
+    //    MyMvc
+    //    .Pipeline()
+    //    .ShouldMap(request => request
+    //       .WithHeaders(new Dictionary<string, string>
+    //       {
+    //           ["X-Real-IP"] = "15.8.8.0",
+    //           ["X-Real-LIMIT"] = "0"
+    //       })
+    //      .WithMethod(HttpMethod.Put)
+    //      .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithAlmostExpiredToken1(email, 1))
+    //      .WithLocation("api/v1.0/tags/edit/2")
+    //      .WithJsonBody(
+    //             string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+    //                 string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+    //      )
+    //    )
+    //    .To<TagsController>(c => c.Edit(2, new()
+    //    {
+    //        TagJson = new()
+    //        {
+    //            Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+    //        }
+    //    }))
+    //    .Which(controller => controller
+    //      .WithData(db => db
+    //        .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+    //           count: 3,
+
+    //           email: email,
+    //           userName: fullName,
+    //           password: password,
+
+    //           name: name,
+
+    //           title: title,
+    //           slug: slug,
+    //           description: description,
+    //           date: DateOnly.FromDateTime(DateTime.Today),
+    //           published: false,
+
+    //           dbContext: entities))))
+    //    .ShouldHave()
+    //    .ActionAttributes(attrs => attrs
+    //         .RestrictingForHttpMethod(HttpMethod.Put)
+    //         .RestrictingForAuthorizedRequests())
+    //    .AndAlso()
+    //    .ShouldReturn()
+    //    .ActionResult(result => result.Result(new TagResponseEnvelope
+    //    {
+    //        TagJson = new()
+    //        {
+    //            Id = 2,
+    //            Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+    //        }
+    //    }));
+    //}, new Dictionary<string, string[]>
+    //{
+    //    { "SecurityTokenRefreshException", new[] { "Security token must be refreshed" } },
+    //});
+
     [Theory]
     [MemberData(nameof(ValidData))]
-    public void Listing_tags_with_rate_limit_zero_should_fail(
+    public void Listing_tags_with_zero_rate_limit_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
      string fullName,
      string email,
@@ -285,7 +369,7 @@ public class RateLimitRouteTest
         }));
     }, new Dictionary<string, string[]>
     {
-        { "RequestBlockedBehaviorAsync", new[] { "Too many requests" } },
+        { "RateLimitMiddlewareException", new[] { "Too many requests" } },
     });
 
 

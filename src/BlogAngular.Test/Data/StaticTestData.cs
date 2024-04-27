@@ -26,6 +26,13 @@ using static Domain.Common.Models.ModelConstants.Identity;
 
 public static class StaticTestData
 {
+    private class MiddlewareResult
+    {
+        public const int NoResult = 0;
+        public const int GoodResult = 1;
+        public const int RateLimitMiddlewareException = -1;
+        public const int SecurityTokenRefreshException = -2;
+    }
     class Worker
     {
         private volatile bool _shouldStop;
@@ -45,9 +52,9 @@ public static class StaticTestData
         }
     }
 
-    public static async Task<bool> InvokeIpRateLimitMiddleware()
+    public static async Task<int> InvokeIpRateLimitMiddleware()
     {
-        bool result = true;
+        int result = MiddlewareResult.NoResult;
 
         if (TestServiceProvider.Current.GetService(typeof(IMiddlewareFactory)) is IMiddlewareFactory middlewareFactory)
         {
@@ -62,11 +69,12 @@ public static class StaticTestData
                          var httpContext = TestServiceProvider.Current.GetService<IHttpContextAccessor>()!.HttpContext!;
                          var ipPolicyStore = TestServiceProvider.Current.GetService<IIpPolicyStore>();
 
-                         if (await ipPolicyStore!.GetAsync("ippp").ConfigureAwait(false) == null)
+                         var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
+                         if (policy == null)
                          {
                              await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
+                             policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
                          }
-                         var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
 
                          if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var ip))
                          {
@@ -87,13 +95,21 @@ public static class StaticTestData
                              }
                          }
 
-                         var middle = middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
-                         if (middle.IsFaulted || middle.IsCanceled)
-                         {
-                             result = false;
-                         }
-
+                         await middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
+                         result = MiddlewareResult.GoodResult;
                      });
+                }
+                catch (Exception exception)
+                {
+                    switch (exception)
+                    {
+                        case RateLimitMiddlewareException:
+                            result = MiddlewareResult.RateLimitMiddlewareException;
+                            break;
+                        case SecurityTokenRefreshException:
+                            result = MiddlewareResult.SecurityTokenRefreshException;
+                            break;
+                    }
                 }
                 finally
                 {
@@ -101,15 +117,42 @@ public static class StaticTestData
                 }
             }
         }
+
         return result;
     }
 
+    public static void ThrowExceptionByCode(int code)
+    {
+        switch (code)
+        {
+            case MiddlewareResult.RateLimitMiddlewareException:
+                throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
+                    {
+                        { "RateLimitMiddlewareException", new []{"Too many requests" } }
+                    });
+
+            case MiddlewareResult.SecurityTokenRefreshException:
+                throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
+                    {
+                        { "SecurityTokenRefreshException", new []{ "Security token must be refreshed" } }
+                    });
+            default:
+                if (code != MiddlewareResult.GoodResult)
+                {
+                    throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
+                    {
+                        { "NoGoodResult", new []{ "Unknown result" } }
+                    });
+                }
+                break;
+        }
+
+    }
     public static string GetJwtBearerWithExpiredToken(
     string email,
     int i)
     {
-        EventWaitHandle _waitHandle = new AutoResetEvent(false); // is signaled value change to true
-                                                                 // start a thread which will after a small time set an event
+        EventWaitHandle _waitHandle = new AutoResetEvent(false);
         Worker workerObject = new()
         {
             WaitHandleExternal = _waitHandle
@@ -143,6 +186,46 @@ public static class StaticTestData
         string role,
         string? ipAddress)
     {
+        return GetJwtBearerWithRoleAndExpires(email, i, role, ipAddress, null);
+    }
+
+    //TODO: This does not work with TestsForStripedAsyncKeyedLock
+    public static string GetJwtBearerWithAlmostExpiredToken1(
+        string email,
+        int i)
+    {
+        EventWaitHandle _waitHandle = new AutoResetEvent(false);
+        Worker workerObject = new()
+        {
+            WaitHandleExternal = _waitHandle
+        };
+        Thread workerThread = new(workerObject.DoWork);
+        workerThread.Start();
+        _waitHandle.WaitOne();
+        var result = GetJwtBearerWithRoleAndExpires(email, i, AdministratorRoleName, "0.0.0.1", DateTime.UtcNow.AddSeconds(5));
+        workerObject.RequestStop();
+
+        return result;
+    }
+
+    //public static async Task<string> GetJwtBearerWithAlmostExpiredToken2(
+    //    string email,
+    //    int i)
+    //{
+    //    var result = GetJwtBearerWithRoleAndExpires(email, i, AdministratorRoleName, "0.0.0.1", DateTime.UtcNow.AddSeconds(4));
+
+    //    await Task.Delay(2000);
+
+    //    return result;
+    //}
+
+    public static string GetJwtBearerWithRoleAndExpires(
+    string email,
+    int i,
+    string role,
+    string? ipAddress,
+    DateTime? expires)
+    {
         var configuration = TestServiceProvider.Current.GetService<IConfiguration>();
 
         var secret = configuration!
@@ -155,7 +238,7 @@ public static class StaticTestData
             .GetSection(nameof(ApplicationSettings))
             .GetValue<string>(nameof(ApplicationSettings.ExperimentalIpAddress))!;
 
-        return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), secret, DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
+        return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), secret, expires ?? DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
     }
 
     private static string CreateJwtBearer(
@@ -240,14 +323,7 @@ public static class StaticTestData
     string name)
     {
         var ipRateLimit = InvokeIpRateLimitMiddleware();
-
-        if (!ipRateLimit.Result)
-        {
-            throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
-                    {
-                        { "RequestBlockedBehaviorAsync", new []{"Too many requests" } }
-                    });
-        }
+        ThrowExceptionByCode(ipRateLimit.Result);
 
         return GetTags(count, name);
     }
@@ -389,14 +465,7 @@ public static class StaticTestData
     DbContext dbContext)
     {
         var ipRateLimit = InvokeIpRateLimitMiddleware();
-
-        if (!ipRateLimit.Result)
-        {
-            throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
-                    {
-                        { "RequestBlockedBehaviorAsync", new []{"Too many requests" } }
-                    });
-        }
+        ThrowExceptionByCode(ipRateLimit.Result);
 
         GetArticlesTagsUsersWithRole(count, email, userName, password, name, title, slug, description, date, published, dbContext);
     }

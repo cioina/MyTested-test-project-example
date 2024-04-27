@@ -1,11 +1,12 @@
 ﻿{
   "General": {
-    "ReplaceMemoryCache": false
+    "ReplaceMemoryCache": true
   },
 
   "ApplicationSettings": {
     "SecurityTokenDescriptorKey": "test1223dfgdfkffpie",
     "SecurityTokenDescriptorExpiresInMinutes": 10,
+    "SecurityTokenRefreshRate": 0.25,
     "MaxFailedAccessAttempts": 5,
     "DefaultLockoutTimeSpanInMinutes": 0,
     "ExperimentalIpAddress": "::1"
@@ -13,6 +14,7 @@
 
   "IpRateLimiting": {
     "EnableEndpointRateLimiting": true,
+    "SecurityTokenRefreshRate": 0.25,
     "StackBlockedRequests": false,
     "RealIpHeader": "X-Real-IP",
     "HttpStatusCode": 429,
