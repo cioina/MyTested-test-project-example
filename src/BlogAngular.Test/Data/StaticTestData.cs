@@ -63,41 +63,41 @@ public static class StaticTestData
             {
                 try
                 {
-                    await Task.Run(
-                          async () =>
-                     {
-                         var httpContext = TestServiceProvider.Current.GetService<IHttpContextAccessor>()!.HttpContext!;
-                         var ipPolicyStore = TestServiceProvider.Current.GetService<IIpPolicyStore>();
+                    //await Task.Run(
+                    //      async () =>
+                    // {
+                    var httpContext = TestServiceProvider.Current.GetService<IHttpContextAccessor>()!.HttpContext!;
+                    var ipPolicyStore = TestServiceProvider.Current.GetService<IIpPolicyStore>();
 
-                         var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
-                         if (policy == null)
-                         {
-                             await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
-                             policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
-                         }
+                    var policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
+                    if (policy == null)
+                    {
+                        await ipPolicyStore!.SeedAsync().ConfigureAwait(false);
+                        policy = await ipPolicyStore!.GetAsync("ippp", httpContext.RequestAborted).ConfigureAwait(false);
+                    }
 
-                         if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var ip))
-                         {
-                             if (httpContext.Request.Headers.TryGetValue("X-Real-LIMIT", out var limit))
-                             {
-                                 if (policy.IpRules.TryAdd(ip!, new IpRateLimitPolicy
-                                 {
-                                     Ip = ip,
-                                     Rules = new List<RateLimitRule>(new RateLimitRule[] {
+                    if (httpContext.Request.Headers.TryGetValue("X-Real-IP", out var ip))
+                    {
+                        if (httpContext.Request.Headers.TryGetValue("X-Real-LIMIT", out var limit))
+                        {
+                            if (policy.IpRules.TryAdd(ip!, new IpRateLimitPolicy
+                            {
+                                Ip = ip,
+                                Rules = new List<RateLimitRule>(new RateLimitRule[] {
                                                new() {
                                                    Endpoint = $"*:{httpContext.Request.Path}",
                                                    Limit = int.Parse(limit!),
-                                                   Period = "1m" }})
-                                 }))
-                                 {
-                                     await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
-                                 }
-                             }
-                         }
+                                                   Period = "5m" }})
+                            }))
+                            {
+                                await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
+                            }
+                        }
+                    }
 
-                         await middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
-                         result = MiddlewareResult.GoodResult;
-                     });
+                    await middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
+                    result = MiddlewareResult.GoodResult;
+                    //});
                 }
                 catch (Exception exception)
                 {
@@ -190,23 +190,23 @@ public static class StaticTestData
     }
 
     //TODO: This does not work with TestsForStripedAsyncKeyedLock
-    public static string GetJwtBearerWithAlmostExpiredToken1(
-        string email,
-        int i)
-    {
-        EventWaitHandle _waitHandle = new AutoResetEvent(false);
-        Worker workerObject = new()
-        {
-            WaitHandleExternal = _waitHandle
-        };
-        Thread workerThread = new(workerObject.DoWork);
-        workerThread.Start();
-        _waitHandle.WaitOne();
-        var result = GetJwtBearerWithRoleAndExpires(email, i, AdministratorRoleName, "0.0.0.1", DateTime.UtcNow.AddSeconds(5));
-        workerObject.RequestStop();
+    //public static string GetJwtBearerWithAlmostExpiredToken1(
+    //    string email,
+    //    int i)
+    //{
+    //    EventWaitHandle _waitHandle = new AutoResetEvent(false);
+    //    Worker workerObject = new()
+    //    {
+    //        WaitHandleExternal = _waitHandle
+    //    };
+    //    Thread workerThread = new(workerObject.DoWork);
+    //    workerThread.Start();
+    //    _waitHandle.WaitOne();
+    //    var result = GetJwtBearerWithRoleAndExpires(email, i, AdministratorRoleName, "0.0.0.1", DateTime.UtcNow.AddSeconds(5));
+    //    workerObject.RequestStop();
 
-        return result;
-    }
+    //    return result;
+    //}
 
     //public static async Task<string> GetJwtBearerWithAlmostExpiredToken2(
     //    string email,
