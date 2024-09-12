@@ -9,32 +9,34 @@ The compiled code of our .NET Core 8 application is on [our GitHub repository](h
 I found out about MyTested for the first time from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Tests/Controllers/AddressesControllerTests.cs) repository. At the same time, I found out about `Jwt Authentication` implementation from same [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Web/Server/Infrastructure/Extensions/ServiceCollectionExtensions.cs) repository and from [aspnetcore-realworld-example](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/StartupExtensions.cs) repository. Both `Jwt Authentication` implementations did not work with original [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) library, so I decided to find out why. I do not know who engineered MyTested, but I was not able to fully understand how it works. I was able only to add some small pieces of code to make MyTested and my own `Jwt Authentication` implementation work and not to break any original MyTested tests. But, what MyTested can do out of the box? The best answer is in [MusicStore](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc/tree/development/samples/MusicStore/MusicStore.Test) testing project. For the API controller, [here](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Test/Routing/FrontEndRouteTest.cs) is an example:
 
 ```csharp
-namespace BlogAngular.Test.Routing;
 #if DEBUG
-
-using Application.Common.Version;
+using BlogAngular.Application.Common.Version;
+using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
-using Web.Features;
 using Xunit;
 
-public class FrontEndRouteTest
+namespace BlogAngular.Test.Routing
 {
-    [Fact]
-    public void VersionShouldBeRouted()
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-            .WithMethod(HttpMethod.Get)
-            .WithLocation("api/v1.0/version"))
-        .To<VersionController>(c => c.Index())
-        .Which()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new VersionResponseEnvelope
-        {
-            VersionJson = new VersionResponseModel()
-        }));
+    public class FrontEndRouteTest
+    {
+        [Fact]
+        public void VersionShouldBeRouted()
+            => MyMvc
+            .Pipeline()
+            .ShouldMap(request => request
+                .WithMethod(HttpMethod.Get)
+                .WithLocation("api/v1.0/version"))
+            .To<VersionController>(c => c.Index())
+            .Which()
+            .ShouldReturn()
+            .ActionResult(result => result.Result(new VersionResponseEnvelope
+            {
+                VersionJson = new VersionResponseModel()
+            }));
+    }
 }
 #endif
+
 ```
 
 ## Basic API Controller Testing
