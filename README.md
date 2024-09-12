@@ -2,14 +2,15 @@
 
 ## Introduction
 
-The compiled code of our .NET Core 8 application is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net). For this test project, which is part our application, we will use [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) - a well-known library for testing ASP.NET Core MVC. Here, we adapted the library to work with .NET Core 8 and API controllers with Bearer Header Authorization based on JWT token implementation provided by .NET Core. Our .NET Core 8 project is based on [BookStore](https://github.com/kalintsenkov/BookStore) repository and adapted to work with MyTested library. In addition, we used `NSwag.MSBuild` from [CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/Web/Web.csproj) to generate [specification.json](https://github.com/cioina/MyTested-test-project-example/blob/main/src/specification.json).
+The compiled code of our .NET Core 8 application is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net). For this test project, which is part our application, we will use [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) - a well-known library for testing ASP.NET Core MVC. Here, we adapted the library to work with .NET Core 8 and API controllers with Bearer Header Authorization based on JWT token implementation provided by .NET Core. Our .NET Core 8 project is based on [BookStore](https://github.com/kalintsenkov/BookStore) repository and adapted to work with MyTested library.
 
 ## MyTested Library Out of The Box
 
-I found out about MyTested for the first time from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Tests/Controllers/AddressesControllerTests.cs)  and [CarRentalSystem](https://github.com/kalintsenkov/CarRentalSystem/blob/master/src/Startup/Specs/IdentityController.Specs.cs) repositories. At the same time, I found out about `Jwt Authentication` implementation from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Web/Server/Infrastructure/Extensions/ServiceCollectionExtensions.cs) and [RealWorld](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/StartupExtensions.cs) repositories. Both `Jwt Authentication` implementations did not work with original [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) library, so I decided to find out why. I do not know who engineered MyTested, but I was not able to fully understand how it works. I was able only to add some small pieces of code to make MyTested and my own `Jwt Authentication` implementation work and not to break any original MyTested tests. But, what MyTested can do out of the box? The best answer is in [MusicStore](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc/tree/development/samples/MusicStore/MusicStore.Test) testing project. For the API controller, [here](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Test/Routing/FrontEndRouteTest.cs) is an example:
+I found out about MyTested for the first time from [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Tests/Controllers/AddressesControllerTests.cs) repository. At the same time, I found out about `Jwt Authentication` implementation from same [BlazorShop](https://github.com/kalintsenkov/BlazorShop/blob/master/src/BlazorShop.Web/Server/Infrastructure/Extensions/ServiceCollectionExtensions.cs) repository and from [aspnetcore-realworld-example](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/StartupExtensions.cs) repository. Both `Jwt Authentication` implementations did not work with original [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) library, so I decided to find out why. I do not know who engineered MyTested, but I was not able to fully understand how it works. I was able only to add some small pieces of code to make MyTested and my own `Jwt Authentication` implementation work and not to break any original MyTested tests. But, what MyTested can do out of the box? The best answer is in [MusicStore](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc/tree/development/samples/MusicStore/MusicStore.Test) testing project. For the API controller, [here](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Test/Routing/FrontEndRouteTest.cs) is an example:
 
 ```csharp
 namespace BlogAngular.Test.Routing;
+#if DEBUG
 
 using Application.Common.Version;
 using MyTested.AspNetCore.Mvc;
@@ -20,7 +21,7 @@ public class FrontEndRouteTest
 {
     [Fact]
     public void VersionShouldBeRouted()
-    => MyMvc
+        => MyMvc
         .Pipeline()
         .ShouldMap(request => request
             .WithMethod(HttpMethod.Get)
@@ -33,6 +34,7 @@ public class FrontEndRouteTest
             VersionJson = new VersionResponseModel()
         }));
 }
+#endif
 ```
 
 ## Basic API Controller Testing
@@ -55,8 +57,9 @@ A particular change we made to MyTested is adding the possibility of testing dat
 Our validation implementation is based mostly on [BookStore](https://github.com/kalintsenkov/BookStore/blob/main/src/Server/BookStore.Application/Catalog/Authors/Commands/Common/AuthorCommandValidator.cs). One useful technique to validate unique data comes from [Conduit](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/Features/Users/Create.cs) and [CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture/blob/main/src/Application/TodoLists/Commands/UpdateTodoList/UpdateTodoListCommandValidator.cs)
 
 - `Create_tag_with_same_name_should_fail_with_validation_error`- Creates tag name length bellow allowed by database constraint
-- `Edit_tag_with_same_name_should_fail_with_validation_error`- Creates tag name length above allowed by database constraint
+- `Edit_tag_with_same_name_should_fail_with_validation_error `- Creates tag name length above allowed by database constraint
 - `Edit_same_tag_with_same_name_should_return_success_with_data`- Updates tag name length bellow allowed by database constraint
+
 
 In [our application](https://github.com/cioina/cioina.azurewebsites.net), any `MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException` will return 422 with JSON string similar to this:
 
@@ -68,6 +71,32 @@ In [our application](https://github.com/cioina/cioina.azurewebsites.net), any `M
 
 That represents a standard validation message from FluentValidation library which can be customized.
 
+- `Edit_tag_with_wrong_id_should_fail`
+- `MyTested.AspNetCore.Mvc.Exceptions.InvocationAssertionException`
+- `InvalidTagException`
+## Identity Controller Testing
+The main reason, we created this repository is a vast sets of tests for the 
+
+## Exception Testing
+
+In [BaseDomainException](https://github.com/kalintsenkov/BookStore/blob/main/src/Server/BookStore.Domain/Common/BaseDomainException.cs) We use [ValidationExceptionHandlerMiddleware](https://github.com/cioina/MyTested-test-project-example/blob/main/src/BlogAngular.Web/Middleware/ValidationExceptionHandlerMiddleware.cs) to intercept all validation exceptions.
+
+## Rate Limiting Testing
+
+[RateLimiting](https://github.com/dotnet/runtime/tree/main/src/libraries/System.Threading.RateLimiting/src/System/Threading/RateLimiting) In-memory rate limiting [AspNetCoreRateLimit](https://github.com/stefanprodan/AspNetCoreRateLimit/blob/master/src/AspNetCoreRateLimit/Middleware/RateLimitMiddleware.cs) Redis [RedisTokenBucketManager](https://github.com/cristipufu/aspnetcore-redis-rate-limiting/blob/master/src/RedisRateLimiting/TokenBucket/RedisTokenBucketManager.cs). `AspNetCoreRateLimit` uses [AsyncKeyedLock](https://github.com/MarkCiliaVincenti/AsyncKeyedLock) alternative [Edi.CacheAside.InMemory](https://github.com/EdiWang/Edi.CacheAside.InMemory/blob/master/src/Edi.CacheAside.InMemory/MemoryCacheAside.cs) 
+
 ## MyTested Library Limitations
 
 We applied modified version of MyTested library to three popular GitHub repositories: [BookStore](https://github.com/kalintsenkov/BookStore/tree/main/src/Server), [RealWorld](https://github.com/gothinkster/aspnetcore-realworld-example-app/tree/master/src/Conduit), and [CleanArchitecture](https://github.com/jasontaylordev/CleanArchitecture/tree/main/src). Our quick investigation shows that BookStore can be configurated to work 100% with MyTested while RealWorld works only with [anonymous controllers](https://github.com/gothinkster/aspnetcore-realworld-example-app/blob/master/src/Conduit/Features/Tags/TagsController.cs) and CleanArchitecture does not work at all.
+
+## Credits
+
+- [Ivaylo Kenov](https://github.com/ivaylokenov)
+- [Kalin Tsenkov](https://github.com/kalintsenkov)
+- [Steve Smith](https://github.com/ardalis)
+- [Jason Taylor](https://github.com/jasontaylordev)
+- [Stefan Prodan](https://github.com/stefanprodan)
+- [Mark Cilia Vincenti](https://github.com/MarkCiliaVincenti)
+- [Jimmy Bogard](https://github.com/jbogard)
+- [Ben Morris](https://github.com/BenMorris)
+
