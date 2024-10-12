@@ -1,6 +1,6 @@
 ﻿{
   "General": {
-    "ReplaceMemoryCache": true
+    "ReplaceMemoryCache": false
   },
 
   "ApplicationSettings": {
@@ -14,6 +14,7 @@
 
   "IpRateLimiting": {
     "EnableEndpointRateLimiting": true,
+    "SecurityTokenRefreshOnly": false,
     "SecurityTokenRefreshRate": 0.025,
     "StackBlockedRequests": false,
     "RealIpHeader": "X-Real-IP",
@@ -22,7 +23,7 @@
     "EndpointWhitelist": [ "post:/api/v1.0/identity/login", "get:/*.json", "get:/*.js", "get:/*.css", "get:/*.ico" ],
     "ClientWhitelist": [ "ClientWhitelist@email.com1" ],
     "QuotaExceededResponse": {
-      "Content": "{{ \"message\": \"Whoa! Calm down, cowboy!\", \"details\": \"Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).\" }}",
+      "Content": "Quota exceeded. Maximum allowed: {0} per {1}. Please try again in {2} second(s).",
       "ContentType": "application/json"
     },
     "GeneralRules": [

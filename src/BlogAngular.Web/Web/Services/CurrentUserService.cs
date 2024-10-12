@@ -9,13 +9,7 @@ namespace BlogAngular.Web.Services
     {
         public CurrentUserService(IHttpContextAccessor httpContextAccessor)
         {
-            var user = httpContextAccessor.HttpContext?.User;
-
-            if (user is null)
-            {
-                throw new InvalidOperationException("This request does not have an authenticated user.");
-            }
-
+            var user = (httpContextAccessor.HttpContext?.User) ?? throw new InvalidOperationException("This request does not have an authenticated user.");
             this.UserId = user.FindFirstValue(ClaimTypes.NameIdentifier)!;
         }
 

@@ -12,10 +12,9 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using Xunit;
-
-using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
-using static BlogAngular.Test.Routing.ControllerExceptionMessages;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
+using static BlogAngular.Test.Routing.ControllerExceptionMessages;
+using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
 
 namespace BlogAngular.Test.Routing
 {
