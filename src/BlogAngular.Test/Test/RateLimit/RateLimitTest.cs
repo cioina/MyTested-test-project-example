@@ -1,4 +1,5 @@
 ﻿#if DEBUG
+using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Commands.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Identity.Commands.Common;
@@ -75,7 +76,23 @@ namespace BlogAngular.Test.RateLimit
               }
           }))
           .Which(controller => controller
-            .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
+            .WithData(db => db
+              .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                 count: 3,
+
+                 email: email,
+                 userName: fullName,
+                 password: password,
+
+                 name: name,
+
+                 title: title,
+                 slug: slug,
+                 description: description,
+                 date: DateOnly.FromDateTime(DateTime.Today),
+                 published: false,
+
+                 dbContext: entities))))
           .ShouldReturn()
           .ActionResult(result => result.Result(new UserResponseEnvelope
           {
@@ -287,16 +304,16 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [InlineData("ValidMinUserNameLength",
-                //Must be valid email address
-                "ValidMinEmailLength@a.bcde",
-                 //Password must contain Upper case, lower case, number, special symbols
-                 "!ValidMinPasswordLength",
+         //Must be valid email address
+         "ValidMinEmailLength@a.bcde",
+          //Password must contain Upper case, lower case, number, special symbols
+          "!ValidMinPasswordLength",
 
-                "ValidMinNameLength",
+         "ValidMinNameLength",
 
-                "ValidMinTitleLength",
-                "ValidMinTitleLength",
-                "ValidMinDescriptionLength")]
+         "ValidMinTitleLength",
+         "ValidMinTitleLength",
+         "ValidMinDescriptionLength")]
         public void Edit_tag_with_client_whitelist_should_fail(
          string fullName,
          string email,
@@ -392,6 +409,54 @@ namespace BlogAngular.Test.RateLimit
         {
             { "RateLimitMiddlewareException", new[] { "Too many requests" } },
         });
+
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_without_middleware_should_return_success_with_all_tags(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+         => MyMvc
+            .Pipeline()
+            .ShouldMap(request => request
+                .WithHeaders(new Dictionary<string, string>
+                {
+                    ["X-Real-IP"] = "20.8.8.0",
+                    ["X-Real-LIMIT"] = "0"
+                })
+               .WithMethod(HttpMethod.Get)
+               .WithLocation("api/v1.0/tags")
+               .WithFormFields(new { })
+            )
+            .To<TagsController>(c => c.Tags(new TagsQuery { }))
+            .Which(controller => controller
+                .WithData(StaticTestData.GetTags(5, name)))
+            .ShouldReturn()
+            .ActionResult(result => result.Result(new TagsResponseEnvelope
+            {
+                Total = 5,
+                Models = Enumerable
+              .Range(1, 5)
+              .Select(i =>
+              {
+                  return new TagResponseModel
+                  {
+                      Id = i,
+                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
+                  };
+              }).ToList(),
+            }));
+
 
         [Theory]
         [MemberData(nameof(ValidData))]

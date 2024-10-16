@@ -235,9 +235,9 @@ namespace BlogAngular.Test.Data
             {
                 Subject = new ClaimsIdentity(new[]
                 {
-                new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
-                new Claim(ClaimTypes.Name, email),
-            }),
+                    new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
+                    new Claim(ClaimTypes.Name, email),
+                }),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),

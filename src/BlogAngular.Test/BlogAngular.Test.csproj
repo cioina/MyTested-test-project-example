@@ -152,6 +152,6 @@
 
   <ItemGroup Condition="'$(Configuration)' != 'Release'">
     <ProjectReference Include="..\BlogAngular.Startup\BlogAngular.Startup.csproj" />
-    <ProjectReference Include="..\..\..\MyTested\vendor\NetArchTest\src\NetArchTest.Rules\NetArchTest.Rules.csproj" />
+    <ProjectReference Include="..\..\..\DotNetVendors\NetArchTest\src\NetArchTest.Rules\NetArchTest.Rules.csproj" />
   </ItemGroup>
 </Project>

@@ -20,9 +20,6 @@ using Xunit.Abstractions;
 namespace BlogAngular.Test.SlowTest
 {
 
-    /// <summary>
-    /// Adapted from https://raw.githubusercontent.com/amoerie/keyed-semaphores/main/KeyedSemaphores.Tests/TestsForKeyedSemaphore.cs and https://raw.githubusercontent.com/amoerie/keyed-semaphores/main/KeyedSemaphores.Tests/TestsForKeyedSemaphoresCollection.cs
-    /// </summary>
     public class AsyncKeyedLockTest
     {
         private readonly ITestOutputHelper _output;
