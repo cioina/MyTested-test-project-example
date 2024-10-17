@@ -16,6 +16,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
 using Xunit.Abstractions;
+using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
 
 namespace BlogAngular.Test.SlowTest
 {
@@ -28,6 +29,144 @@ namespace BlogAngular.Test.SlowTest
         public AsyncKeyedLockTest(ITestOutputHelper output)
         {
             _output = output ?? throw new ArgumentNullException(nameof(output));
+        }
+
+        public class One : AsyncKeyedLockTest
+        {
+            public One(ITestOutputHelper output) : base(output) { }
+
+            [Theory]
+            [InlineData("ValidMinUserNameLength",
+             //Must be valid email address
+             "ValidMinEmailLength@a.bcde",
+              //Password must contain Upper case, lower case, number, special symbols
+              "!ValidMinPasswordLength",
+
+             "ValidMinNameLength",
+
+             "ValidMinTitleLength",
+             "ValidMinTitleLength",
+             "ValidMinDescriptionLength", 50, 35, 5, 35)]
+            public async Task ShouldApplyParallelismCorrectly(
+                string fullName,
+                string email,
+                string password,
+                string name,
+                string title,
+                string slug,
+                string description,
+                int numberOfThreads,
+                int numberOfKeys,
+                int minParallelism,
+                int maxParallelism)
+            {
+                var runningTasksIndex = new ConcurrentDictionary<int, int>();
+                var parallelismLock = new object();
+                var currentParallelism = 0;
+                var peakParallelism = 0;
+
+                var threads = Enumerable.Range(0, numberOfThreads)
+                    .Select(i =>
+                        Task.Run(async () => await OccupyTheLockALittleBit(i % numberOfKeys)))
+                    .ToList();
+
+                await Task.WhenAll(threads);
+
+                peakParallelism.Should().BeLessOrEqualTo(maxParallelism);
+                peakParallelism.Should().BeGreaterOrEqualTo(minParallelism);
+
+                _output.WriteLine("Peak parallelism was " + peakParallelism);
+
+                async Task OccupyTheLockALittleBit(int key)
+                {
+                    using (await _keyedLocker.LockAsync(key.ToString()))
+                    {
+                        var incrementedCurrentParallelism = Interlocked.Increment(ref currentParallelism);
+
+                        lock (parallelismLock)
+                        {
+                            peakParallelism = Math.Max(incrementedCurrentParallelism, peakParallelism);
+                        }
+
+                        var currentTaskId = Task.CurrentId ?? -1;
+
+                        if (!runningTasksIndex.TryAdd(key, currentTaskId))
+                        {
+                            throw new InvalidOperationException(
+                                $"Task #{currentTaskId} acquired a lock using key ${key} but another thread is also still running using this key!");
+                        }
+
+                        AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+                         () =>
+                         {
+                           MyMvc
+                            .Pipeline()
+                            .ShouldMap(request => request
+                               .WithHeaders(new Dictionary<string, string>
+                               {
+                                   ["X-Real-IP"] = $"26.8.{key}.0",
+                                   ["X-Real-LIMIT"] = "0"
+                               })
+                              .WithMethod(HttpMethod.Put)
+                              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                              .WithLocation("api/v1.0/tags/edit/2")
+                              .WithJsonBody(
+                                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                              )
+                            )
+                            .To<TagsController>(c => c.Edit(2, new()
+                            {
+                                TagJson = new()
+                                {
+                                    Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                                }
+                            }))
+                            .Which(controller => controller
+                              .WithData(db => db
+                                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                                   count: 3,
+
+                                   email: email,
+                                   userName: fullName,
+                                   password: password,
+
+                                   name: name,
+
+                                   title: title,
+                                   slug: slug,
+                                   description: description,
+                                   date: DateOnly.FromDateTime(DateTime.Today),
+                                   published: false,
+
+                                   dbContext: entities))));
+                         }, new Dictionary<string, string[]>
+                         {
+                                { "RateLimitMiddlewareException", new[] { "Too many requests" } },
+                         });
+
+                        const int delay = 10;
+
+                        await Task.Delay(delay);
+
+                        if (!runningTasksIndex.TryRemove(key, out var value))
+                        {
+                            throw new InvalidOperationException($"Task #{currentTaskId} has just finished " +
+                                                                $"but the running tasks index does not contain an entry for key {key}");
+                        }
+
+                        if (value != currentTaskId)
+                        {
+                            var ex = new InvalidOperationException($"Task #{currentTaskId} has just finished " +
+                                                                   $"but the running threads index has linked task #{value} to key {key}!");
+
+                            throw ex;
+                        }
+
+                        Interlocked.Decrement(ref currentParallelism);
+                    }
+                }
+            }
         }
 
         public class Async : AsyncKeyedLockTest
