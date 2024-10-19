@@ -14,13 +14,13 @@
 
   "IpRateLimiting": {
     "EnableEndpointRateLimiting": true,
-    "SecurityTokenRefreshOnly": false,
     "SecurityTokenRefreshRate": 0.025,
     "StackBlockedRequests": false,
     "RealIpHeader": "X-Real-IP",
     "HttpStatusCode": 429,
     "IpWhitelist": [ "::1/10", "192.168.0.0/24" ],
     "EndpointWhitelist": [
+      "post:/api/v1.0/identity",
       "post:/api/v1.0/identity/login",
       "get:/*.json",
       "get:/*.js",

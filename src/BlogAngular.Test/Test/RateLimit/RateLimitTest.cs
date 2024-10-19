@@ -4,6 +4,7 @@ using BlogAngular.Application.Blog.Tags.Commands.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Identity.Commands.Common;
 using BlogAngular.Application.Identity.Commands.Login;
+using BlogAngular.Application.Identity.Commands.Update;
 using BlogAngular.Test.Data;
 using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
@@ -40,7 +41,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Login_user_with_endpoint_whitelist_should_return_success_with_token(
+        public void Login_user_with_whitelisted_public_route_and_zero_limit_should_return_success_with_token(
          string fullName,
          string email,
          string password,
@@ -111,7 +112,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_client_whitelist_should_return_success_with_data(
+        public void Edit_tag_with_whitelisted_client_id_and_zero_limit_on_private_route_should_return_success_with_data(
          string fullName,
          string email,
          string password,
@@ -182,7 +183,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void List_tags_with_administrator_role_and_public_route_should_fail(
+        public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
          string fullName,
          string email,
          string password,
@@ -233,7 +234,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_ip_whitelist_should_return_success_with_data(
+        public void Edit_tag_with_whitelisted_ip_address_and_zero_limit_should_return_success_with_data(
          string fullName,
          string email,
          string password,
@@ -305,7 +306,7 @@ namespace BlogAngular.Test.RateLimit
         [Theory]
         [InlineData("ValidMinUserNameLength",
          //Must be valid email address
-         "ValidMinEmailLength@a.bcde",
+         "SecurityTokenRefreshException@email.com",
           //Password must contain Upper case, lower case, number, special symbols
           "!ValidMinPasswordLength",
 
@@ -314,7 +315,7 @@ namespace BlogAngular.Test.RateLimit
          "ValidMinTitleLength",
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
-        public void Edit_tag_with_client_whitelist_should_fail(
+        public void Edit_tag_with_refresh_token_should_fail(
          string fullName,
          string email,
          string password,
@@ -335,7 +336,7 @@ namespace BlogAngular.Test.RateLimit
                    ["X-Real-LIMIT"] = "0"
                })
               .WithMethod(HttpMethod.Put)
-              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("SecurityTokenRefreshException@email.com", 1))
+              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
               .WithLocation("api/v1.0/tags/edit/2")
               .WithJsonBody(
                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
@@ -372,9 +373,94 @@ namespace BlogAngular.Test.RateLimit
             { "SecurityTokenRefreshException", new[] { "Security token must be refreshed" } },
         });
 
+
+        [Theory]
+        [InlineData("ValidMinUserNameLength",
+         //Must be valid email address
+         "SecurityTokenRefreshException@email.com",
+          //Password must contain Upper case, lower case, number, special symbols
+          "!ValidMinPasswordLength",
+
+         "ValidMinNameLength",
+
+         "ValidMinTitleLength",
+         "ValidMinTitleLength",
+         "ValidMinDescriptionLength")]
+        public void Login_with_password_with_refresh_token_and_whitelisted_private_route_should_return_success_with_token(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+         ) => MyMvc
+             .Pipeline()
+             .ShouldMap(request => request
+                .WithHeaders(new Dictionary<string, string>
+                {
+                     ["X-Real-IP"] = "14.8.8.0",
+                     ["X-Real-LIMIT"] = "0"
+                })
+                .WithMethod(HttpMethod.Post)
+                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                .WithLocation("api/v1.0/identity")
+                .WithJsonBody(
+                     string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
+                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                     )
+                )
+             )
+             .To<IdentityController>(c => c.LoginPassword(new LoginPasswordCommand
+             {
+                 UserJson = new()
+                 {
+                     FullName = null,
+                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                 }
+             }))
+            .Which(controller => controller
+              .WithData(db => db
+                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                   count: 3,
+
+                   email: email,
+                   userName: fullName,
+                   password: password,
+
+                   name: name,
+
+                   title: title,
+                   slug: slug,
+                   description: description,
+                   date: DateOnly.FromDateTime(DateTime.Today),
+                   published: false,
+
+                   dbContext: entities))))
+             .ShouldHave()
+             .ActionAttributes(attrs => attrs
+                 .RestrictingForHttpMethod(HttpMethod.Post)
+                 .RestrictingForAuthorizedRequests())
+             .AndAlso()
+             .ShouldReturn()
+             .ActionResult(result => result.Result(new UserResponseEnvelope
+             {
+                 UserJson = new()
+                 {
+                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
+                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
+                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                 }
+             }))
+             .AndAlso()
+             .ShouldPassForThe<ActionAttributes>(attributes =>
+             {
+                 Assert.Equal(4, attributes.Count());
+             });
+
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_zero_rate_limit_should_fail(
+        public void Listing_tags_with_middleware_and_zero_rate_limit_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -413,7 +499,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_without_middleware_should_return_success_with_all_tags(
+        public void Listing_tags_without_middleware_and_zero_rate_limit_should_return_success_with_all_tags(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -460,7 +546,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_zero_ip_should_fail(
+        public void Listing_tags_with_special_case_ip_address_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,

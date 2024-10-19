@@ -99,47 +99,47 @@ namespace BlogAngular.Test.SlowTest
                         AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
                          () =>
                          {
-                           MyMvc
-                            .Pipeline()
-                            .ShouldMap(request => request
-                               .WithHeaders(new Dictionary<string, string>
-                               {
-                                   ["X-Real-IP"] = $"26.8.{key}.0",
-                                   ["X-Real-LIMIT"] = "0"
-                               })
-                              .WithMethod(HttpMethod.Put)
-                              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                              .WithLocation("api/v1.0/tags/edit/2")
-                              .WithJsonBody(
-                                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                             MyMvc
+                              .Pipeline()
+                              .ShouldMap(request => request
+                                 .WithHeaders(new Dictionary<string, string>
+                                 {
+                                     ["X-Real-IP"] = $"26.8.{key}.0",
+                                     ["X-Real-LIMIT"] = "0"
+                                 })
+                                .WithMethod(HttpMethod.Put)
+                                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                                .WithLocation("api/v1.0/tags/edit/2")
+                                .WithJsonBody(
+                                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                                )
                               )
-                            )
-                            .To<TagsController>(c => c.Edit(2, new()
-                            {
-                                TagJson = new()
-                                {
-                                    Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
-                                }
-                            }))
-                            .Which(controller => controller
-                              .WithData(db => db
-                                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                                   count: 3,
+                              .To<TagsController>(c => c.Edit(2, new()
+                              {
+                                  TagJson = new()
+                                  {
+                                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                                  }
+                              }))
+                              .Which(controller => controller
+                                .WithData(db => db
+                                  .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                                     count: 3,
 
-                                   email: email,
-                                   userName: fullName,
-                                   password: password,
+                                     email: email,
+                                     userName: fullName,
+                                     password: password,
 
-                                   name: name,
+                                     name: name,
 
-                                   title: title,
-                                   slug: slug,
-                                   description: description,
-                                   date: DateOnly.FromDateTime(DateTime.Today),
-                                   published: false,
+                                     title: title,
+                                     slug: slug,
+                                     description: description,
+                                     date: DateOnly.FromDateTime(DateTime.Today),
+                                     published: false,
 
-                                   dbContext: entities))));
+                                     dbContext: entities))));
                          }, new Dictionary<string, string[]>
                          {
                                 { "RateLimitMiddlewareException", new[] { "Too many requests" } },
