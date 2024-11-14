@@ -61,7 +61,7 @@ namespace BlogAngular.Test.SlowTest
                 int maxParallelism)
             {
                 var runningTasksIndex = new ConcurrentDictionary<int, int>();
-                var parallelismLock = new object();
+                var parallelismLock = new Lock();
                 var currentParallelism = 0;
                 var peakParallelism = 0;
 
@@ -182,7 +182,7 @@ namespace BlogAngular.Test.SlowTest
                 int maxParallelism)
             {
                 var runningTasksIndex = new ConcurrentDictionary<int, int>();
-                var parallelismLock = new object();
+                var parallelismLock = new Lock();
                 var currentParallelism = 0;
                 var peakParallelism = 0;
 

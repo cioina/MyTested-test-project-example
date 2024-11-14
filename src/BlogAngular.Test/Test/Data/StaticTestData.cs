@@ -233,18 +233,18 @@ namespace BlogAngular.Test.Data
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
-                Subject = new ClaimsIdentity(new[]
-                {
+                Subject = new ClaimsIdentity(
+                [
                     new Claim(ClaimTypes.NameIdentifier, Guid.NewGuid().ToString()),
                     new Claim(ClaimTypes.Name, email),
-                }),
+                ]),
                 Expires = expires,
                 SigningCredentials = new SigningCredentials(
                     new SymmetricSecurityKey(key),
                     SecurityAlgorithms.HmacSha256Signature)
             };
 
-            if (!role.IsNullOrEmpty())
+            if (!string.IsNullOrEmpty(role))
             {
                 tokenDescriptor.Subject.AddClaim(
                     new Claim(ClaimTypes.Role, role)

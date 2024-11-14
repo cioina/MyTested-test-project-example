@@ -6,8 +6,8 @@
     <AssemblyTitle>BlogAngular.Test</AssemblyTitle>
     <VersionPrefix>8.0.0</VersionPrefix>
     <Authors>Alexei Cioina</Authors>
-    <TargetFramework>net8.0</TargetFramework>
-    <LangVersion>12.0</LangVersion>
+    <TargetFramework>net9.0</TargetFramework>
+    <LangVersion>13.0</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
 	  <Nullable>enable</Nullable>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
@@ -40,7 +40,7 @@
   <ItemGroup>
     <PackageReference Include="Microsoft.DotNet.PlatformAbstractions" Version="3.1.6" />
     <PackageReference Include="Microsoft.AspNetCore.Mvc.Versioning" Version="5.1.0" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.10" />
+    <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="9.0.0" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2">
@@ -50,105 +50,106 @@
   </ItemGroup>
 
   <ItemGroup Condition="'$(Configuration)' != 'Release'">
-    <PackageReference Include="FluentAssertions" Version="6.12.1" />
+    <PackageReference Include="FluentAssertions" Version="6.12.2" />
   </ItemGroup>
 
-   <ItemGroup>
+  <ItemGroup>
     <Reference Include="MyTested.AspNetCore.Mvc.Test.Setups">
-      <HintPath>..\..\..\MyTested\test\MyTested.AspNetCore.Mvc.Test.Setups\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Test.Setups.dll</HintPath>
+      <HintPath>..\..\..\MyTested\test\MyTested.AspNetCore.Mvc.Test.Setups\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Test.Setups.dll</HintPath>
     </Reference>
 
     <Reference Include="MyTested.AspNetCore.Mvc">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Abstractions">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Abstractions.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Abstractions.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Authentication">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Authentication.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Authentication.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Caching">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Caching.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Caching.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Configuration">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Configuration.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Configuration.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Controllers">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Controllers.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Controllers.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Controllers.ActionResults">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Controllers.ActionResults.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Controllers.ActionResults.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Controllers.Attributes">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Controllers.Attributes.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Controllers.Attributes.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Controllers.Views">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Controllers.Views.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Controllers.Views.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Controllers.Views.ActionResults">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Controllers.Views.ActionResults.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Controllers.Views.ActionResults.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Core">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Core.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Core.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.DataAnnotations">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.DataAnnotations.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.DataAnnotations.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.DependencyInjection">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.DependencyInjection.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.DependencyInjection.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.EntityFrameworkCore">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.EntityFrameworkCore.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.EntityFrameworkCore.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Helpers">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Helpers.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Http">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Http.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Http.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Models">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Models.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Models.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.ModelState">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.ModelState.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.ModelState.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Options">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Options.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Options.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Pipeline">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Pipeline.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Pipeline.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Razor.RuntimeCompilation">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Razor.RuntimeCompilation.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Razor.RuntimeCompilation.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Routing">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Routing.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Routing.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Session">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Session.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Session.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.TempData">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.TempData.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.TempData.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Universe">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Universe.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Universe.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.Versioning">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.Versioning.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.Versioning.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.ViewComponents">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.ViewComponents.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.ViewComponents.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.ViewComponents.Results">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.ViewComponents.Results.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.ViewComponents.Results.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.ViewData">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.ViewData.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.ViewData.dll</HintPath>
     </Reference>
     <Reference Include="MyTested.AspNetCore.Mvc.ViewFeatures">
-      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net8.0\MyTested.AspNetCore.Mvc.ViewFeatures.dll</HintPath>
+      <HintPath>..\..\..\MyTested\src\MyTested.AspNetCore.Mvc.Universe\bin\Debug\net9.0\MyTested.AspNetCore.Mvc.ViewFeatures.dll</HintPath>
     </Reference>
   </ItemGroup>
+
 
   <ItemGroup Condition="'$(Configuration)' != 'Release'">
     <ProjectReference Include="..\BlogAngular.Startup\BlogAngular.Startup.csproj" />
