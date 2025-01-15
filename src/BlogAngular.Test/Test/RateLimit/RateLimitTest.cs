@@ -399,8 +399,8 @@ namespace BlogAngular.Test.RateLimit
              .ShouldMap(request => request
                 .WithHeaders(new Dictionary<string, string>
                 {
-                     ["X-Real-IP"] = "14.8.8.0",
-                     ["X-Real-LIMIT"] = "0"
+                    ["X-Real-IP"] = "14.8.8.0",
+                    ["X-Real-LIMIT"] = "0"
                 })
                 .WithMethod(HttpMethod.Post)
                 .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))

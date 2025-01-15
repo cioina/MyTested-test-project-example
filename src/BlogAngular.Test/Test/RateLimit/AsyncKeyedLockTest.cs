@@ -72,8 +72,8 @@ namespace BlogAngular.Test.SlowTest
 
                 await Task.WhenAll(threads);
 
-                peakParallelism.Should().BeLessOrEqualTo(maxParallelism);
-                peakParallelism.Should().BeGreaterOrEqualTo(minParallelism);
+                peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
+                peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
 
                 _output.WriteLine("Peak parallelism was " + peakParallelism);
 
@@ -193,8 +193,8 @@ namespace BlogAngular.Test.SlowTest
 
                 await Task.WhenAll(threads);
 
-                peakParallelism.Should().BeLessOrEqualTo(maxParallelism);
-                peakParallelism.Should().BeGreaterOrEqualTo(minParallelism);
+                peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
+                peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
 
                 _output.WriteLine("Peak parallelism was " + peakParallelism);
 
