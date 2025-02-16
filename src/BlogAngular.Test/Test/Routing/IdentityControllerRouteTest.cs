@@ -573,9 +573,9 @@ the value was different. Difference occurs at '{2}'.";
                 .WithData(StaticTestData.GetUsers(3, email, fullName, password)))
               .ShouldReturn();
           }, new Dictionary<string, string[]>
-            {
-               { "no_data_error", new[] { "There is no data to proccess." } }
-            });
+          {
+             { "no_data_error", new[] { "There is no data to proccess." } }
+          });
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
@@ -616,9 +616,56 @@ the value was different. Difference occurs at '{2}'.";
                             dbContext: entities))))
               .ShouldReturn();
           }, new Dictionary<string, string[]>
-            {
-           { "PasswordRequiresDigit", new[] { "Password requared upper and lower case letters, digits, and at least one special simbol." } },
-            });
+          {
+            { "PasswordRequiresDigit", new[] { "Password requared upper and lower case letters, digits, and at least one special simbol." } },
+            { "PasswordDeleted", new[] { "The old password was deleted. You must provide a new password." } },
+          });
+
+        [Theory]
+        [InlineData("good_username", "good@email.com", "123456789123456789")]
+        public void Update_user_with_bad_password_should_fail(
+         string fullName,
+         string email,
+         string password)
+          => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+          () =>
+          {
+              MyMvc
+              .Pipeline()
+              .ShouldMap(request => request
+                .WithMethod(HttpMethod.Put)
+                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                .WithLocation("api/v1.0/identity/update")
+                .WithJsonBody(
+                     string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
+                         string.Format(CultureInfo.InvariantCulture, "{0}", password)
+                     )
+                )
+             )
+             .To<IdentityController>(c => c.Update(new UserUpdateCommand
+             {
+                 UserJson = new()
+                 {
+                     FullName = null,
+                     Password = string.Format(CultureInfo.InvariantCulture, "{0}", password)
+                 }
+             }))
+            .Which(controller => controller
+                   .WithData(db => db
+                        .WithEntities(entities => StaticTestData.GetUsersWithRole(
+                            count: 3,
+                            email: email,
+                            userName: fullName,
+                            password: string.Format(CultureInfo.InvariantCulture, "Aa_{0}", password),
+                            dbContext: entities))))
+              .ShouldReturn();
+          }, new Dictionary<string, string[]>
+          {
+            { "PasswordRequiresNonAlphanumeric", new[] { "Passwords must have at least one non alphanumeric character." } },
+            { "PasswordRequiresLower", new[] { "Passwords must have at least one lowercase ('a'-'z')." } },
+            { "PasswordRequiresUpper", new[] { "Passwords must have at least one uppercase ('A'-'Z')." } },
+            { "PasswordDeleted", new[] { "The old password was deleted. You must provide a new password." } },
+          });
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
@@ -659,9 +706,9 @@ the value was different. Difference occurs at '{2}'.";
                             dbContext: entities))))
               .ShouldReturn();
           }, new Dictionary<string, string[]>
-            {
-           { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
-            });
+          {
+            { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
+          });
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
