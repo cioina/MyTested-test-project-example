@@ -574,7 +574,7 @@ the value was different. Difference occurs at '{2}'.";
               .ShouldReturn();
           }, new Dictionary<string, string[]>
           {
-             { "no_data_error", new[] { "There is no data to proccess." } }
+             { "no_data_error", new[] { "There is no data to process." } }
           });
 
         [Theory]
@@ -617,7 +617,7 @@ the value was different. Difference occurs at '{2}'.";
               .ShouldReturn();
           }, new Dictionary<string, string[]>
           {
-            { "PasswordRequiresDigit", new[] { "Password requared upper and lower case letters, digits, and at least one special simbol." } },
+            { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
             { "PasswordDeleted", new[] { "The old password was deleted. You must provide a new password." } },
           });
 
@@ -910,7 +910,7 @@ the value was different. Difference occurs at '{2}'.";
               .ShouldReturn();
           }, new Dictionary<string, string[]>
             {
-                { "no_data_error", new[] { "There is no data to proccess." } }
+                { "no_data_error", new[] { "There is no data to process." } }
             });
 
         [Theory]
@@ -1149,7 +1149,7 @@ the value was different. Difference occurs at '{2}'.";
              .ShouldReturn();
          }, new Dictionary<string, string[]>
          {
-         { "PasswordRequiresDigit", new[] { "Password requared upper and lower case letters, digits, and at least one special simbol." } },
+         { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
          });
 
         [Theory]
