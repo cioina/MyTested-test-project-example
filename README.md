@@ -1,5 +1,7 @@
 # MyTested-test-project-example
 
+[![test-run](/test-run.png?raw=true)](https://github.com/cioina/MyTested-test-project-example/blob/main/test-run.png)
+
 ## Introduction
 
 The compiled code of our .NET Core 9 application is on [our GitHub repository](https://github.com/cioina/cioina.azurewebsites.net). For this test project, which is part our application, we will use [MyTested](https://github.com/ivaylokenov/MyTested.AspNetCore.Mvc) - a well-known library for testing ASP.NET Core MVC. Here, we adapted the library to work with .NET Core 9 and API controllers with Bearer Header Authorization based on JWT token implementation provided by .NET Core. Our .NET Core 9 project is based on [BookStore](https://github.com/kalintsenkov/BookStore) repository and adapted to work with MyTested library.
