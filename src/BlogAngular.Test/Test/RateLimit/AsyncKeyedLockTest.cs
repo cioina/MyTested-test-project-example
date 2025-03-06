@@ -10,7 +10,6 @@ using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
@@ -112,14 +111,14 @@ namespace BlogAngular.Test.SlowTest
                                 .WithLocation("api/v1.0/tags/edit/2")
                                 .WithJsonBody(
                                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                                           $"{name}4")
                                 )
                               )
                               .To<TagsController>(c => c.Edit(2, new()
                               {
                                   TagJson = new()
                                   {
-                                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                                      Title = $"{name}4"
                                   }
                               }))
                               .Which(controller => controller
@@ -243,7 +242,7 @@ namespace BlogAngular.Test.SlowTest
                               return new TagResponseModel
                               {
                                   Id = i,
-                                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", "name", i),
+                                  Title = $"name{i}"
                               };
                           }).ToList(),
                         }));

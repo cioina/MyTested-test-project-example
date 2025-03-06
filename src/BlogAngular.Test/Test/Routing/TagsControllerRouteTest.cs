@@ -7,7 +7,6 @@ using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Xunit;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Article;
@@ -55,14 +54,14 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/tags/create")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                       $"{name}4")
             )
           )
           .To<TagsController>(c => c.Create(new()
           {
               TagJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .Which(controller => controller
@@ -94,7 +93,7 @@ namespace BlogAngular.Test.Routing
               TagJson = new()
               {
                   Id = 4,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4),
+                  Title = $"{name}4"
               }
           }))
           .AndAlso()
@@ -124,14 +123,14 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/tags/create")
                .WithJsonBody(
                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                          $"{name}4")
                )
              )
              .To<TagsController>(c => c.Create(new()
              {
                  TagJson = new()
                  {
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                     Title = $"{name}4"
                  }
              }))
              .Which(controller => controller
@@ -177,14 +176,14 @@ namespace BlogAngular.Test.Routing
                     .WithLocation("api/v1.0/tags/create")
                     .WithJsonBody(
                            string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                               string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                               $"{name}4")
                     )
                   )
                   .To<TagsController>(c => c.Create(new()
                   {
                       TagJson = new()
                       {
-                          Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                          Title = $"{name}4"
                       }
                   }))
                   .Which(controller => controller
@@ -237,14 +236,14 @@ namespace BlogAngular.Test.Routing
         //            .WithLocation("api/v1.0/tags/create")
         //            .WithJsonBody(
         //                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-        //                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+        //                       $"{name}4")
         //            )
         //          )
         //          .To<TagsController>(c => c.Create(new()
         //          {
         //              TagJson = new()
         //              {
-        //                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+        //                  Title = $"{name}4"
         //              }
         //          }));
 
@@ -278,14 +277,14 @@ namespace BlogAngular.Test.Routing
                 .WithLocation("api/v1.0/tags/create")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                           $"{name}4")
                 )
               )
               .To<TagsController>(c => c.Create(new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                      Title = $"{name}4"
                   }
               }));
 
@@ -320,14 +319,14 @@ namespace BlogAngular.Test.Routing
                 .WithLocation("api/v1.0/tags/create")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                           $"{name}4")
                 )
               )
               .To<TagsController>(c => c.Create(new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                      Title = $"{name}4"
                   }
               }));
 
@@ -408,14 +407,14 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/tags/create")
                .WithJsonBody(
                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab"))
+                          $"{ValidMaxxNameLength}ab")
                )
              )
              .To<TagsController>(c => c.Create(new()
              {
                  TagJson = new()
                  {
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab")
+                     Title = $"{ValidMaxxNameLength}ab"
                  }
              }))
              .Which(controller => controller
@@ -458,14 +457,14 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                       $"{name}4")
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .Which(controller => controller
@@ -490,7 +489,7 @@ namespace BlogAngular.Test.Routing
               TagJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .AndAlso()
@@ -573,14 +572,14 @@ namespace BlogAngular.Test.Routing
                 .WithLocation("api/v1.0/tags/edit/2")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab"))
+                           $"{ValidMaxxNameLength}ab")
                 )
               )
               .To<TagsController>(c => c.Edit(2, new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxNameLength, "ab")
+                      Title = $"{ValidMaxxNameLength}ab"
                   }
               }))
               .Which(controller => controller
@@ -626,14 +625,14 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/tags/edit/5")
                .WithJsonBody(
                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                          $"{name}4")
                )
              )
              .To<TagsController>(c => c.Edit(5, new()
              {
                  TagJson = new()
                  {
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                     Title = $"{name}4"
                  }
              }))
              .Which(controller => controller
@@ -674,14 +673,14 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2))
+                       $"{name}2")
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2)
+                  Title = $"{name}2"
               }
           }))
           .Which(controller => controller
@@ -706,7 +705,7 @@ namespace BlogAngular.Test.Routing
               TagJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 2)
+                  Title = $"{name}2"
               }
           }))
           .AndAlso()
@@ -736,14 +735,14 @@ namespace BlogAngular.Test.Routing
                 .WithLocation("api/v1.0/tags/edit/2")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1))
+                           $"{name}1")
                 )
               )
               .To<TagsController>(c => c.Edit(2, new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1)
+                      Title = $"{name}1"
                   }
               }))
               .Which(controller => controller
@@ -790,14 +789,14 @@ namespace BlogAngular.Test.Routing
                 .WithLocation("api/v1.0/tags/create")
                 .WithJsonBody(
                        string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1))
+                           $"{name}1")
                 )
               )
               .To<TagsController>(c => c.Create(new()
               {
                   TagJson = new()
                   {
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 1)
+                      Title = $"{name}1"
                   }
               }))
               .Which(controller => controller
@@ -957,7 +956,7 @@ namespace BlogAngular.Test.Routing
                       return new TagResponseModel
                       {
                           Id = i,
-                          Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
+                          Title = $"{name}{i}"
                       };
                   }).ToList(),
             }));
@@ -998,7 +997,7 @@ namespace BlogAngular.Test.Routing
                   return new TagResponseModel
                   {
                       Id = i,
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
+                      Title = $"{name}{i}"
                   };
               }).ToList(),
             }));
@@ -1040,7 +1039,7 @@ namespace BlogAngular.Test.Routing
                   return new TagResponseModel
                   {
                       Id = i,
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
+                      Title = $"{name}{i}",
                   };
               }).ToList(),
         }));
@@ -1053,7 +1052,7 @@ namespace BlogAngular.Test.Routing
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength),
+            $"U!{ValidMinPasswordLength}",
 
             ValidMinNameLength,
 
@@ -1068,7 +1067,7 @@ namespace BlogAngular.Test.Routing
             //Must be valid email address
             $"{ValidMaxEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength),
+            $"U!{ValidMaxPasswordLength}",
 
             ValidMaxxNameLength,
 

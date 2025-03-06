@@ -10,7 +10,6 @@ using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Xunit;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Article;
@@ -64,16 +63,16 @@ namespace BlogAngular.Test.RateLimit
             .WithLocation("api/v1.0/identity/login")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                    $"{email}1",
+                    $"{password}1"
                 ))
           )
           .To<IdentityController>(c => c.Login(new UserLoginCommand
           {
               UserJson = new()
               {
-                  Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                  Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                  Email = $"{email}1",
+                  Password = $"{password}1"
               }
           }))
           .Which(controller => controller
@@ -99,9 +98,9 @@ namespace BlogAngular.Test.RateLimit
           {
               UserJson = new()
               {
-                  Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                  UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                  Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                  Email = $"{email}1",
+                  UserName = $"{fullName}1",
+                  Token = $"Token: {email}1"
               }
           }))
           .AndAlso()
@@ -133,14 +132,14 @@ namespace BlogAngular.Test.RateLimit
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                       $"{name}4")
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .Which(controller => controller
@@ -172,7 +171,7 @@ namespace BlogAngular.Test.RateLimit
               TagJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .AndAlso()
@@ -255,14 +254,14 @@ namespace BlogAngular.Test.RateLimit
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                       $"{name}4")
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
           {
               TagJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .Which(controller => controller
@@ -294,7 +293,7 @@ namespace BlogAngular.Test.RateLimit
               TagJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                  Title = $"{name}4"
               }
           }))
           .AndAlso()
@@ -340,14 +339,14 @@ namespace BlogAngular.Test.RateLimit
               .WithLocation("api/v1.0/tags/edit/2")
               .WithJsonBody(
                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4))
+                         $"{name}4")
               )
             )
             .To<TagsController>(c => c.Edit(2, new()
             {
                 TagJson = new()
                 {
-                    Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, 4)
+                    Title = $"{name}4"
                 }
             }))
             .Which(controller => controller
@@ -407,7 +406,7 @@ namespace BlogAngular.Test.RateLimit
                 .WithLocation("api/v1.0/identity")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                         $"{password}1"
                      )
                 )
              )
@@ -416,7 +415,7 @@ namespace BlogAngular.Test.RateLimit
                  UserJson = new()
                  {
                      FullName = null,
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     Password = $"{password}1"
                  }
              }))
             .Which(controller => controller
@@ -447,9 +446,9 @@ namespace BlogAngular.Test.RateLimit
              {
                  UserJson = new()
                  {
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                     Email = $"{email}1",
+                     UserName = $"{fullName}1",
+                     Token = $"Token: {email}1"
                  }
              }))
              .AndAlso()
@@ -538,7 +537,7 @@ namespace BlogAngular.Test.RateLimit
                   return new TagResponseModel
                   {
                       Id = i,
-                      Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i),
+                      Title = $"{name}{i}",
                   };
               }).ToList(),
             }));
@@ -590,7 +589,7 @@ namespace BlogAngular.Test.RateLimit
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength),
+            $"U!{ValidMinPasswordLength}",
 
             ValidMinNameLength,
 
@@ -605,7 +604,7 @@ namespace BlogAngular.Test.RateLimit
             //Must be valid email address
             $"{ValidMaxEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength),
+            $"U!{ValidMaxPasswordLength}",
 
             ValidMaxxNameLength,
 

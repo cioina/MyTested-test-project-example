@@ -9,7 +9,6 @@ using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Xunit;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
@@ -69,8 +68,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
             )
@@ -78,8 +77,8 @@ the value was different. Difference occurs at '{2}'.";
             {
                 UserJson = new()
                 {
-                    FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                    Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                    FullName = $"{fullName}1",
+                    Password = $"{password}1"
                 }
             }));
 
@@ -98,12 +97,12 @@ the value was different. Difference occurs at '{2}'.";
              .Pipeline()
              .ShouldMap(request => request
                 .WithMethod(HttpMethod.Put)
-                .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}{1}", StaticTestData.GetJwtBearerAdministratorRole(email, 1), "a"))
+                .WithHeaderAuthorization($"{StaticTestData.GetJwtBearerAdministratorRole(email, 1)}a")
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
              )
@@ -111,8 +110,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }));
 
@@ -133,12 +132,12 @@ the value was different. Difference occurs at '{2}'.";
              .Pipeline()
              .ShouldMap(request => request
                 .WithMethod(HttpMethod.Put)
-                .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}.{1}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .WithHeaderAuthorization($"{Guid.NewGuid()}.{Guid.NewGuid()}")
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
              )
@@ -146,8 +145,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }));
 
@@ -168,12 +167,12 @@ the value was different. Difference occurs at '{2}'.";
              .Pipeline()
              .ShouldMap(request => request
                 .WithMethod(HttpMethod.Put)
-                .WithHeaderAuthorization(string.Format(CultureInfo.InvariantCulture, "{0}.{1}.{2}", Guid.NewGuid().ToString(), Guid.NewGuid().ToString(), Guid.NewGuid().ToString()))
+                .WithHeaderAuthorization($"{Guid.NewGuid()}.{Guid.NewGuid()}.{Guid.NewGuid()}")
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
              )
@@ -181,8 +180,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }));
 
@@ -205,8 +204,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
              )
@@ -214,8 +213,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }));
 
@@ -238,8 +237,8 @@ the value was different. Difference occurs at '{2}'.";
                  .WithLocation("api/v1.0/identity/update")
                  .WithJsonBody(
                       string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                          $"{password}1",
+                          $"{fullName}1"
                       )
                  )
              )
@@ -247,8 +246,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }));
          }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/update", "Update", "IdentityController"));
@@ -270,8 +269,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}", password),
-                         string.Format(CultureInfo.InvariantCulture, "{0}", fullName)
+                         $"{password}",
+                         $"{fullName}"
                      )
                 )
              )
@@ -310,8 +309,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                         $"{password}1",
+                         $"{fullName}1"
                      )
                 )
              )
@@ -319,8 +318,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
                  }
              }))
               .Which(controller => controller
@@ -346,8 +345,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
+                         $"{password}4",
+                         $"{fullName}4"
                      )
                 )
              )
@@ -355,8 +354,8 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                     FullName = $"{fullName}4",
+                     Password = $"{password}4"
                  }
              }))
             .Which(controller => controller
@@ -377,9 +376,9 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
-                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                     Email = $"{email}1",
+                     UserName = $"{fullName}4",
+                     Token = $"Token: {email}1"
                  }
              }))
              .AndAlso()
@@ -405,8 +404,8 @@ the value was different. Difference occurs at '{2}'.";
                    .WithLocation("api/v1.0/identity/update")
                    .WithJsonBody(
                         string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
-                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
+                            $"{password}4",
+                            $"{fullName}4"
                         )
                    )
                 )
@@ -414,8 +413,8 @@ the value was different. Difference occurs at '{2}'.";
                 {
                     UserJson = new()
                     {
-                        FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
-                        Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                        FullName = $"{fullName}4",
+                        Password = $"{password}4"
                     }
                 }))
                 .Which(controller => controller
@@ -446,7 +445,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
+                         $"{fullName}4"
                      )
                 )
              )
@@ -454,7 +453,7 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
+                     FullName = $"{fullName}4",
                      Password = null,
                  }
              }))
@@ -476,9 +475,9 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
-                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                     Email = $"{email}1",
+                     UserName = $"{fullName}4",
+                     Token = $"Token: {email}1"
                  }
              }))
              .AndAlso()
@@ -501,7 +500,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                         $"{password}1"
                      )
                 )
              )
@@ -510,7 +509,7 @@ the value was different. Difference occurs at '{2}'.";
                  UserJson = new()
                  {
                      FullName = null,
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     Password = $"{password}1"
                  }
              }))
             .Which(controller => controller
@@ -531,9 +530,9 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                     Email = $"{email}1",
+                     UserName = $"{fullName}1",
+                     Token = $"Token: {email}1",
                  }
              }))
              .AndAlso()
@@ -594,7 +593,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0} ", password)
+                         $"{password} "
                      )
                 )
              )
@@ -603,7 +602,7 @@ the value was different. Difference occurs at '{2}'.";
                  UserJson = new()
                  {
                      FullName = null,
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0} ", password)
+                     Password = $"{password} "
                  }
              }))
             .Which(controller => controller
@@ -638,7 +637,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}", password)
+                         $"{password}"
                      )
                 )
              )
@@ -647,7 +646,7 @@ the value was different. Difference occurs at '{2}'.";
                  UserJson = new()
                  {
                      FullName = null,
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}", password)
+                     Password = $"{password}"
                  }
              }))
             .Which(controller => controller
@@ -656,7 +655,7 @@ the value was different. Difference occurs at '{2}'.";
                             count: 3,
                             email: email,
                             userName: fullName,
-                            password: string.Format(CultureInfo.InvariantCulture, "Aa_{0}", password),
+                            password: $"Aa_{password}",
                             dbContext: entities))))
               .ShouldReturn();
           }, new Dictionary<string, string[]>
@@ -684,7 +683,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/update")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0} ", fullName)
+                         $"{fullName} "
                      )
                 )
              )
@@ -692,7 +691,7 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0} ", fullName),
+                     FullName = $"{fullName} ",
                      Password = null,
                  }
              }))
@@ -730,7 +729,7 @@ the value was different. Difference occurs at '{2}'.";
                    .WithLocation("api/v1.0/identity/update")
                    .WithJsonBody(
                     string.Format(@"{{""password"":""{0}""}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                        $"{password}1"
                     ))
                 )
                 .To<IdentityController>(c => c.Update(new UserUpdateCommand
@@ -795,7 +794,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity")
                 .WithJsonBody(
                      string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                         $"{password}1"
                      )
                 )
              )
@@ -804,7 +803,7 @@ the value was different. Difference occurs at '{2}'.";
                  UserJson = new()
                  {
                      FullName = null,
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                     Password = $"{password}1"
                  }
              }))
             .Which(controller => controller
@@ -825,9 +824,9 @@ the value was different. Difference occurs at '{2}'.";
              {
                  UserJson = new()
                  {
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                     UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                     Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                     Email = $"{email}1",
+                     UserName = $"{fullName}1",
+                     Token = $"Token: {email}1"
                  }
              }))
              .AndAlso()
@@ -853,7 +852,7 @@ the value was different. Difference occurs at '{2}'.";
                  .WithLocation("api/v1.0/identity")
                  .WithJsonBody(
                       string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                          $"{password}1"
                       )
                  )
               )
@@ -862,7 +861,7 @@ the value was different. Difference occurs at '{2}'.";
                   UserJson = new()
                   {
                       FullName = null,
-                      Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                      Password = $"{password}1"
                   }
               }))
               .Which(controller => controller
@@ -930,7 +929,7 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2)
+                         $"{password}2"
                     )
                 ))
               .To<IdentityController>(c => c.LoginPassword(new LoginPasswordCommand
@@ -938,7 +937,7 @@ the value was different. Difference occurs at '{2}'.";
                   UserJson = new()
                   {
                       FullName = null,
-                      Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
+                      Password = $"{password}2"
                   }
               }))
              .Which(controller => controller
@@ -968,18 +967,18 @@ the value was different. Difference occurs at '{2}'.";
             .WithLocation("api/v1.0/identity/register")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
+                    $"{email}2",
+                    $"{password}2",
+                    $"{fullName}2"
                 ))
          )
          .To<IdentityController>(c => c.Register(new UserRegisterCommand
          {
              UserJson = new()
              {
-                 FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
-                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                 Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
+                 FullName = $"{fullName}2",
+                 Email = $"{email}2",
+                 Password = $"{password}2"
              }
          }))
          .Which(controller => controller
@@ -989,9 +988,9 @@ the value was different. Difference occurs at '{2}'.";
          {
              UserJson = new()
              {
-                 Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                 UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
-                 Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2)}",
+                 Email = $"{email}2",
+                 UserName = $"{fullName}2",
+                 Token = $"Token: {email}2",
              }
          }))
          .AndAlso()
@@ -1016,18 +1015,18 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/register")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 4),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
+                        $"{email}4",
+                        $"{password}4",
+                        $"{fullName}2"
                     ))
              )
              .To<IdentityController>(c => c.Register(new UserRegisterCommand
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 4),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                     FullName = $"{fullName}2",
+                     Email = $"{email}4",
+                     Password = $"{password}4"
                  }
              }))
              .Which(controller => controller
@@ -1035,7 +1034,7 @@ the value was different. Difference occurs at '{2}'.";
              .ShouldReturn();
          }, new Dictionary<string, string[]>
          {
-         { "name_error", new[] { "The user name has been taken." } },
+           { "name_error", new[] { "The user name has been taken." } },
          });
 
         [Theory]
@@ -1054,18 +1053,18 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/register")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4)
+                        $"{email}2",
+                        $"{password}4",
+                        $"{fullName}4"
                     ))
              )
              .To<IdentityController>(c => c.Register(new UserRegisterCommand
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 4),
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 4),
+                     FullName = $"{fullName}4",
+                     Email = $"{email}2",
+                     Password = $"{password}4"
                  }
              }))
              .Which(controller => controller
@@ -1073,7 +1072,7 @@ the value was different. Difference occurs at '{2}'.";
              .ShouldReturn();
          }, new Dictionary<string, string[]>
          {
-         { "email_error", new[] { "The email has been taken." } },
+           { "email_error", new[] { "The email has been taken." } },
          });
 
         [Theory]
@@ -1092,18 +1091,18 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/register")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
-                        string.Format(CultureInfo.InvariantCulture, "{0} ", fullName)
+                        $"{email}2",
+                        $"{password}2",
+                        $"{fullName} "
                     ))
              )
              .To<IdentityController>(c => c.Register(new UserRegisterCommand
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0} ", fullName),
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 2),
+                     FullName = $"{fullName} ",
+                     Email = $"{email}2",
+                     Password = $"{password}2",
                  }
              }))
              .Which(controller => controller
@@ -1111,7 +1110,7 @@ the value was different. Difference occurs at '{2}'.";
              .ShouldReturn();
          }, new Dictionary<string, string[]>
          {
-         { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
+          { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
          });
 
         [Theory]
@@ -1130,18 +1129,18 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/register")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                        string.Format(CultureInfo.InvariantCulture, "{0} ", password),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2)
+                        $"{email}2",
+                        $"{password} ",
+                        $"{fullName}2"
                     ))
              )
              .To<IdentityController>(c => c.Register(new UserRegisterCommand
              {
                  UserJson = new()
                  {
-                     FullName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 2),
-                     Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 2),
-                     Password = string.Format(CultureInfo.InvariantCulture, "{0} ", password),
+                     FullName = $"{fullName}2",
+                     Email = $"{email}2",
+                     Password = $"{password} "
                  }
              }))
              .Which(controller => controller
@@ -1149,7 +1148,7 @@ the value was different. Difference occurs at '{2}'.";
              .ShouldReturn();
          }, new Dictionary<string, string[]>
          {
-         { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
+          { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
          });
 
         [Theory]
@@ -1168,9 +1167,9 @@ the value was different. Difference occurs at '{2}'.";
                  .WithLocation("api/v1.0/identity/register")
                  .WithJsonBody(
                      string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}"",""username"":""{2}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}", email),
-                         string.Format(CultureInfo.InvariantCulture, "{0}", password),
-                         string.Format(CultureInfo.InvariantCulture, "{0}", fullName)
+                         email,
+                         password,
+                         fullName
                      ))
               )
              .To<IdentityController>(c => c.Register(new UserRegisterCommand
@@ -1209,16 +1208,16 @@ the value was different. Difference occurs at '{2}'.";
             .WithLocation("api/v1.0/identity/login")
             .WithJsonBody(
                 string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                    string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                    $"{email}1",
+                    $"{password}1"
                 ))
           )
           .To<IdentityController>(c => c.Login(new UserLoginCommand
           {
               UserJson = new()
               {
-                  Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                  Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                  Email = $"{email}1",
+                  Password = $"{password}1"
               }
           }))
           .Which(controller => controller
@@ -1228,9 +1227,9 @@ the value was different. Difference occurs at '{2}'.";
           {
               UserJson = new()
               {
-                  Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                  UserName = string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                  Token = $"Token: {string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1)}",
+                  Email = $"{email}1",
+                  UserName = $"{fullName}1",
+                  Token = $"Token: {email}1"
               }
           }))
           .AndAlso()
@@ -1259,16 +1258,16 @@ the value was different. Difference occurs at '{2}'.";
                     .WithLocation("api/v1.0/identity/login")
                     .WithJsonBody(
                         string.Format(@"{{""user"":{{""em"":""{0}"",""pass"":""{1}""}}}}",
-                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                            string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                            $"{email}1",
+                            $"{password}1"
                         ))
                   )
                   .To<IdentityController>(c => c.Login(new UserLoginCommand
                   {
                       UserJson = new()
                       {
-                          Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                          Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                          Email = $"{email}1",
+                          Password = $"{password}1"
                       }
                   }));
             }, string.Format(DifferenceException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/login", "command", "UserLoginCommand.UserJson.Email"));
@@ -1289,8 +1288,8 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/login")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}", email),
-                        string.Format(CultureInfo.InvariantCulture, "{0}", password)
+                        email,
+                        password
                     ))
              )
              .To<IdentityController>(c => c.Login(new UserLoginCommand
@@ -1329,16 +1328,16 @@ the value was different. Difference occurs at '{2}'.";
                 .WithLocation("api/v1.0/identity/login")
                 .WithJsonBody(
                     string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                        string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1)
+                        $"{email}1",
+                        $"{password}1"
                     )
                 ))
               .To<IdentityController>(c => c.Login(new UserLoginCommand
               {
                   UserJson = new()
                   {
-                      Email = string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, 1),
-                      Password = string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, 1),
+                      Email = $"{email}1",
+                      Password = $"{password}1"
                   }
               }))
               .Which(controller => controller
@@ -1387,16 +1386,16 @@ the value was different. Difference occurs at '{2}'.";
             .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
             .WithLocation($"api/v1.0/profile/{fullName}1")
           )
-          .To<ProfileController>(c => c.Index(string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)))
+          .To<ProfileController>(c => c.Index($"{fullName}1"))
           .Which(controller => controller
             .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
           .ShouldReturn()
           .ActionResult(result => result.Result(new ProfileResponseEnvelope
           {
               ProfileJson = new ProfileResponseModel(
-                  string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                  string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1),
-                  string.Format(CultureInfo.InvariantCulture, "{0}{1}", fullName, 1)
+                  $"{fullName}1",
+                  $"{fullName}1",
+                  $"{fullName}1"
               )
           }))
           .AndAlso()
@@ -1413,7 +1412,7 @@ the value was different. Difference occurs at '{2}'.";
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength)
+            $"U!{ValidMinPasswordLength}",
             };
 
             yield return new object[]
@@ -1422,7 +1421,7 @@ the value was different. Difference occurs at '{2}'.";
              //Must be valid email address
              $"{ValidMaxEmailLength}@a.bcde",
              //Password must contain Upper case, lower case, number, special symbols
-             string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength)
+             $"U!{ValidMaxPasswordLength}"
             };
         }
     }

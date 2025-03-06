@@ -8,7 +8,6 @@ using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using Xunit;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Article;
@@ -376,9 +375,9 @@ namespace BlogAngular.Test.Routing
                    return new ArticleResponseModel
                    {
                        Id = i,
-                       Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
-                       Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
-                       Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
+                       Title = $"{title}{i}",
+                       Slug = $"{slug}{i}",
+                       Description = $"{description}{i}",
                        Published = true,
                        CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                        TagList = Enumerable
@@ -464,9 +463,9 @@ namespace BlogAngular.Test.Routing
                  return new ArticleResponseModel
                  {
                      Id = j,
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, j),
-                     Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, j),
-                     Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, j),
+                     Title = $"{title}{j}",
+                     Slug = $"{slug}{j}",
+                     Description = $"{description}{j}",
                      Published = true,
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                      TagList = Enumerable
@@ -550,9 +549,9 @@ namespace BlogAngular.Test.Routing
                    return new ArticleResponseModel
                    {
                        Id = i,
-                       Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
-                       Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
-                       Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
+                       Title = $"{title}{i}",
+                       Slug = $"{slug}{i}",
+                       Description = $"{description}{i}",
                        Published = true,
                        CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                    };
@@ -615,9 +614,9 @@ namespace BlogAngular.Test.Routing
                    return new ArticleResponseModel
                    {
                        Id = j,
-                       Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, j),
-                       Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, j),
-                       Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, j),
+                       Title = $"{title}{j}",
+                       Slug = $"{slug}{j}",
+                       Description = $"{description}{j}",
                        Published = true,
                        CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                    };
@@ -757,9 +756,9 @@ namespace BlogAngular.Test.Routing
                    return new ArticleResponseModel
                    {
                        Id = i,
-                       Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
-                       Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
-                       Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
+                       Title = $"{title}{i}",
+                       Slug = $"{slug}{i}",
+                       Description = $"{description}{i}",
                        Published = true,
                        CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                        TagList = Enumerable
@@ -805,9 +804,9 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/articles/create")
             .WithJsonBody(
                    string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}"", ""published"": ""{3}""}}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                       $"{title}4",
+                       $"{slug}4",
+                       $"{description}4",
                        true)
             )
           )
@@ -815,9 +814,9 @@ namespace BlogAngular.Test.Routing
           {
               ArticleJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   Published = true
               }
           }))
@@ -843,9 +842,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 4,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today)),
                   Published = true
               }
@@ -874,18 +873,18 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/articles/create")
             .WithJsonBody(
                    string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                       $"{title}4",
+                       $"{slug}4",
+                       $"{description}4")
             )
           )
           .To<ArticlesController>(c => c.Create(new()
           {
               ArticleJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4)
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4"
               }
           }))
           .Which(controller => controller
@@ -910,9 +909,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 4,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today)),
                   Published = false
               }
@@ -944,18 +943,18 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/articles/create")
                .WithJsonBody(
                       string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                          $"{title}1",
+                          $"{slug}1",
+                          $"{description}4")
                )
              )
              .To<ArticlesController>(c => c.Create(new()
              {
                  ArticleJson = new()
                  {
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
-                     Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
-                     Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4)
+                     Title = $"{title}1",
+                     Slug = $"{slug}1",
+                     Description = $"{description}4"
                  }
              }))
              .Which(controller => controller
@@ -1002,18 +1001,18 @@ namespace BlogAngular.Test.Routing
               .WithLocation("api/v1.0/articles/create")
               .WithJsonBody(
                      string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab"))
+                         $"{ValidMaxxTitleLength}ab",
+                         $"{ValidMaxxTitleLength}ab",
+                         $"{ValidMaxxDescriptionLength}ab")
               )
             )
             .To<ArticlesController>(c => c.Create(new()
             {
                 ArticleJson = new()
                 {
-                    Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                    Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                    Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab")
+                    Title = $"{ValidMaxxTitleLength}ab",
+                    Slug = $"{ValidMaxxTitleLength}ab",
+                    Description = $"{ValidMaxxDescriptionLength}ab"
                 }
             }))
             .Which(controller => controller
@@ -1117,9 +1116,9 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/articles/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}"", ""published"": ""{3}""}}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                       $"{title}4",
+                       $"{slug}4",
+                       $"{description}4",
                        true)
             )
           )
@@ -1127,9 +1126,9 @@ namespace BlogAngular.Test.Routing
           {
               ArticleJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   Published = true
               }
           }))
@@ -1155,9 +1154,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
                   Published = true
               }
@@ -1186,18 +1185,18 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/articles/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                       $"{title}4",
+                       $"{slug}4",
+                       $"{description}4")
             )
           )
           .To<ArticlesController>(c => c.Edit(2, new()
           {
               ArticleJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
               }
           }))
           .Which(controller => controller
@@ -1222,9 +1221,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
                   Published = false
               }
@@ -1253,18 +1252,18 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/articles/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
-                       string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                       $"{title}2",
+                       $"{slug}2",
+                       $"{description}4")
             )
           )
           .To<ArticlesController>(c => c.Edit(2, new()
           {
               ArticleJson = new()
               {
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}2",
+                  Slug = $"{slug}2",
+                  Description = $"{description}4"
               }
           }))
           .Which(controller => controller
@@ -1289,9 +1288,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 2,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 2),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 2),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}2",
+                  Slug = $"{slug}2",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(2))),
                   Published = false
               }
@@ -1323,18 +1322,18 @@ namespace BlogAngular.Test.Routing
                      .WithLocation("api/v1.0/articles/edit/2")
                      .WithJsonBody(
                             string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                                string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
-                                string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
-                                string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                                $"{title}1",
+                                $"{slug}1",
+                                $"{description}4")
                      )
                    )
                    .To<ArticlesController>(c => c.Edit(2, new()
                    {
                        ArticleJson = new()
                        {
-                           Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 1),
-                           Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 1),
-                           Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                           Title = $"{title}1",
+                           Slug = $"{slug}1",
+                           Description = $"{description}4"
                        }
                    }))
                    .Which(controller => controller
@@ -1381,18 +1380,18 @@ namespace BlogAngular.Test.Routing
               .WithLocation("api/v1.0/articles/edit/2")
               .WithJsonBody(
                      string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab"))
+                         $"{ValidMaxxTitleLength}ab",
+                         $"{ValidMaxxTitleLength}ab",
+                         $"{ValidMaxxDescriptionLength}ab")
               )
             )
             .To<ArticlesController>(c => c.Edit(2, new()
             {
                 ArticleJson = new()
                 {
-                    Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                    Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxTitleLength, "ab"),
-                    Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", ValidMaxxDescriptionLength, "ab")
+                    Title = $"{ValidMaxxTitleLength}ab",
+                    Slug = $"{ValidMaxxTitleLength}ab",
+                    Description = $"{ValidMaxxDescriptionLength}ab"
                 }
             }))
             .Which(controller => controller
@@ -1498,18 +1497,18 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/articles/edit/5")
                .WithJsonBody(
                       string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                          string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4))
+                          $"{title}4",
+                          $"{slug}4",
+                          $"{description}4")
                )
              )
              .To<ArticlesController>(c => c.Edit(5, new()
              {
                  ArticleJson = new()
                  {
-                     Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                     Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                     Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                     Title = $"{title}4",
+                     Slug = $"{slug}4",
+                     Description = $"{description}4"
                  }
              }))
              .Which(controller => controller
@@ -1575,9 +1574,9 @@ namespace BlogAngular.Test.Routing
               ArticleJson = new()
               {
                   Id = 4,
-                  Title = string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, 4),
-                  Slug = string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, 4),
-                  Description = string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, 4),
+                  Title = $"{title}4",
+                  Slug = $"{slug}4",
+                  Description = $"{description}4",
                   CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(4))),
                   TagList = Enumerable
                              .Range(1, 3)
@@ -1749,7 +1748,7 @@ namespace BlogAngular.Test.Routing
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}",  ValidMinPasswordLength),
+            $"U!{ValidMinPasswordLength}",  
 
             ValidMinNameLength,
 
@@ -1764,7 +1763,7 @@ namespace BlogAngular.Test.Routing
             //Must be valid email address
             $"{ValidMaxEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            string.Format(CultureInfo.InvariantCulture, "U!{0}", ValidMaxPasswordLength),
+            $"U!{ValidMaxPasswordLength}",
 
             ValidMaxxNameLength,
 

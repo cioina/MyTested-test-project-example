@@ -14,7 +14,6 @@ using Microsoft.IdentityModel.Tokens;
 using MyTested.AspNetCore.Mvc.Internal.Services;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Security.Claims;
 using System.Text;
@@ -171,7 +170,7 @@ namespace BlogAngular.Test.Data
             Thread workerThread = new(workerObject.DoWork);
             workerThread.Start();
             _waitHandle.WaitOne();
-            var result = CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddSeconds(1), AdministratorRoleName, "0.0.0.1");
+            var result = CreateJwtBearer($"{email}{i}", Guid.NewGuid().ToString(), DateTime.UtcNow.AddSeconds(1), AdministratorRoleName, "0.0.0.1");
             workerObject.RequestStop();
 
             return result;
@@ -181,7 +180,7 @@ namespace BlogAngular.Test.Data
             string email,
             int i)
         {
-            return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
+            return CreateJwtBearer($"{email}{i}", Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
         }
 
         public static string GetJwtBearerAdministratorRole(
@@ -219,7 +218,7 @@ namespace BlogAngular.Test.Data
                 .GetSection(nameof(ApplicationSettings))
                 .GetValue<string>(nameof(ApplicationSettings.ExperimentalIpAddress))!;
 
-            return CreateJwtBearer(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i), secret, expires ?? DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
+            return CreateJwtBearer($"{email}{i}", secret, expires ?? DateTime.UtcNow.AddMinutes(expiresInMinutes), role, ipAddress ?? ip);
         }
 
         private static string CreateJwtBearer(
@@ -258,7 +257,7 @@ namespace BlogAngular.Test.Data
             JsonWebTokenHandler jwtSecurityTokenHandler = new();
             var token = jwtSecurityTokenHandler.CreateToken(tokenDescriptor);
 
-            return string.Format(CultureInfo.InvariantCulture, "{0} {1}", JwtBearerDefaults.AuthenticationScheme, token);
+            return $"{JwtBearerDefaults.AuthenticationScheme} {token}";
         }
 
         public static IEnumerable<object> GetUsers(
@@ -274,11 +273,11 @@ namespace BlogAngular.Test.Data
                 .Select(i =>
                 {
                     var user = new User(
-                             string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i),
-                             string.Format(CultureInfo.InvariantCulture, "{0}{1}", userName, i)
+                             $"{email}{i}",
+                             $"{userName}{i}"
                          );
 
-                    userManager.AddPasswordAsync(user, string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, i));
+                    userManager.AddPasswordAsync(user, $"{password}{i}");
 
                     return user;
 
@@ -294,7 +293,7 @@ namespace BlogAngular.Test.Data
                  .Select(i =>
                  {
                      return new Tag(
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", name, i)
+                         $"{name}{i}"
                      );
                  }).ToList();
         }
@@ -330,9 +329,9 @@ namespace BlogAngular.Test.Data
                  .Select(i =>
                  {
                      return new Article(
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
+                         $"{title}{i}",
+                         $"{slug}{i}",
+                         $"{description}{i}",
                          date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                          published
 
@@ -361,11 +360,11 @@ namespace BlogAngular.Test.Data
                  .Select(i =>
                  {
                      var user = new User(
-                              string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i),
-                              string.Format(CultureInfo.InvariantCulture, "{0}{1}", userName, i)
+                              $"{email}{i}",
+                              $"{userName}{i}"
                           );
 
-                     userManager.AddPasswordAsync(user!, string.Format(CultureInfo.InvariantCulture, "{0}{1}", password, i));
+                     userManager.AddPasswordAsync(user!, $"{password}{i}");
 
                      return user;
 
@@ -386,7 +385,7 @@ namespace BlogAngular.Test.Data
              .Range(1, count)
              .Select(async i =>
              {
-                 var user = await userManager.FindByEmailAsync(string.Format(CultureInfo.InvariantCulture, "{0}{1}", email, i));
+                 var user = await userManager.FindByEmailAsync($"{email}{i}");
                  await userManager.AddToRoleAsync(user!, AdministratorRoleName);
 
                  return user;
@@ -416,9 +415,9 @@ namespace BlogAngular.Test.Data
                  .Select(i =>
                  {
                      return new Article(
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", title, i),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", slug, i),
-                         string.Format(CultureInfo.InvariantCulture, "{0}{1}", description, i),
+                         $"{title}{i}",
+                         $"{slug}{i}",
+                         $"{description}{i}",
                          date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                          published
 
