@@ -58,6 +58,8 @@ namespace BlogAngular.Web.Middleware
                 else if (exception.Source == "Microsoft.EntityFrameworkCore.Relational" &&
                     error == "An error occurred while saving the entity changes. See the inner exception for details.")
                 {
+                    //Example of exception.InnerException!.Message. Please see https://github.com/cioina/angular-test-example/blob/main/version-2/article-listing.component.spec.ts
+                    //Cannot insert duplicate key row in object 'dbo.Articles' with unique index 'IX_Articles_Slug'. The duplicate key value is (dotnet-core-testing).
                     error = exception.InnerException!.Message;
                     code = HttpStatusCode.UnprocessableEntity;
                 }

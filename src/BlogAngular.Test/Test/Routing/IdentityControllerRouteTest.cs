@@ -33,6 +33,10 @@ action itself, or you must set the request properties so that they will pass thr
         public const string DifferenceException =
     @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 
 the value was different. Difference occurs at '{2}'.";
+        //In real life returns 422 Queried object tag was not found, Key: 0
+        public const string DifferenceFormatException =
+    @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 
+the value was different - {2}.";
         //In real life returns 404
         public const string RouteCouldNotBeMachedException =
     @"Expected route '{0}' to match {1} action in {2} but action could not be matched.";

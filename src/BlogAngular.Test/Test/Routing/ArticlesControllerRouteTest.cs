@@ -1748,7 +1748,7 @@ namespace BlogAngular.Test.Routing
             //Must be valid email address
             $"{ValidMinEmailLength}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",  
+            $"U!{ValidMinPasswordLength}",
 
             ValidMinNameLength,
 

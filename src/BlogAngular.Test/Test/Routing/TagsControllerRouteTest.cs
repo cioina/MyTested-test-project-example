@@ -654,6 +654,55 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "NotFoundException", "tag", 5));
 
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Edit_tag_with_incorrecr_id_format_should_fail(
+        string fullName,
+        string email,
+        string password,
+        string name,
+        string title,
+        string slug,
+        string description)
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+            MyMvc
+             .Pipeline()
+             .ShouldMap(request => request
+               .WithMethod(HttpMethod.Put)
+               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+               .WithLocation("api/v1.0/tags/edit/a")
+               .WithJsonBody(
+                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                          $"{name}4")
+               )
+             )
+             .To<TagsController>(c => c.Edit(5, new()
+             {
+                 TagJson = new()
+                 {
+                     Title = $"{name}4"
+                 }
+             }))
+             .Which(controller => controller
+               .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                      email,
+                      fullName,
+                      password,
+                      name,
+                      title,
+                      slug,
+                      description,
+                      DateOnly.FromDateTime(DateTime.Today),
+                      false)))
+             .ShouldHave()
+             .ActionAttributes(attrs => attrs
+                  .RestrictingForHttpMethod(HttpMethod.Put)
+                  .RestrictingForAuthorizedRequests())
+             .AndAlso()
+             .ShouldReturn();
+        }, string.Format(DifferenceFormatException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/edit/a", "id", "a"));
 
         [Theory]
         [MemberData(nameof(ValidData))]
