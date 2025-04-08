@@ -19,25 +19,30 @@ namespace BlogAngular.Test.Routing
 {
     public class ControllerExceptionMessages
     {
-        //In real life returns 401
+        //In browser, it returns 401
         public const string HeaderAuthorizationException =
     @"Expected route '{0}' to match {1} action in {2} but action could not be invoked because 
 of the declared filters - ApiControllerAttribute (Controller), AuthorizeFilter (Action), 
 UnsupportedContentTypeFilter (Global). Either a filter is setting the response result before the 
 action itself, or you must set the request properties so that they will pass through the pipeline.";
-        //In real life returns 422
+        //In browser, it returns 422 Queried object tag was not found, Key: 5
         public const string FromNotFoundException =
     @"When calling {0} action in {1} expected no exception but AggregateException (containing 
 {2} with 'Queried object {3} was not found, Key: {4}' message) was thrown without being caught.";
-        //In real life returns 422
+        //In browser, it returns 422
         public const string DifferenceException =
     @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 
 the value was different. Difference occurs at '{2}'.";
-        //In real life returns 422 Queried object tag was not found, Key: 0
+        //In browser, it returns 422
+        public const string DifferenceExtendedException =
+    @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 
+the value was different. Difference occurs at '{2}'. 
+Expected a value of '{3}', but in fact it was '{4}'.";
+        //In browser, it returns 422 Queried object tag was not found, Key: 0
         public const string DifferenceFormatException =
     @"Expected route '{0}' to contain route value with '{1}' key and the provided value but 
 the value was different - {2}.";
-        //In real life returns 404
+        //In browser, it returns 404
         public const string RouteCouldNotBeMachedException =
     @"Expected route '{0}' to match {1} action in {2} but action could not be matched.";
     }
@@ -65,26 +70,26 @@ the value was different - {2}.";
          () =>
          {
              MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-                .WithMethod(HttpMethod.Put)
-                // without WithHeaderAuthorization
-                .WithLocation("api/v1.0/identity/update")
-                .WithJsonBody(
-                     string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                         $"{password}1",
-                         $"{fullName}1"
-                     )
-                )
-            )
-            .To<IdentityController>(c => c.Update(new UserUpdateCommand
-            {
-                UserJson = new()
-                {
-                    FullName = $"{fullName}1",
-                    Password = $"{password}1"
-                }
-            }));
+             .Pipeline()
+             .ShouldMap(request => request
+                 .WithMethod(HttpMethod.Put)
+                 // without WithHeaderAuthorization
+                 .WithLocation("api/v1.0/identity/update")
+                 .WithJsonBody(
+                      string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
+                          $"{password}1",
+                          $"{fullName}1"
+                      )
+                 )
+             )
+             .To<IdentityController>(c => c.Update(new UserUpdateCommand
+             {
+                 UserJson = new()
+                 {
+                     FullName = $"{fullName}1",
+                     Password = $"{password}1"
+                 }
+             }));
 
          }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/update", "Update", "IdentityController"));
 
@@ -715,7 +720,7 @@ the value was different - {2}.";
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
-        //TODO: Not tested in real life
+        //TODO: Test this in browser
         public void Update_user_with_malformated_data_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
@@ -749,7 +754,7 @@ the value was different - {2}.";
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
-        //In real life returns 404
+        //In browser, it returns 404
         public void Update_user_with_incorrect_route_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
@@ -758,8 +763,7 @@ the value was different - {2}.";
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string password
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-            )
-
+         )
          => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
          () =>
          {
@@ -1245,7 +1249,7 @@ the value was different - {2}.";
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
-        //In real life returns 422 with a validation error: userJson.Email 'User Json Email' must not be empty.
+        //In browser, it returns 422 with a validation error: userJson.Email 'User Json Email' must not be empty.
         public void Login_user_with_malformated_data_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
@@ -1253,28 +1257,28 @@ the value was different - {2}.";
          string email,
          string password)
          => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-            () =>
-            {
-                MyMvc
-                  .Pipeline()
-                  .ShouldMap(request => request
-                    .WithMethod(HttpMethod.Post)
-                    .WithLocation("api/v1.0/identity/login")
-                    .WithJsonBody(
-                        string.Format(@"{{""user"":{{""em"":""{0}"",""pass"":""{1}""}}}}",
-                            $"{email}1",
-                            $"{password}1"
-                        ))
-                  )
-                  .To<IdentityController>(c => c.Login(new UserLoginCommand
-                  {
-                      UserJson = new()
-                      {
-                          Email = $"{email}1",
-                          Password = $"{password}1"
-                      }
-                  }));
-            }, string.Format(DifferenceException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/login", "command", "UserLoginCommand.UserJson.Email"));
+         () =>
+         {
+             MyMvc
+               .Pipeline()
+               .ShouldMap(request => request
+                 .WithMethod(HttpMethod.Post)
+                 .WithLocation("api/v1.0/identity/login")
+                 .WithJsonBody(
+                     string.Format(@"{{""user"":{{""em"":""{0}"",""pass"":""{1}""}}}}",
+                         $"{email}1",
+                         $"{password}1"
+                     ))
+               )
+               .To<IdentityController>(c => c.Login(new UserLoginCommand
+               {
+                   UserJson = new()
+                   {
+                       Email = $"{email}1",
+                       Password = $"{password}1"
+                   }
+               }));
+         }, string.Format(DifferenceException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/login", "command", "UserLoginCommand.UserJson.Email"));
 
         [Theory]
         [InlineData("ValidUserName", "e@", "p")]

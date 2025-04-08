@@ -46,7 +46,76 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => MyMvc
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/create")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}4")
+          )
+        )
+        .To<TagsController>(c => c.Create(new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}4"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(db => db
+            .WithEntities(entities => StaticTestData.GetArticlesTagsUsersWithRole(
+               count: 3,
+
+               email: email,
+               userName: fullName,
+               password: password,
+
+               name: name,
+
+               title: title,
+               slug: slug,
+               description: description,
+               date: DateOnly.FromDateTime(DateTime.Today),
+               published: false,
+
+               dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Post)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 4,
+                Title = $"{name}4"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void EXPERIMENTAL_Create_tag_with_deleted_role_should_fail(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
           .Pipeline()
           .ShouldMap(request => request
             .WithMethod(HttpMethod.Post)
@@ -65,95 +134,26 @@ namespace BlogAngular.Test.Routing
               }
           }))
           .Which(controller => controller
-            .WithData(db => db
-              .WithEntities(entities => StaticTestData.GetArticlesTagsUsersWithRole(
-                 count: 3,
-
-                 email: email,
-                 userName: fullName,
-                 password: password,
-
-                 name: name,
-
-                 title: title,
-                 slug: slug,
-                 description: description,
-                 date: DateOnly.FromDateTime(DateTime.Today),
-                 published: false,
-
-                 dbContext: entities))))
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
           .ShouldHave()
           .ActionAttributes(attrs => attrs
                .RestrictingForHttpMethod(HttpMethod.Post)
                .RestrictingForAuthorizedRequests())
           .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new TagResponseEnvelope
-          {
-              TagJson = new()
-              {
-                  Id = 4,
-                  Title = $"{name}4"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void EXPERIMENTAL_Create_tag_with_deleted_role_should_fail(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Post)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/create")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{name}4")
-               )
-             )
-             .To<TagsController>(c => c.Create(new()
-             {
-                 TagJson = new()
-                 {
-                     Title = $"{name}4"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Post)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
+          .ShouldReturn();
         }, new Dictionary<string, string[]>
-         {
+        {
          { "is_in_role_error", new[] { "Cannot find role Administrator" } },
-         });
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -165,48 +165,48 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-         () =>
-         {
-             MyMvc
-                  .Pipeline()
-                  .ShouldMap(request => request
-                    .WithMethod(HttpMethod.Post)
-                    .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 4))
-                    .WithLocation("api/v1.0/tags/create")
-                    .WithJsonBody(
-                           string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                               $"{name}4")
-                    )
-                  )
-                  .To<TagsController>(c => c.Create(new()
-                  {
-                      TagJson = new()
-                      {
-                          Title = $"{name}4"
-                      }
-                  }))
-                  .Which(controller => controller
-                    .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                           email,
-                           fullName,
-                           password,
-                           name,
-                           title,
-                           slug,
-                           description,
-                           DateOnly.FromDateTime(DateTime.Today),
-                           false)))
-                  .ShouldHave()
-                  .ActionAttributes(attrs => attrs
-                       .RestrictingForHttpMethod(HttpMethod.Post)
-                       .RestrictingForAuthorizedRequests())
-                  .AndAlso()
-                  .ShouldReturn();
-         }, new Dictionary<string, string[]>
-         {
-             { "user_error", new[] { "Cannot find user by Id." } },
-         });
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 4))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}4")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
+              {
+                  Title = $"{name}4"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Post)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+            { "user_error", new[] { "Cannot find user by Id." } },
+        });
 
         //    [Theory]
         //    [MemberData(nameof(ValidData))]
@@ -266,30 +266,28 @@ namespace BlogAngular.Test.Routing
         string description
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
-         => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-         () =>
-         {
-             MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Post)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, "SomeRole", null))
-                .WithLocation("api/v1.0/tags/create")
-                .WithJsonBody(
-                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           $"{name}4")
-                )
-              )
-              .To<TagsController>(c => c.Create(new()
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, "SomeRole", null))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}4")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
               {
-                  TagJson = new()
-                  {
-                      Title = $"{name}4"
-                  }
-              }));
-
-         }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/create", "Create", "TagsController"));
-
+                  Title = $"{name}4"
+              }
+          }));
+        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/create", "Create", "TagsController"));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -308,30 +306,28 @@ namespace BlogAngular.Test.Routing
         string description
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
-         => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-         () =>
-         {
-             MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Post)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, "", null))
-                .WithLocation("api/v1.0/tags/create")
-                .WithJsonBody(
-                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           $"{name}4")
-                )
-              )
-              .To<TagsController>(c => c.Create(new()
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, "", null))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}4")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
               {
-                  TagJson = new()
-                  {
-                      Title = $"{name}4"
-                  }
-              }));
-
-         }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/create", "Create", "TagsController"));
-
+                  Title = $"{name}4"
+              }
+          }));
+        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/create", "Create", "TagsController"));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -346,45 +342,45 @@ namespace BlogAngular.Test.Routing
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
         () =>
         {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Post)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/create")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          "a")
-               )
-             )
-             .To<TagsController>(c => c.Create(new()
-             {
-                 TagJson = new()
-                 {
-                     Title = "a"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Post)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       "a")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
+              {
+                  Title = "a"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Post)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
         }, new Dictionary<string, string[]>
-         {
+        {
          { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters." } },
-         });
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -399,44 +395,44 @@ namespace BlogAngular.Test.Routing
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
         () =>
         {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Post)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/create")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{ValidMaxxNameLength}ab")
-               )
-             )
-             .To<TagsController>(c => c.Create(new()
-             {
-                 TagJson = new()
-                 {
-                     Title = $"{ValidMaxxNameLength}ab"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Post)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{ValidMaxxNameLength}ab")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
+              {
+                  Title = $"{ValidMaxxNameLength}ab"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Post)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-        { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
+         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
         });
 
         [Theory]
@@ -449,7 +445,69 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => MyMvc
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Put)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/edit/2")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}4")
+          )
+        )
+        .To<TagsController>(c => c.Edit(2, new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}4"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Put)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 2,
+                Title = $"{name}4"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Edit_tag_with_one_char_should_return_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
           .Pipeline()
           .ShouldMap(request => request
             .WithMethod(HttpMethod.Put)
@@ -457,10 +515,116 @@ namespace BlogAngular.Test.Routing
             .WithLocation("api/v1.0/tags/edit/2")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       $"{name}4")
+                       "a")
             )
           )
           .To<TagsController>(c => c.Edit(2, new()
+          {
+              TagJson = new()
+              {
+                  Title = "a"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Put)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters." } },
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Edit_tag_with_max_chars_should_return_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Put)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/edit/2")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{ValidMaxxNameLength}ab")
+            )
+          )
+          .To<TagsController>(c => c.Edit(2, new()
+          {
+              TagJson = new()
+              {
+                  Title = $"{ValidMaxxNameLength}ab"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Put)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Edit_tag_with_wrong_id_should_fail(
+        string fullName,
+        string email,
+        string password,
+        string name,
+        string title,
+        string slug,
+        string description)
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.InvocationAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Put)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/edit/5")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}4")
+            )
+          )
+          .To<TagsController>(c => c.Edit(5, new()
           {
               TagJson = new()
               {
@@ -483,175 +647,7 @@ namespace BlogAngular.Test.Routing
                .RestrictingForHttpMethod(HttpMethod.Put)
                .RestrictingForAuthorizedRequests())
           .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new TagResponseEnvelope
-          {
-              TagJson = new()
-              {
-                  Id = 2,
-                  Title = $"{name}4"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_one_char_should_return_validation_error(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Put)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/edit/2")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          "a")
-               )
-             )
-             .To<TagsController>(c => c.Edit(2, new()
-             {
-                 TagJson = new()
-                 {
-                     Title = "a"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Put)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
-        }, new Dictionary<string, string[]>
-         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters." } },
-         });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_max_chars_should_return_validation_error(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-         () =>
-         {
-             MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Put)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                .WithLocation("api/v1.0/tags/edit/2")
-                .WithJsonBody(
-                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           $"{ValidMaxxNameLength}ab")
-                )
-              )
-              .To<TagsController>(c => c.Edit(2, new()
-              {
-                  TagJson = new()
-                  {
-                      Title = $"{ValidMaxxNameLength}ab"
-                  }
-              }))
-              .Which(controller => controller
-                .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                       email,
-                       fullName,
-                       password,
-                       name,
-                       title,
-                       slug,
-                       description,
-                       DateOnly.FromDateTime(DateTime.Today),
-                       false)))
-              .ShouldHave()
-              .ActionAttributes(attrs => attrs
-                   .RestrictingForHttpMethod(HttpMethod.Put)
-                   .RestrictingForAuthorizedRequests())
-              .AndAlso()
-              .ShouldReturn();
-         }, new Dictionary<string, string[]>
-         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
-         });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_wrong_id_should_fail(
-        string fullName,
-        string email,
-        string password,
-        string name,
-        string title,
-        string slug,
-        string description)
-        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.InvocationAssertionException>(
-        () =>
-        {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Put)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/edit/5")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{name}4")
-               )
-             )
-             .To<TagsController>(c => c.Edit(5, new()
-             {
-                 TagJson = new()
-                 {
-                     Title = $"{name}4"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Put)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
+          .ShouldReturn();
         }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Edit", "TagsController", "NotFoundException", "tag", 5));
 
         [Theory]
@@ -667,69 +663,22 @@ namespace BlogAngular.Test.Routing
         => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
         () =>
         {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Put)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/edit/a")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{name}4")
-               )
-             )
-             .To<TagsController>(c => c.Edit(5, new()
-             {
-                 TagJson = new()
-                 {
-                     Title = $"{name}4"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Put)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
-        }, string.Format(DifferenceFormatException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/edit/a", "id", "a"));
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Edit_same_tag_with_same_name_should_return_success_with_data(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-         => MyMvc
+         MyMvc
           .Pipeline()
           .ShouldMap(request => request
             .WithMethod(HttpMethod.Put)
             .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-            .WithLocation("api/v1.0/tags/edit/2")
+            .WithLocation("api/v1.0/tags/edit/a")
             .WithJsonBody(
                    string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       $"{name}2")
+                       $"{name}4")
             )
           )
-          .To<TagsController>(c => c.Edit(2, new()
+          .To<TagsController>(c => c.Edit(5, new()
           {
               TagJson = new()
               {
-                  Title = $"{name}2"
+                  Title = $"{name}4"
               }
           }))
           .Which(controller => controller
@@ -748,20 +697,67 @@ namespace BlogAngular.Test.Routing
                .RestrictingForHttpMethod(HttpMethod.Put)
                .RestrictingForAuthorizedRequests())
           .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new TagResponseEnvelope
-          {
-              TagJson = new()
-              {
-                  Id = 2,
-                  Title = $"{name}2"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
+          .ShouldReturn();
+        }, string.Format(DifferenceFormatException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/edit/a", "id", "a"));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Edit_same_tag_with_same_name_should_return_success_with_data(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Put)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/edit/2")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}2")
+          )
+        )
+        .To<TagsController>(c => c.Edit(2, new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}2"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Put)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 2,
+                Title = $"{name}2"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -773,49 +769,48 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-         () =>
-         {
-             MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Put)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                .WithLocation("api/v1.0/tags/edit/2")
-                .WithJsonBody(
-                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           $"{name}1")
-                )
-              )
-              .To<TagsController>(c => c.Edit(2, new()
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Put)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/edit/2")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}1")
+            )
+          )
+          .To<TagsController>(c => c.Edit(2, new()
+          {
+              TagJson = new()
               {
-                  TagJson = new()
-                  {
-                      Title = $"{name}1"
-                  }
-              }))
-              .Which(controller => controller
-                .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                       email,
-                       fullName,
-                       password,
-                       name,
-                       title,
-                       slug,
-                       description,
-                       DateOnly.FromDateTime(DateTime.Today),
-                       false)))
-              .ShouldHave()
-              .ActionAttributes(attrs => attrs
-                   .RestrictingForHttpMethod(HttpMethod.Put)
-                   .RestrictingForAuthorizedRequests())
-              .AndAlso()
-              .ShouldReturn();
-         }, new Dictionary<string, string[]>
-         {
+                  Title = $"{name}1"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Put)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
          { "TagJson.Title", new[] { "'Tag Json Title' must be unique." } },
-         });
-
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -827,49 +822,48 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-         () =>
-         {
-             MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Post)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                .WithLocation("api/v1.0/tags/create")
-                .WithJsonBody(
-                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                           $"{name}1")
-                )
-              )
-              .To<TagsController>(c => c.Create(new()
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+         MyMvc
+          .Pipeline()
+          .ShouldMap(request => request
+            .WithMethod(HttpMethod.Post)
+            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+            .WithLocation("api/v1.0/tags/create")
+            .WithJsonBody(
+                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                       $"{name}1")
+            )
+          )
+          .To<TagsController>(c => c.Create(new()
+          {
+              TagJson = new()
               {
-                  TagJson = new()
-                  {
-                      Title = $"{name}1"
-                  }
-              }))
-              .Which(controller => controller
-                .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                       email,
-                       fullName,
-                       password,
-                       name,
-                       title,
-                       slug,
-                       description,
-                       DateOnly.FromDateTime(DateTime.Today),
-                       false)))
-              .ShouldHave()
-              .ActionAttributes(attrs => attrs
-                   .RestrictingForHttpMethod(HttpMethod.Post)
-                   .RestrictingForAuthorizedRequests())
-              .AndAlso()
-              .ShouldReturn();
-         }, new Dictionary<string, string[]>
-         {
-         { "TagJson.Title", new[] { "'Tag Json Title' must be unique." } },
-         });
-
+                  Title = $"{name}1"
+              }
+          }))
+          .Which(controller => controller
+            .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                   email,
+                   fullName,
+                   password,
+                   name,
+                   title,
+                   slug,
+                   description,
+                   DateOnly.FromDateTime(DateTime.Today),
+                   false)))
+          .ShouldHave()
+          .ActionAttributes(attrs => attrs
+               .RestrictingForHttpMethod(HttpMethod.Post)
+               .RestrictingForAuthorizedRequests())
+          .AndAlso()
+          .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+          { "TagJson.Title", new[] { "'Tag Json Title' must be unique." } },
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -881,40 +875,40 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => MyMvc
-          .Pipeline()
-          .ShouldMap(request => request
-            .WithMethod(HttpMethod.Delete)
-            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-            .WithLocation("api/v1.0/tags/delete/2")
-          )
-          .To<TagsController>(c => c.Delete(new()
-          {
-              Id = 2,
-          }))
-          .Which(controller => controller
-            .WithData(StaticTestData.GetArticlesTagsUsers(5,
-                   email,
-                   fullName,
-                   password,
-                   name,
-                   title,
-                   slug,
-                   description,
-                   DateOnly.FromDateTime(DateTime.Today),
-                   false)))
-          .ShouldHave()
-          .ActionAttributes(attrs => attrs
-               .RestrictingForHttpMethod(HttpMethod.Delete)
-               .RestrictingForAuthorizedRequests())
-          .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(2))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Delete)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/delete/2")
+        )
+        .To<TagsController>(c => c.Delete(new()
+        {
+            Id = 2,
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Delete)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(2))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -926,40 +920,72 @@ namespace BlogAngular.Test.Routing
          string title,
          string slug,
          string description)
-         => MyMvc
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Delete)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/delete/20")
+        )
+        .To<TagsController>(c => c.Delete(new()
+        {
+            Id = 20,
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Delete)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(-1))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        //TODO: Test this in browser
+        public void Delete_non_existing_format_tag_should_fail(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string email,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+        )
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+         MyMvc
           .Pipeline()
           .ShouldMap(request => request
             .WithMethod(HttpMethod.Delete)
             .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-            .WithLocation("api/v1.0/tags/delete/20")
+            .WithLocation("api/v1.0/tags/delete/a")
           )
           .To<TagsController>(c => c.Delete(new()
           {
-              Id = 20,
-          }))
-          .Which(controller => controller
-            .WithData(StaticTestData.GetArticlesTagsUsers(5,
-                   email,
-                   fullName,
-                   password,
-                   name,
-                   title,
-                   slug,
-                   description,
-                   DateOnly.FromDateTime(DateTime.Today),
-                   false)))
-          .ShouldHave()
-          .ActionAttributes(attrs => attrs
-               .RestrictingForHttpMethod(HttpMethod.Delete)
-               .RestrictingForAuthorizedRequests())
-          .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(-1))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
+              Id = 1,
+          }));
+        }, string.Format(DifferenceExtendedException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/delete/a", "command", "TagDeleteCommand.Id", "1", "0"));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -977,38 +1003,38 @@ namespace BlogAngular.Test.Routing
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
          => MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-               .WithMethod(HttpMethod.Get)
-               .WithLocation($"api/v1.0/tags?Limit={4}&Offset={0}")
-               .WithFormFields(new
-               {
-                   Limit = 4,
-                   Offset = 0
-               })
-            )
-            .To<TagsController>(c => c.Tags(new TagsQuery
-            {
-                Limit = 4,
-                Offset = 0
-            }))
-            .Which(controller => controller
-                .WithData(StaticTestData.GetTags(5, name)))
-            .ShouldReturn()
-            .ActionResult(result => result.Result(new TagsResponseEnvelope
-            {
-                Total = 5,
-                Models = Enumerable
-                  .Range(1, 4)
-                  .Select(i =>
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithLocation($"api/v1.0/tags?Limit={4}&Offset={0}")
+           .WithFormFields(new
+           {
+               Limit = 4,
+               Offset = 0
+           })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery
+        {
+            Limit = 4,
+            Offset = 0
+        }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 5,
+            Models = Enumerable
+              .Range(1, 4)
+              .Select(i =>
+              {
+                  return new TagResponseModel
                   {
-                      return new TagResponseModel
-                      {
-                          Id = i,
-                          Title = $"{name}{i}"
-                      };
-                  }).ToList(),
-            }));
+                      Id = i,
+                      Title = $"{name}{i}"
+                  };
+              }).ToList(),
+        }));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -1026,30 +1052,30 @@ namespace BlogAngular.Test.Routing
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
          => MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-               .WithMethod(HttpMethod.Get)
-               .WithLocation("api/v1.0/tags")
-               .WithFormFields(new { })
-            )
-            .To<TagsController>(c => c.Tags(new TagsQuery { }))
-            .Which(controller => controller
-                .WithData(StaticTestData.GetTags(5, name)))
-            .ShouldReturn()
-            .ActionResult(result => result.Result(new TagsResponseEnvelope
-            {
-                Total = 5,
-                Models = Enumerable
-              .Range(1, 5)
-              .Select(i =>
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithLocation("api/v1.0/tags")
+           .WithFormFields(new { })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery { }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 5,
+            Models = Enumerable
+          .Range(1, 5)
+          .Select(i =>
+          {
+              return new TagResponseModel
               {
-                  return new TagResponseModel
-                  {
-                      Id = i,
-                      Title = $"{name}{i}"
-                  };
-              }).ToList(),
-            }));
+                  Id = i,
+                  Title = $"{name}{i}"
+              };
+          }).ToList(),
+        }));
 
         [Theory]
         [MemberData(nameof(ValidData))]

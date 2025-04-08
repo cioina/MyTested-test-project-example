@@ -9,12 +9,9 @@ using System.Threading.Tasks;
 
 namespace BlogAngular.Web.Middleware
 {
-    public class ValidationExceptionHandlerMiddleware
+    public class ValidationExceptionHandlerMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate next;
-
-        public ValidationExceptionHandlerMiddleware(RequestDelegate next)
-            => this.next = next;
+        private readonly RequestDelegate next = next;
 
         public async Task InvokeAsync(HttpContext context)
         {
@@ -65,7 +62,7 @@ namespace BlogAngular.Web.Middleware
                 }
 
                 result = SerializeObject(
-                    new ErrorListResult(exception.GetType().Name, new[] { error })
+                    new ErrorListResult(exception.GetType().Name, [error])
                     );
             }
 
