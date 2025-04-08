@@ -957,7 +957,7 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        //TODO: Test this in browser
+        //In browser, it returns success with -1
         public void Delete_non_existing_format_tag_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
