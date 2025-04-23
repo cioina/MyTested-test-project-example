@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using BlogAngular.Application.Blog.Common;
+﻿using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Commands.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Test.Data;
@@ -152,7 +151,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "is_in_role_error", new[] { "Cannot find role Administrator" } },
+         { "is_in_role_error", ["Cannot find role Administrator"] },
         });
 
         [Theory]
@@ -205,7 +204,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "user_error", new[] { "Cannot find user by Id." } },
+            { "user_error", ["Cannot find user by Id."] },
         });
 
         //    [Theory]
@@ -379,7 +378,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters." } },
+         { "TagJson.Title",  ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] } ,
         });
 
         [Theory]
@@ -432,7 +431,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
+         { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
         });
 
         [Theory]
@@ -544,7 +543,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters." } },
+         { "TagJson.Title", ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -597,7 +596,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", new[] { "The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters." } },
+         { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
         });
 
         [Theory]
@@ -809,7 +808,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", new[] { "'Tag Json Title' must be unique." } },
+         { "TagJson.Title", ["'Tag Json Title' must be unique."] },
         });
 
         [Theory]
@@ -862,7 +861,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "TagJson.Title", new[] { "'Tag Json Title' must be unique." } },
+          { "TagJson.Title", ["'Tag Json Title' must be unique."] },
         });
 
         [Theory]
@@ -1024,7 +1023,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new TagsResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
               .Range(1, 4)
               .Select(i =>
               {
@@ -1033,7 +1032,7 @@ namespace BlogAngular.Test.Routing
                       Id = i,
                       Title = $"{name}{i}"
                   };
-              }).ToList(),
+              })],
         }));
 
         [Theory]
@@ -1075,8 +1074,8 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "Limit", new[] { "'Limit' must be greater than '0'." } },
-            { "Offset", new[] { "'Offset' must be greater than '-1'." } }
+            { "Limit", ["'Limit' must be greater than '0'."] },
+            { "Offset",["'Offset' must be greater than '-1'."] }
         });
 
         [Theory]
@@ -1108,7 +1107,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new TagsResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
           .Range(1, 5)
           .Select(i =>
           {
@@ -1117,7 +1116,7 @@ namespace BlogAngular.Test.Routing
                   Id = i,
                   Title = $"{name}{i}"
               };
-          }).ToList(),
+          })],
         }));
 
         [Theory]
@@ -1150,7 +1149,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new TagsResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
               .Range(1, 5)
               .Select(i =>
               {
@@ -1159,7 +1158,7 @@ namespace BlogAngular.Test.Routing
                       Id = i,
                       Title = $"{name}{i}",
                   };
-              }).ToList(),
+              })],
         }));
 
         public static IEnumerable<object[]> ValidData()
@@ -1196,4 +1195,3 @@ namespace BlogAngular.Test.Routing
         }
     }
 }
-#endif

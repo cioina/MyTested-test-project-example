@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using BlogAngular.Application;
+﻿using BlogAngular.Application;
 using BlogAngular.Domain;
 using BlogAngular.Infrastructure;
 using NetArchTest.Rules;
@@ -48,4 +47,3 @@ namespace BlogAngular.Test.Architecture
         }
     }
 }
-#endif

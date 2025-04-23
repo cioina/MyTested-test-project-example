@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using BlogAngular.Application.Identity.Commands.Common;
+﻿using BlogAngular.Application.Identity.Commands.Common;
 using BlogAngular.Application.Identity.Commands.Login;
 using BlogAngular.Application.Identity.Commands.Register;
 using BlogAngular.Application.Identity.Commands.Update;
@@ -294,8 +293,8 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "UserJson.Password", new[] { "The length of 'User Json Password' must be at least 16 characters. You entered 1 characters." } },
-           { "UserJson.FullName", new[] { "The length of 'User Json Full Name' must be at least 2 characters. You entered 1 characters." } },
+           { "UserJson.Password", ["The length of 'User Json Password' must be at least 16 characters. You entered 1 characters."] },
+           { "UserJson.FullName", ["The length of 'User Json Full Name' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -333,7 +332,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-               { "name_error", new[] { "The user name has been taken." } }
+               { "name_error", ["The user name has been taken."] }
         });
 
 
@@ -433,7 +432,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "is_in_role_error", new[] { "Cannot find role Administrator" } }
+           { "is_in_role_error", ["Cannot find role Administrator"] }
         });
 
 
@@ -579,7 +578,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "no_data_error", new[] { "There is no data to process." } }
+           { "no_data_error", ["There is no data to process."] }
         });
 
         [Theory]
@@ -622,8 +621,8 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
-          { "PasswordDeleted", new[] { "The old password was deleted. You must provide a new password." } },
+          { "PasswordRequiresDigit", ["Password required upper and lower case letters, digits, and at least one special symbol."] },
+          { "PasswordDeleted", ["The old password was deleted. You must provide a new password."] },
         });
 
         [Theory]
@@ -666,10 +665,10 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "PasswordRequiresNonAlphanumeric", new[] { "Passwords must have at least one non alphanumeric character." } },
-          { "PasswordRequiresLower", new[] { "Passwords must have at least one lowercase ('a'-'z')." } },
-          { "PasswordRequiresUpper", new[] { "Passwords must have at least one uppercase ('A'-'Z')." } },
-          { "PasswordDeleted", new[] { "The old password was deleted. You must provide a new password." } },
+          { "PasswordRequiresNonAlphanumeric", ["Passwords must have at least one non alphanumeric character."] },
+          { "PasswordRequiresLower", ["Passwords must have at least one lowercase ('a'-'z')."] },
+          { "PasswordRequiresUpper",["Passwords must have at least one uppercase ('A'-'Z')."] },
+          { "PasswordDeleted", ["The old password was deleted. You must provide a new password."] },
         });
 
         [Theory]
@@ -712,7 +711,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
+          { "InvalidUserName", ["Username must contain letters and numbers."] },
         });
 
         [Theory]
@@ -879,7 +878,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "is_in_role_error", new[] { "Cannot find role Administrator" } }
+         { "is_in_role_error", ["Cannot find role Administrator"] }
         });
 
 
@@ -914,7 +913,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "no_data_error", new[] { "There is no data to process." } }
+            { "no_data_error", ["There is no data to process."] }
         });
 
         [Theory]
@@ -956,7 +955,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "invalid_error", new[] { "Invalid credentials." } }
+         { "invalid_error", ["Invalid credentials."] }
         });
 
         [Theory]
@@ -1039,7 +1038,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "name_error", new[] { "The user name has been taken." } },
+          { "name_error", ["The user name has been taken."] },
         });
 
         [Theory]
@@ -1077,7 +1076,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "email_error", new[] { "The email has been taken." } },
+          { "email_error", ["The email has been taken."] },
         });
 
         [Theory]
@@ -1115,7 +1114,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "InvalidUserName", new[] { "Username must contain letters and numbers." } },
+         { "InvalidUserName", ["Username must contain letters and numbers."] },
         });
 
         [Theory]
@@ -1153,7 +1152,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "PasswordRequiresDigit", new[] { "Password required upper and lower case letters, digits, and at least one special symbol." } },
+         { "PasswordRequiresDigit", ["Password required upper and lower case letters, digits, and at least one special symbol."] },
         });
 
         [Theory]
@@ -1191,11 +1190,11 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "UserJson.Password", new[] { "The length of 'User Json Password' must be at least 16 characters. You entered 1 characters." } },
-           { "UserJson.FullName", new[] { "The length of 'User Json Full Name' must be at least 2 characters. You entered 1 characters." } },
-           { "UserJson.Email", new[] {
+           { "UserJson.Password", ["The length of 'User Json Password' must be at least 16 characters. You entered 1 characters."] },
+           { "UserJson.FullName", ["The length of 'User Json Full Name' must be at least 2 characters. You entered 1 characters."] },
+           { "UserJson.Email", [
                "The length of 'User Json Email' must be at least 3 characters. You entered 2 characters.",
-               "'User Json Email' is not a valid email address." }
+               "'User Json Email' is not a valid email address."]
            },
         });
 
@@ -1308,10 +1307,10 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "UserJson.Password", new[] { "The length of 'User Json Password' must be at least 16 characters. You entered 1 characters." } },
-           { "UserJson.Email", new[] {
+           { "UserJson.Password", ["The length of 'User Json Password' must be at least 16 characters. You entered 1 characters."] },
+           { "UserJson.Email", [
                "The length of 'User Json Email' must be at least 3 characters. You entered 2 characters.",
-               "'User Json Email' is not a valid email address." }
+               "'User Json Email' is not a valid email address."]
            },
         });
 
@@ -1347,7 +1346,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-             { "invalid_error", new[] { "Invalid credentials." } }
+             { "invalid_error", ["Invalid credentials."] }
         });
 
         [Theory]
@@ -1372,7 +1371,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "profile_error", new[] { "Cannot find user profile." } }
+            { "profile_error", ["Cannot find user profile."] }
         });
 
         [Theory]
@@ -1451,4 +1450,3 @@ the value was different - {2}.";
         }
     }
 }
-#endif

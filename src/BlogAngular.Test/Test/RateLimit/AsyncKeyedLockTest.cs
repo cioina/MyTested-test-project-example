@@ -1,6 +1,4 @@
-﻿#if DEBUG
-
-using AsyncKeyedLock;
+﻿using AsyncKeyedLock;
 using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Test.Data;
@@ -17,23 +15,16 @@ using Xunit;
 using Xunit.Abstractions;
 using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
 
-namespace BlogAngular.Test.SlowTest
+namespace BlogAngular.Test.RateLimit
 {
 
-    public class AsyncKeyedLockTest
+    public class AsyncKeyedLockTest(ITestOutputHelper output)
     {
-        private readonly ITestOutputHelper _output;
+        private readonly ITestOutputHelper _output = output ?? throw new ArgumentNullException(nameof(output));
         private readonly StripedAsyncKeyedLocker<string> _keyedLocker = new();
 
-        public AsyncKeyedLockTest(ITestOutputHelper output)
+        public class One(ITestOutputHelper output) : AsyncKeyedLockTest(output)
         {
-            _output = output ?? throw new ArgumentNullException(nameof(output));
-        }
-
-        public class One : AsyncKeyedLockTest
-        {
-            public One(ITestOutputHelper output) : base(output) { }
-
             [Theory]
             [InlineData("ValidMinUserNameLength",
              //Must be valid email address
@@ -141,7 +132,7 @@ namespace BlogAngular.Test.SlowTest
                                      dbContext: entities))));
                          }, new Dictionary<string, string[]>
                          {
-                                { "RateLimitMiddlewareException", new[] { "Too many requests" } },
+                                { "RateLimitMiddlewareException", ["Too many requests"] },
                          });
 
                         const int delay = 10;
@@ -168,10 +159,8 @@ namespace BlogAngular.Test.SlowTest
             }
         }
 
-        public class Async : AsyncKeyedLockTest
+        public class Async(ITestOutputHelper output) : AsyncKeyedLockTest(output)
         {
-            public Async(ITestOutputHelper output) : base(output) { }
-
             [Theory]
             [InlineData(100, 100, 100, 10, 100)]
             [InlineData(102, 100, 10, 2, 10)]
@@ -235,7 +224,7 @@ namespace BlogAngular.Test.SlowTest
                         .ActionResult(result => result.Result(new TagsResponseEnvelope
                         {
                             Total = 5,
-                            Models = Enumerable
+                            Models = [.. Enumerable
                           .Range(1, 5)
                           .Select(i =>
                           {
@@ -244,7 +233,7 @@ namespace BlogAngular.Test.SlowTest
                                   Id = i,
                                   Title = $"name{i}"
                               };
-                          }).ToList(),
+                          })],
                         }));
 
                         const int delay = 10;
@@ -272,4 +261,3 @@ namespace BlogAngular.Test.SlowTest
         }
     }
 }
-#endif

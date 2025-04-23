@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using BlogAngular.Application.Blog.Common;
+﻿using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Commands.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Identity.Commands.Common;
@@ -615,4 +614,3 @@ namespace BlogAngular.Test.RateLimit
         }
     }
 }
-#endif

@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using BlogAngular.Application.Blog.Articles.Commands.Common;
+﻿using BlogAngular.Application.Blog.Articles.Commands.Common;
 using BlogAngular.Application.Blog.ArticleTags.Commands.Create;
 using BlogAngular.Application.Blog.ArticleTags.Commands.Listing;
 using BlogAngular.Application.Blog.Common;
@@ -363,7 +362,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
              .Range(1, 4)
              .Select(i =>
              {
@@ -375,7 +374,7 @@ namespace BlogAngular.Test.Routing
                      Description = $"{description}{i}",
                      Published = true,
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
-                     TagList = Enumerable
+                     TagList = [.. Enumerable
                                 .Range(1, 3)
                                 .Select(i =>
                                 {
@@ -393,10 +392,10 @@ namespace BlogAngular.Test.Routing
                                             break;
                                     }
                                     return r;
-                                }).ToList(),
+                                })],
 
                  };
-             }).ToList(),
+             })],
         }));
 
         [Theory]
@@ -449,7 +448,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
            .Range(1, 4)
            .Select(i =>
            {
@@ -462,7 +461,7 @@ namespace BlogAngular.Test.Routing
                    Description = $"{description}{j}",
                    Published = true,
                    CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
-                   TagList = Enumerable
+                   TagList = [.. Enumerable
                               .Range(1, 3)
                               .Select(i =>
                               {
@@ -480,10 +479,10 @@ namespace BlogAngular.Test.Routing
                                           break;
                                   }
                                   return r;
-                              }).ToList(),
+                              })],
 
                };
-           }).ToList(),
+           })],
         }));
 
         [Theory]
@@ -535,7 +534,7 @@ namespace BlogAngular.Test.Routing
         {
             Total = 5,
             Models =
-              Enumerable
+              [.. Enumerable
              .Range(1, 4)
              .Select(i =>
              {
@@ -548,7 +547,7 @@ namespace BlogAngular.Test.Routing
                      Published = true,
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                  };
-             }).ToList(),
+             })],
         }));
 
         [Theory]
@@ -599,7 +598,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
              .Range(1, 4)
              .Select(i =>
              {
@@ -613,7 +612,7 @@ namespace BlogAngular.Test.Routing
                      Published = true,
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                  };
-             }).ToList(),
+             })],
         }));
 
         [Theory]
@@ -666,8 +665,8 @@ namespace BlogAngular.Test.Routing
            .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "ArticleTagsJson.Limit", new[] { "'Article Tags Json Limit' must be greater than '0'." } },
-            { "ArticleTagsJson.Offset", new[] { "'Article Tags Json Offset' must be greater than '-1'." } }
+            { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
+            { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
         });
 
         [Fact]
@@ -791,7 +790,7 @@ namespace BlogAngular.Test.Routing
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
             Total = 5,
-            Models = Enumerable
+            Models = [.. Enumerable
              .Range(1, 4)
              .Select(i =>
              {
@@ -803,7 +802,7 @@ namespace BlogAngular.Test.Routing
                      Description = $"{description}{i}",
                      Published = true,
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
-                     TagList = Enumerable
+                     TagList = [.. Enumerable
                                 .Range(1, 3)
                                 .Select(i =>
                                 {
@@ -821,10 +820,10 @@ namespace BlogAngular.Test.Routing
                                             break;
                                     }
                                     return r;
-                                }).ToList(),
+                                })],
 
                  };
-             }).ToList(),
+             })],
         }));
 
         [Theory]
@@ -1017,8 +1016,8 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "ArticleJson.Title", new[] { "'Article Json Title' must be unique." } },
-            { "ArticleJson.Slug", new[] { "'Article Json Slug' must be unique." } },
+            { "ArticleJson.Title", ["'Article Json Title' must be unique."] },
+            { "ArticleJson.Slug", ["'Article Json Slug' must be unique."] },
         });
 
         [Theory]
@@ -1075,8 +1074,8 @@ namespace BlogAngular.Test.Routing
             .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "ArticleJson.Title", new[] { "The length of 'Article Json Title' must be 320 characters or fewer. You entered 321 characters." } },
-           { "ArticleJson.Slug", new[] { "The length of 'Article Json Slug' must be 320 characters or fewer. You entered 321 characters." } },
+           { "ArticleJson.Title", ["The length of 'Article Json Title' must be 320 characters or fewer. You entered 321 characters."] },
+           { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be 320 characters or fewer. You entered 321 characters."] },
         });
 
         [Theory]
@@ -1133,9 +1132,9 @@ namespace BlogAngular.Test.Routing
             .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "ArticleJson.Title", new[] { "The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters." } },
-            { "ArticleJson.Slug", new[] { "The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters." } },
-            { "ArticleJson.Description", new[] { "The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters." } },
+            { "ArticleJson.Title", ["The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters."] },
+            { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters."] },
+            { "ArticleJson.Description", ["The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -1395,8 +1394,8 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "ArticleJson.Title", new[] { "'Article Json Title' must be unique." } },
-          { "ArticleJson.Slug", new[] { "'Article Json Slug' must be unique." } },
+          { "ArticleJson.Title", ["'Article Json Title' must be unique."] },
+          { "ArticleJson.Slug", ["'Article Json Slug' must be unique."] },
         });
 
         [Theory]
@@ -1453,8 +1452,8 @@ namespace BlogAngular.Test.Routing
             .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "ArticleJson.Title", new[] { "The length of 'Article Json Title' must be 320 characters or fewer. You entered 321 characters." } },
-           { "ArticleJson.Slug", new[] { "The length of 'Article Json Slug' must be 320 characters or fewer. You entered 321 characters." } },
+           { "ArticleJson.Title", ["The length of 'Article Json Title' must be 320 characters or fewer. You entered 321 characters."] },
+           { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be 320 characters or fewer. You entered 321 characters."] },
         });
 
         [Theory]
@@ -1511,9 +1510,9 @@ namespace BlogAngular.Test.Routing
                 .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-                { "ArticleJson.Title", new[] { "The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters." } },
-                { "ArticleJson.Slug", new[] { "The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters." } },
-                { "ArticleJson.Description", new[] { "The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters." } },
+                { "ArticleJson.Title", ["The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters."] },
+                { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters."] },
+                { "ArticleJson.Description", ["The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -1617,7 +1616,7 @@ namespace BlogAngular.Test.Routing
                 Slug = $"{slug}4",
                 Description = $"{description}4",
                 CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(4))),
-                TagList = Enumerable
+                TagList = [.. Enumerable
                            .Range(1, 3)
                            .Select(i =>
                            {
@@ -1635,7 +1634,7 @@ namespace BlogAngular.Test.Routing
                                        break;
                                }
                                return r;
-                           }).ToList(),
+                           })],
 
             }
         }))
@@ -1812,4 +1811,3 @@ namespace BlogAngular.Test.Routing
         }
     }
 }
-#endif

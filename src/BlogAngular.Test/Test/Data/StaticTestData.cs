@@ -1,5 +1,4 @@
-﻿#if DEBUG
-using AspNetCoreRateLimit;
+﻿using AspNetCoreRateLimit;
 using BlogAngular.Application.Common;
 using BlogAngular.Domain.Blog.Models;
 using BlogAngular.Infrastructure.Identity;
@@ -84,11 +83,11 @@ namespace BlogAngular.Test.Data
                                      if (policy.IpRules.TryAdd(ip!, new IpRateLimitPolicy
                                      {
                                          Ip = ip,
-                                         Rules = new List<RateLimitRule>(new RateLimitRule[] {
+                                         Rules = [.. new RateLimitRule[] {
                                                new() {
                                                    Endpoint = $"*:{httpContext.Request.Path}",
                                                    Limit = int.Parse(limit!),
-                                                   Period = "5m" }})
+                                                   Period = "5m" }}]
                                      }))
                                      {
                                          await ipPolicyStore!.SetAsync("ippp", policy!, cancellationToken: httpContext.RequestAborted).ConfigureAwait(false);
@@ -132,18 +131,18 @@ namespace BlogAngular.Test.Data
                 case MiddlewareResult.RateLimitMiddlewareException:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "RateLimitMiddlewareException", new []{"Too many requests" } }
+                        { "RateLimitMiddlewareException", ["Too many requests"] }
                     });
 
                 case MiddlewareResult.SecurityTokenRefreshException:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "SecurityTokenRefreshException", new []{ "Security token must be refreshed" } }
+                        { "SecurityTokenRefreshException", ["Security token must be refreshed"] }
                     });
                 case MiddlewareResult.MatchingRulesException:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "MatchingRulesException", new []{ "Matching Rules Exception" } }
+                        { "MatchingRulesException", ["Matching Rules Exception"] }
                     });
 
                 default:
@@ -151,7 +150,7 @@ namespace BlogAngular.Test.Data
                     {
                         throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
-                        { "NoGoodResult", new []{ "Unknown result" } }
+                        { "NoGoodResult", ["Unknown result"] }
                     });
                     }
                     break;
@@ -451,4 +450,3 @@ namespace BlogAngular.Test.Data
         }
     }
 }
-#endif

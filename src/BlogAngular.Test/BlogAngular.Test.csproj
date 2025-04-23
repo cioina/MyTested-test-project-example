@@ -2,10 +2,8 @@
 
 <PropertyGroup>
     <Description>Blog for ASP.NET Core framework.</Description>
-    <Copyright>2023 Alexei Cioina</Copyright>
     <AssemblyTitle>BlogAngular.Test</AssemblyTitle>
-    <VersionPrefix>8.0.0</VersionPrefix>
-    <Authors>Alexei Cioina</Authors>
+    <VersionPrefix>9.0.0</VersionPrefix>
     <TargetFramework>net9.0</TargetFramework>
     <LangVersion>latest</LangVersion>
     <NoWarn>$(NoWarn);CS1591</NoWarn>
@@ -49,7 +47,7 @@
     </PackageReference>
   </ItemGroup>
 
-  <ItemGroup Condition="'$(Configuration)' != 'Release'">
+  <ItemGroup>
     <PackageReference Include="FluentAssertions" Version="8.2.0" />
   </ItemGroup>
 
@@ -150,8 +148,7 @@
     </Reference>
   </ItemGroup>
 
-
-  <ItemGroup Condition="'$(Configuration)' != 'Release'">
+  <ItemGroup>
     <ProjectReference Include="..\BlogAngular.Startup\BlogAngular.Startup.csproj" />
     <ProjectReference Include="..\..\..\DotNetVendors\NetArchTest\src\NetArchTest.Rules\NetArchTest.Rules.csproj" />
   </ItemGroup>
