@@ -30,12 +30,45 @@ namespace BlogAngular.Test.RateLimit
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
         private static readonly string ValidMinNameLength = new('t', MinNameLength);
-        private static readonly string ValidMaxxNameLength = new('t', MaxNameLength - 1);
+        private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
         private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
-        private static readonly string ValidMaxxTitleLength = new('t', MaxTitleLength - 1);
+        private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
         private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
-        private static readonly string ValidMaxxDescriptionLength = new('t', MaxDescriptionLength - 1);
+        private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
+
+        public static IEnumerable<object[]> ValidData()
+        {
+            yield return new object[]
+            {
+            ValidMinUserNameLength,
+            //Must be valid email address
+            $"{ValidMinEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMinPasswordLength}",
+
+            ValidMinNameLength,
+
+            ValidMinTitleLength,
+            ValidMinTitleLength,
+            ValidMinDescriptionLength,
+            };
+
+            yield return new object[]
+            {
+            ValidMaxUserNameLength,
+            //Must be valid email address
+            $"{ValidMaxEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMaxPasswordLength}",
+
+            ValidMaxNameLength,
+
+            ValidMaxTitleLength,
+            ValidMaxTitleLength,
+            ValidMaxDescriptionLength,
+            };
+        }
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -50,63 +83,59 @@ namespace BlogAngular.Test.RateLimit
          string description
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
             )
-         => MyMvc
-          .Pipeline()
-          .ShouldMap(request => request
-             .WithHeaders(new Dictionary<string, string>
-             {
-                 ["X-Real-IP"] = "9.8.8.0",
-                 ["X-Real-LIMIT"] = "0"
-             })
-            .WithMethod(HttpMethod.Post)
-            .WithLocation("api/v1.0/identity/login")
-            .WithJsonBody(
-                string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
-                    $"{email}1",
-                    $"{password}1"
-                ))
-          )
-          .To<IdentityController>(c => c.Login(new UserLoginCommand
-          {
-              UserJson = new()
-              {
-                  Email = $"{email}1",
-                  Password = $"{password}1"
-              }
-          }))
-          .Which(controller => controller
-            .WithData(db => db
-              .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                 count: 3,
-
-                 email: email,
-                 userName: fullName,
-                 password: password,
-
-                 name: name,
-
-                 title: title,
-                 slug: slug,
-                 description: description,
-                 date: DateOnly.FromDateTime(DateTime.Today),
-                 published: false,
-
-                 dbContext: entities))))
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new UserResponseEnvelope
-          {
-              UserJson = new()
-              {
-                  Email = $"{email}1",
-                  UserName = $"{fullName}1",
-                  Token = $"Token: {email}1"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(4, attributes.Count());
-          });
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithHeaders(new Dictionary<string, string>
+           {
+               ["X-Real-IP"] = "9.8.8.0",
+               ["X-Real-LIMIT"] = "0"
+           })
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/identity/login")
+          .WithJsonBody(
+              string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
+                  $"{email}1",
+                  $"{password}1"
+              ))
+        )
+        .To<IdentityController>(c => c.Login(new UserLoginCommand
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                Password = $"{password}1"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(db => db
+            .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+               count: 3,
+               email: email,
+               userName: fullName,
+               password: password,
+               name: name,
+               title: title,
+               slug: slug,
+               description: description,
+               date: DateOnly.FromDateTime(DateTime.Today),
+               published: false,
+               dbContext: entities))))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new UserResponseEnvelope
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                UserName = $"{fullName}1",
+                Token = $"Token: {email}1"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(4, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -118,66 +147,62 @@ namespace BlogAngular.Test.RateLimit
          string title,
          string slug,
          string description)
-         => MyMvc
-          .Pipeline()
-          .ShouldMap(request => request
-             .WithHeaders(new Dictionary<string, string>
-             {
-                 ["X-Real-IP"] = "10.8.8.0",
-                 ["X-Real-LIMIT"] = "0"
-             })
-            .WithMethod(HttpMethod.Put)
-            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
-            .WithLocation("api/v1.0/tags/edit/2")
-            .WithJsonBody(
-                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       $"{name}4")
-            )
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithHeaders(new Dictionary<string, string>
+           {
+               ["X-Real-IP"] = "10.8.8.0",
+               ["X-Real-LIMIT"] = "0"
+           })
+          .WithMethod(HttpMethod.Put)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
+          .WithLocation("api/v1.0/tags/edit/2")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}4")
           )
-          .To<TagsController>(c => c.Edit(2, new()
-          {
-              TagJson = new()
-              {
-                  Title = $"{name}4"
-              }
-          }))
-          .Which(controller => controller
-            .WithData(db => db
-              .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                 count: 3,
-
-                 email: email,
-                 userName: fullName,
-                 password: password,
-
-                 name: name,
-
-                 title: title,
-                 slug: slug,
-                 description: description,
-                 date: DateOnly.FromDateTime(DateTime.Today),
-                 published: false,
-
-                 dbContext: entities))))
-          .ShouldHave()
-          .ActionAttributes(attrs => attrs
-               .RestrictingForHttpMethod(HttpMethod.Put)
-               .RestrictingForAuthorizedRequests())
-          .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new TagResponseEnvelope
-          {
-              TagJson = new()
-              {
-                  Id = 2,
-                  Title = $"{name}4"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
+        )
+        .To<TagsController>(c => c.Edit(2, new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}4"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(db => db
+            .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+               count: 3,
+               email: email,
+               userName: fullName,
+               password: password,
+               name: name,
+               title: title,
+               slug: slug,
+               description: description,
+               date: DateOnly.FromDateTime(DateTime.Today),
+               published: false,
+               dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Put)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 2,
+                Title = $"{name}4"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -240,66 +265,66 @@ namespace BlogAngular.Test.RateLimit
          string title,
          string slug,
          string description)
-         => MyMvc
-          .Pipeline()
-          .ShouldMap(request => request
-             .WithHeaders(new Dictionary<string, string>
-             {
-                 ["X-Real-IP"] = "192.168.0.0",
-                 ["X-Real-LIMIT"] = "0"
-             })
-            .WithMethod(HttpMethod.Put)
-            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-            .WithLocation("api/v1.0/tags/edit/2")
-            .WithJsonBody(
-                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                       $"{name}4")
-            )
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithHeaders(new Dictionary<string, string>
+           {
+               ["X-Real-IP"] = "192.168.0.0",
+               ["X-Real-LIMIT"] = "0"
+           })
+          .WithMethod(HttpMethod.Put)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/edit/2")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}4")
           )
-          .To<TagsController>(c => c.Edit(2, new()
-          {
-              TagJson = new()
-              {
-                  Title = $"{name}4"
-              }
-          }))
-          .Which(controller => controller
-            .WithData(db => db
-              .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                 count: 3,
+        )
+        .To<TagsController>(c => c.Edit(2, new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}4"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(db => db
+            .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+               count: 3,
 
-                 email: email,
-                 userName: fullName,
-                 password: password,
+               email: email,
+               userName: fullName,
+               password: password,
 
-                 name: name,
+               name: name,
 
-                 title: title,
-                 slug: slug,
-                 description: description,
-                 date: DateOnly.FromDateTime(DateTime.Today),
-                 published: false,
+               title: title,
+               slug: slug,
+               description: description,
+               date: DateOnly.FromDateTime(DateTime.Today),
+               published: false,
 
-                 dbContext: entities))))
-          .ShouldHave()
-          .ActionAttributes(attrs => attrs
-               .RestrictingForHttpMethod(HttpMethod.Put)
-               .RestrictingForAuthorizedRequests())
-          .AndAlso()
-          .ShouldReturn()
-          .ActionResult(result => result.Result(new TagResponseEnvelope
-          {
-              TagJson = new()
-              {
-                  Id = 2,
-                  Title = $"{name}4"
-              }
-          }))
-          .AndAlso()
-          .ShouldPassForThe<ActionAttributes>(attributes =>
-          {
-              Assert.Equal(5, attributes.Count());
-          });
+               dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Put)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 2,
+                Title = $"{name}4"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
 
         [Theory]
         [InlineData("ValidMinUserNameLength",
@@ -371,7 +396,6 @@ namespace BlogAngular.Test.RateLimit
             { "SecurityTokenRefreshException", new[] { "Security token must be refreshed" } },
         });
 
-
         [Theory]
         [InlineData("ValidMinUserNameLength",
          //Must be valid email address
@@ -392,69 +416,66 @@ namespace BlogAngular.Test.RateLimit
          string title,
          string slug,
          string description
-         ) => MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-                .WithHeaders(new Dictionary<string, string>
-                {
-                    ["X-Real-IP"] = "14.8.8.0",
-                    ["X-Real-LIMIT"] = "0"
-                })
-                .WithMethod(HttpMethod.Post)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                .WithLocation("api/v1.0/identity")
-                .WithJsonBody(
-                     string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                         $"{password}1"
-                     )
+         )
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithHeaders(new Dictionary<string, string>
+           {
+               ["X-Real-IP"] = "14.8.8.0",
+               ["X-Real-LIMIT"] = "0"
+           })
+           .WithMethod(HttpMethod.Post)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/identity")
+           .WithJsonBody(
+                string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
+                    $"{password}1"
                 )
-             )
-             .To<IdentityController>(c => c.LoginPassword(new LoginPasswordCommand
-             {
-                 UserJson = new()
-                 {
-                     FullName = null,
-                     Password = $"{password}1"
-                 }
-             }))
-            .Which(controller => controller
-              .WithData(db => db
-                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                   count: 3,
-
-                   email: email,
-                   userName: fullName,
-                   password: password,
-
-                   name: name,
-
-                   title: title,
-                   slug: slug,
-                   description: description,
-                   date: DateOnly.FromDateTime(DateTime.Today),
-                   published: false,
-
-                   dbContext: entities))))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                 .RestrictingForHttpMethod(HttpMethod.Post)
-                 .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn()
-             .ActionResult(result => result.Result(new UserResponseEnvelope
-             {
-                 UserJson = new()
-                 {
-                     Email = $"{email}1",
-                     UserName = $"{fullName}1",
-                     Token = $"Token: {email}1"
-                 }
-             }))
-             .AndAlso()
-             .ShouldPassForThe<ActionAttributes>(attributes =>
-             {
-                 Assert.Equal(4, attributes.Count());
-             });
+           )
+        )
+        .To<IdentityController>(c => c.LoginPassword(new LoginPasswordCommand
+        {
+            UserJson = new()
+            {
+                FullName = null,
+                Password = $"{password}1"
+            }
+        }))
+        .Which(controller => controller
+         .WithData(db => db
+           .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+              count: 3,
+              email: email,
+              userName: fullName,
+              password: password,
+              name: name,
+              title: title,
+              slug: slug,
+              description: description,
+              date: DateOnly.FromDateTime(DateTime.Today),
+              published: false,
+              dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Post)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new UserResponseEnvelope
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                UserName = $"{fullName}1",
+                Token = $"Token: {email}1"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(4, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -494,7 +515,6 @@ namespace BlogAngular.Test.RateLimit
             { "RateLimitMiddlewareException", new[] { "Too many requests" } },
         });
 
-
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_tags_without_middleware_and_zero_rate_limit_should_return_success_with_all_tags(
@@ -510,37 +530,36 @@ namespace BlogAngular.Test.RateLimit
          string description
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
-         => MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-                .WithHeaders(new Dictionary<string, string>
-                {
-                    ["X-Real-IP"] = "20.8.8.0",
-                    ["X-Real-LIMIT"] = "0"
-                })
-               .WithMethod(HttpMethod.Get)
-               .WithLocation("api/v1.0/tags")
-               .WithFormFields(new { })
-            )
-            .To<TagsController>(c => c.Tags(new TagsQuery { }))
-            .Which(controller => controller
-                .WithData(StaticTestData.GetTags(5, name)))
-            .ShouldReturn()
-            .ActionResult(result => result.Result(new TagsResponseEnvelope
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+            .WithHeaders(new Dictionary<string, string>
             {
-                Total = 5,
-                Models = Enumerable
-              .Range(1, 5)
-              .Select(i =>
+                ["X-Real-IP"] = "20.8.8.0",
+                ["X-Real-LIMIT"] = "0"
+            })
+           .WithMethod(HttpMethod.Get)
+           .WithLocation("api/v1.0/tags")
+           .WithFormFields(new { })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery { }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 5,
+            Models = Enumerable
+          .Range(1, 5)
+          .Select(i =>
+          {
+              return new TagResponseModel
               {
-                  return new TagResponseModel
-                  {
-                      Id = i,
-                      Title = $"{name}{i}",
-                  };
-              }).ToList(),
-            }));
-
+                  Id = i,
+                  Title = $"{name}{i}",
+              };
+          }).ToList(),
+        }));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -580,37 +599,5 @@ namespace BlogAngular.Test.RateLimit
             { "MatchingRulesException", new[] { "Matching Rules Exception" } },
         });
 
-        public static IEnumerable<object[]> ValidData()
-        {
-            yield return new object[]
-            {
-            ValidMinUserNameLength,
-            //Must be valid email address
-            $"{ValidMinEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",
-
-            ValidMinNameLength,
-
-            ValidMinTitleLength,
-            ValidMinTitleLength,
-            ValidMinDescriptionLength,
-            };
-
-            yield return new object[]
-            {
-            ValidMaxUserNameLength,
-            //Must be valid email address
-            $"{ValidMaxEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMaxPasswordLength}",
-
-            ValidMaxxNameLength,
-
-            ValidMaxxTitleLength,
-            ValidMaxxTitleLength,
-            ValidMaxxDescriptionLength,
-            };
-        }
     }
 }

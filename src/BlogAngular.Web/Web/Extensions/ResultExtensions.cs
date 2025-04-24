@@ -11,11 +11,14 @@ namespace BlogAngular.Web.Extensions
         public static async Task<ActionResult<TData>> ToActionResult<TData>(this Task<TData> resultTask)
         {
             var result = await resultTask;
+
             if (result == null)
+            {
                 ThrowErrors(new Dictionary<string, string[]>
-                        {
-                            { "not_found_error", new[] { "Not Found Resul" } }
-                        });
+                {
+                    { "not_found_error", [ "Not Found Result" ] }
+                });
+            }
 
             return result;
         }
@@ -23,17 +26,22 @@ namespace BlogAngular.Web.Extensions
         public static async Task<ActionResult> ToActionResult(this Task<Result> resultTask)
         {
             var result = await resultTask;
-            if (!result.Succeeded)
-                ThrowErrors(result.Errors);
 
+            if (!result.Succeeded)
+            {
+                ThrowErrors(result.Errors);
+            }
             return new OkResult();
         }
 
         public static async Task<ActionResult<TData>> ToActionResult<TData>(this Task<Result<TData>> resultTask)
         {
             var result = await resultTask;
+
             if (!result.Succeeded)
+            {
                 ThrowErrors(result.Errors);
+            }
 
             return result.Data;
         }

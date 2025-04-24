@@ -29,12 +29,151 @@ namespace BlogAngular.Test.Routing
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
         private static readonly string ValidMinNameLength = new('t', MinNameLength);
-        private static readonly string ValidMaxxNameLength = new('t', MaxNameLength - 1);
+        private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
         private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
-        private static readonly string ValidMaxxTitleLength = new('t', MaxTitleLength - 1);
+        private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
         private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
-        private static readonly string ValidMaxxDescriptionLength = new('t', MaxDescriptionLength - 1);
+        private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
+
+        public static IEnumerable<object[]> ValidData()
+        {
+            yield return new object[]
+            {
+            ValidMinUserNameLength,
+            //Must be valid email address
+            $"{ValidMinEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMinPasswordLength}",
+
+            ValidMinNameLength,
+
+            ValidMinTitleLength,
+            ValidMinTitleLength,
+            ValidMinDescriptionLength,
+            };
+
+            yield return new object[]
+            {
+            ValidMaxUserNameLength,
+            //Must be valid email address
+            $"{ValidMaxEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMaxPasswordLength}",
+
+            ValidMaxNameLength,
+
+            ValidMaxTitleLength,
+            ValidMaxTitleLength,
+            ValidMaxDescriptionLength,
+            };
+        }
+        #region Link Tags
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Link_tags_to_article_should_return_success_with_id(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/articles/linktags")
+          .WithJsonBody(
+                string.Format(@"{{""articleTags"":{{""articleId"": 4, ""tags"": [{0},{1},{2}]}}}}", 1, 2, 3)
+          )
+        )
+        .To<ArticlesController>(c => c.LinkTags(new ArticleTagsCreateCommand
+        {
+            ArticleTagsJson = new()
+            {
+                ArticleId = 4,
+                Tags = Enumerable
+                             .Range(1, 3)
+                             .Select(i => i).ToList(),
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Post)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(1))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Link_empty_tag_list_to_article_should_return_success_with_id(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/articles/linktags")
+          .WithJsonBody(
+                string.Format(@"{{""articleTags"":{{""articleId"": 4 }}}}")
+          )
+        )
+        .To<ArticlesController>(c => c.LinkTags(new ArticleTagsCreateCommand
+        {
+            ArticleTagsJson = new()
+            {
+                ArticleId = 4,
+                Tags = null,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Post)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(0))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -205,113 +344,9 @@ namespace BlogAngular.Test.Routing
              .AndAlso()
              .ShouldReturn();
         }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "LinkTags", "ArticlesController", "NotFoundException", "article", 6));
+        #endregion
 
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Link_tags_to_article_should_return_success_with_id(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-          .WithMethod(HttpMethod.Post)
-          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-          .WithLocation("api/v1.0/articles/linktags")
-          .WithJsonBody(
-                string.Format(@"{{""articleTags"":{{""articleId"": 4, ""tags"": [{0},{1},{2}]}}}}", 1, 2, 3)
-          )
-        )
-        .To<ArticlesController>(c => c.LinkTags(new ArticleTagsCreateCommand
-        {
-            ArticleTagsJson = new()
-            {
-                ArticleId = 4,
-                Tags = Enumerable
-                             .Range(1, 3)
-                             .Select(i => i).ToList(),
-            }
-        }))
-        .Which(controller => controller
-          .WithData(StaticTestData.GetArticlesTagsUsers(5,
-                 email,
-                 fullName,
-                 password,
-                 name,
-                 title,
-                 slug,
-                 description,
-                 DateOnly.FromDateTime(DateTime.Today),
-                 false)))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-            .RestrictingForHttpMethod(HttpMethod.Post)
-            .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(1))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
-        });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Link_empty_tag_list_to_article_should_return_success_with_id(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-          .WithMethod(HttpMethod.Post)
-          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-          .WithLocation("api/v1.0/articles/linktags")
-          .WithJsonBody(
-                string.Format(@"{{""articleTags"":{{""articleId"": 4 }}}}")
-          )
-        )
-        .To<ArticlesController>(c => c.LinkTags(new ArticleTagsCreateCommand
-        {
-            ArticleTagsJson = new()
-            {
-                ArticleId = 4,
-                Tags = null,
-            }
-        }))
-        .Which(controller => controller
-          .WithData(StaticTestData.GetArticlesTagsUsers(5,
-                 email,
-                 fullName,
-                 password,
-                 name,
-                 title,
-                 slug,
-                 description,
-                 DateOnly.FromDateTime(DateTime.Today),
-                 false)))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-            .RestrictingForHttpMethod(HttpMethod.Post)
-            .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(0))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
-        });
-
+        #region Listing Articles
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_articles_ascending_with_tag_filter_should_return_success_with_article_list(
@@ -668,75 +703,9 @@ namespace BlogAngular.Test.Routing
             { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
             { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
         });
+        #endregion
 
-        [Fact]
-        public void Listing_all_articles_without_authorization_header_should_fail()
-        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-        () =>
-        {
-            MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Post)
-                .WithLocation("api/v1.0/articles/all")
-                .WithJsonBody(
-                       string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0 }}}}")
-                )
-            )
-            .To<ArticlesController>(c => c.All(new ArticleTagsListingCommand
-            {
-                ArticleTagsJson = new()
-                {
-                    CreatedAtAsc = null,
-                    Published = null,
-                    Tags = null,
-                    Limit = 4,
-                    Offset = 0,
-                }
-            }));
-        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/articles/all", "All", "ArticlesController"));
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Listing_all_articles_with_expired_authorization_header_should_fail(
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string fullName,
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-         string email,
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-        )
-        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-        () =>
-        {
-            MyMvc
-              .Pipeline()
-              .ShouldMap(request => request
-                .WithMethod(HttpMethod.Post)
-                .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithExpiredToken(email, 1))
-                .WithLocation("api/v1.0/articles/all")
-                .WithJsonBody(
-                       string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0 }}}}")
-                )
-            )
-          .To<ArticlesController>(c => c.All(new ArticleTagsListingCommand
-          {
-              ArticleTagsJson = new()
-              {
-                  CreatedAtAsc = null,
-                  Published = null,
-                  Tags = null,
-                  Limit = 4,
-                  Offset = 0,
-              }
-          }));
-        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/articles/all", "All", "ArticlesController"));
-
+        #region Listing All Articles
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_all_articles_ascending_with_tag_filter_should_return_success_with_article_list(
@@ -826,6 +795,76 @@ namespace BlogAngular.Test.Routing
              })],
         }));
 
+        [Fact]
+        public void Listing_all_articles_without_authorization_header_should_fail()
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+            MyMvc
+              .Pipeline()
+              .ShouldMap(request => request
+                .WithMethod(HttpMethod.Post)
+                .WithLocation("api/v1.0/articles/all")
+                .WithJsonBody(
+                       string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0 }}}}")
+                )
+            )
+            .To<ArticlesController>(c => c.All(new ArticleTagsListingCommand
+            {
+                ArticleTagsJson = new()
+                {
+                    CreatedAtAsc = null,
+                    Published = null,
+                    Tags = null,
+                    Limit = 4,
+                    Offset = 0,
+                }
+            }));
+        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/articles/all", "All", "ArticlesController"));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_all_articles_with_expired_authorization_header_should_fail(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string email,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+        )
+        => AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
+        () =>
+        {
+            MyMvc
+              .Pipeline()
+              .ShouldMap(request => request
+                .WithMethod(HttpMethod.Post)
+                .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithExpiredToken(email, 1))
+                .WithLocation("api/v1.0/articles/all")
+                .WithJsonBody(
+                       string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0 }}}}")
+                )
+            )
+          .To<ArticlesController>(c => c.All(new ArticleTagsListingCommand
+          {
+              ArticleTagsJson = new()
+              {
+                  CreatedAtAsc = null,
+                  Published = null,
+                  Tags = null,
+                  Limit = 4,
+                  Offset = 0,
+              }
+          }));
+        }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/articles/all", "All", "ArticlesController"));
+        #endregion
+
+        #region Create Article
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Create_article_should_return_success_with_data(
@@ -1041,18 +1080,18 @@ namespace BlogAngular.Test.Routing
               .WithLocation("api/v1.0/articles/create")
               .WithJsonBody(
                      string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                         $"{ValidMaxxTitleLength}ab",
-                         $"{ValidMaxxTitleLength}ab",
-                         $"{ValidMaxxDescriptionLength}ab")
+                         $"{ValidMaxTitleLength}ab",
+                         $"{ValidMaxTitleLength}ab",
+                         $"{ValidMaxDescriptionLength}ab")
               )
             )
             .To<ArticlesController>(c => c.Create(new()
             {
                 ArticleJson = new()
                 {
-                    Title = $"{ValidMaxxTitleLength}ab",
-                    Slug = $"{ValidMaxxTitleLength}ab",
-                    Description = $"{ValidMaxxDescriptionLength}ab"
+                    Title = $"{ValidMaxTitleLength}ab",
+                    Slug = $"{ValidMaxTitleLength}ab",
+                    Description = $"{ValidMaxDescriptionLength}ab"
                 }
             }))
             .Which(controller => controller
@@ -1136,7 +1175,9 @@ namespace BlogAngular.Test.Routing
             { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters."] },
             { "ArticleJson.Description", ["The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters."] },
         });
+        #endregion
 
+        #region Edit Article
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Edit_article_should_return_success_with_data(
@@ -1419,18 +1460,18 @@ namespace BlogAngular.Test.Routing
               .WithLocation("api/v1.0/articles/edit/2")
               .WithJsonBody(
                      string.Format(@"{{""article"":{{""title"": ""{0}"", ""slug"": ""{1}"", ""description"": ""{2}""}}}}",
-                         $"{ValidMaxxTitleLength}ab",
-                         $"{ValidMaxxTitleLength}ab",
-                         $"{ValidMaxxDescriptionLength}ab")
+                         $"{ValidMaxTitleLength}ab",
+                         $"{ValidMaxTitleLength}ab",
+                         $"{ValidMaxDescriptionLength}ab")
               )
             )
             .To<ArticlesController>(c => c.Edit(2, new()
             {
                 ArticleJson = new()
                 {
-                    Title = $"{ValidMaxxTitleLength}ab",
-                    Slug = $"{ValidMaxxTitleLength}ab",
-                    Description = $"{ValidMaxxDescriptionLength}ab"
+                    Title = $"{ValidMaxTitleLength}ab",
+                    Slug = $"{ValidMaxTitleLength}ab",
+                    Description = $"{ValidMaxDescriptionLength}ab"
                 }
             }))
             .Which(controller => controller
@@ -1510,9 +1551,9 @@ namespace BlogAngular.Test.Routing
                 .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-                { "ArticleJson.Title", ["The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters."] },
-                { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters."] },
-                { "ArticleJson.Description", ["The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters."] },
+           { "ArticleJson.Title", ["The length of 'Article Json Title' must be at least 2 characters. You entered 1 characters."] },
+           { "ArticleJson.Slug", ["The length of 'Article Json Slug' must be at least 2 characters. You entered 1 characters."] },
+           { "ArticleJson.Description", ["The length of 'Article Json Description' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -1568,7 +1609,9 @@ namespace BlogAngular.Test.Routing
              .AndAlso()
              .ShouldReturn();
         }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Edit", "ArticlesController", "NotFoundException", "article", 5));
+        #endregion
 
+        #region Get Article
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Get_article_should_return_success_with_data(
@@ -1686,7 +1729,9 @@ namespace BlogAngular.Test.Routing
               .AndAlso()
               .ShouldReturn();
         }, string.Format(FromNotFoundException.Replace(Environment.NewLine, ""), "Details", "ArticlesController", "NotFoundException", "article", 6));
+        #endregion
 
+        #region Delete Article
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Delete_article_should_return_success_with_article_id(
@@ -1776,38 +1821,6 @@ namespace BlogAngular.Test.Routing
         {
             Assert.Equal(5, attributes.Count());
         });
-
-        public static IEnumerable<object[]> ValidData()
-        {
-            yield return new object[]
-            {
-            ValidMinUserNameLength,
-            //Must be valid email address
-            $"{ValidMinEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",
-
-            ValidMinNameLength,
-
-            ValidMinTitleLength,
-            ValidMinTitleLength,
-            ValidMinDescriptionLength,
-            };
-
-            yield return new object[]
-            {
-            ValidMaxUserNameLength,
-            //Must be valid email address
-            $"{ValidMaxEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMaxPasswordLength}",
-
-            ValidMaxxNameLength,
-
-            ValidMaxxTitleLength,
-            ValidMaxxTitleLength,
-            ValidMaxxDescriptionLength,
-            };
-        }
+        #endregion
     }
 }

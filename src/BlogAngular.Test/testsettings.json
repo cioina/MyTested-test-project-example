@@ -1,6 +1,7 @@
 ﻿{
   "General": {
-    "ReplaceMemoryCache": false
+    "ReplaceMemoryCache": false,
+    "Environment": "Test"
   },
 
   "ApplicationSettings": {

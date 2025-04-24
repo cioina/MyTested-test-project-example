@@ -60,6 +60,194 @@ the value was different - {2}.";
         private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
+        public static IEnumerable<object[]> RegisterValidData()
+        {
+            yield return new object[]
+            {
+            ValidMinUserNameLength,
+            //Must be valid email address
+            $"{ValidMinEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMinPasswordLength}",
+            };
+
+            yield return new object[]
+            {
+             ValidMaxUserNameLength,
+             //Must be valid email address
+             $"{ValidMaxEmailLength}@a.bcde",
+             //Password must contain Upper case, lower case, number, special symbols
+             $"U!{ValidMaxPasswordLength}"
+            };
+        }
+
+        #region Update
+        [Theory]
+        [MemberData(nameof(RegisterValidData))]
+        public void Update_user_should_return_success_with_token(
+         string fullName,
+         string email,
+         string password)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Put)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/identity/update")
+           .WithJsonBody(
+                string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
+                    $"{password}4",
+                    $"{fullName}4"
+                )
+           )
+        )
+        .To<IdentityController>(c => c.Update(new UserUpdateCommand
+        {
+            UserJson = new()
+            {
+                FullName = $"{fullName}4",
+                Password = $"{password}4"
+            }
+        }))
+        .Which(controller => controller
+              .WithData(db => db
+                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
+                       count: 3,
+                       email: email,
+                       userName: fullName,
+                       password: password,
+                       dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Put)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new UserResponseEnvelope
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                UserName = $"{fullName}4",
+                Token = $"Token: {email}1"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+        
+        [Theory]
+        [MemberData(nameof(RegisterValidData))]
+        public void Update_user_name_only_should_return_success_with_token(
+         string fullName,
+         string email,
+         string password)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Put)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/identity/update")
+           .WithJsonBody(
+                string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
+                    $"{fullName}4"
+                )
+           )
+        )
+        .To<IdentityController>(c => c.Update(new UserUpdateCommand
+        {
+            UserJson = new()
+            {
+                FullName = $"{fullName}4",
+                Password = null,
+            }
+        }))
+        .Which(controller => controller
+              .WithData(db => db
+                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
+                       count: 3,
+                       email: email,
+                       userName: fullName,
+                       password: password,
+                       dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Put)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new UserResponseEnvelope
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                UserName = $"{fullName}4",
+                Token = $"Token: {email}1"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(RegisterValidData))]
+        public void Update_user_password_only_should_return_success_with_token(
+         string fullName,
+         string email,
+         string password)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Put)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/identity/update")
+           .WithJsonBody(
+                string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
+                    $"{password}1"
+                )
+           )
+        )
+        .To<IdentityController>(c => c.Update(new UserUpdateCommand
+        {
+            UserJson = new()
+            {
+                FullName = null,
+                Password = $"{password}1"
+            }
+        }))
+        .Which(controller => controller
+              .WithData(db => db
+                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
+                       count: 3,
+                       email: email,
+                       userName: fullName,
+                       password: password,
+                       dbContext: entities))))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+            .RestrictingForHttpMethod(HttpMethod.Put)
+            .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new UserResponseEnvelope
+        {
+            UserJson = new()
+            {
+                Email = $"{email}1",
+                UserName = $"{fullName}1",
+                Token = $"Token: {email}1",
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         public void Update_user_without_authorization_header_should_fail(
@@ -332,64 +520,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-               { "name_error", ["The user name has been taken."] }
-        });
-
-
-        [Theory]
-        [MemberData(nameof(RegisterValidData))]
-        public void Update_user_should_return_success_with_token(
-         string fullName,
-         string email,
-         string password)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-           .WithMethod(HttpMethod.Put)
-           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-           .WithLocation("api/v1.0/identity/update")
-           .WithJsonBody(
-                string.Format(@"{{""user"":{{""password"":""{0}"",""username"":""{1}""}}}}",
-                    $"{password}4",
-                    $"{fullName}4"
-                )
-           )
-        )
-        .To<IdentityController>(c => c.Update(new UserUpdateCommand
-        {
-            UserJson = new()
-            {
-                FullName = $"{fullName}4",
-                Password = $"{password}4"
-            }
-        }))
-        .Which(controller => controller
-              .WithData(db => db
-                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
-                       count: 3,
-                       email: email,
-                       userName: fullName,
-                       password: password,
-                       dbContext: entities))))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-            .RestrictingForHttpMethod(HttpMethod.Put)
-            .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new UserResponseEnvelope
-        {
-            UserJson = new()
-            {
-                Email = $"{email}1",
-                UserName = $"{fullName}4",
-                Token = $"Token: {email}1"
-            }
-        }))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
+           { "name_error", ["The user name has been taken."] }
         });
 
         [Theory]
@@ -433,117 +564,6 @@ the value was different - {2}.";
         }, new Dictionary<string, string[]>
         {
            { "is_in_role_error", ["Cannot find role Administrator"] }
-        });
-
-
-        [Theory]
-        [MemberData(nameof(RegisterValidData))]
-        public void Update_user_name_only_should_return_success_with_token(
-         string fullName,
-         string email,
-         string password)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-           .WithMethod(HttpMethod.Put)
-           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-           .WithLocation("api/v1.0/identity/update")
-           .WithJsonBody(
-                string.Format(@"{{""user"":{{""username"":""{0}""}}}}",
-                    $"{fullName}4"
-                )
-           )
-        )
-        .To<IdentityController>(c => c.Update(new UserUpdateCommand
-        {
-            UserJson = new()
-            {
-                FullName = $"{fullName}4",
-                Password = null,
-            }
-        }))
-        .Which(controller => controller
-              .WithData(db => db
-                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
-                       count: 3,
-                       email: email,
-                       userName: fullName,
-                       password: password,
-                       dbContext: entities))))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-            .RestrictingForHttpMethod(HttpMethod.Put)
-            .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new UserResponseEnvelope
-        {
-            UserJson = new()
-            {
-                Email = $"{email}1",
-                UserName = $"{fullName}4",
-                Token = $"Token: {email}1"
-            }
-        }))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
-        });
-
-        [Theory]
-        [MemberData(nameof(RegisterValidData))]
-        public void Update_user_password_only_should_return_success_with_token(
-         string fullName,
-         string email,
-         string password)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-           .WithMethod(HttpMethod.Put)
-           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-           .WithLocation("api/v1.0/identity/update")
-           .WithJsonBody(
-                string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
-                    $"{password}1"
-                )
-           )
-        )
-        .To<IdentityController>(c => c.Update(new UserUpdateCommand
-        {
-            UserJson = new()
-            {
-                FullName = null,
-                Password = $"{password}1"
-            }
-        }))
-        .Which(controller => controller
-              .WithData(db => db
-                   .WithEntities(entities => StaticTestData.GetUsersWithRole(
-                       count: 3,
-                       email: email,
-                       userName: fullName,
-                       password: password,
-                       dbContext: entities))))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-            .RestrictingForHttpMethod(HttpMethod.Put)
-            .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new UserResponseEnvelope
-        {
-            UserJson = new()
-            {
-                Email = $"{email}1",
-                UserName = $"{fullName}1",
-                Token = $"Token: {email}1",
-            }
-        }))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
         });
 
         [Theory]
@@ -747,7 +767,6 @@ the value was different - {2}.";
              }));
         }, string.Format(DifferenceException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/update", "command", "UserUpdateCommand.UserJson"));
 
-
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         //In browser, it returns 404
@@ -782,8 +801,9 @@ the value was different - {2}.";
                  }
              }));
         }, string.Format(RouteCouldNotBeMachedException.Replace(Environment.NewLine, ""), "/api/v1.0/identity/noroute", "Update", "IdentityController"));
+        #endregion
 
-
+        #region Login Password
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         public void Login_with_password_should_return_success_with_token(
@@ -878,9 +898,8 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "is_in_role_error", ["Cannot find role Administrator"] }
+          { "is_in_role_error", ["Cannot find role Administrator"] }
         });
-
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
@@ -955,9 +974,11 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "invalid_error", ["Invalid credentials."] }
+          { "invalid_error", ["Invalid credentials."] }
         });
+        #endregion
 
+        #region Register
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         public void Register_user_should_return_success_with_token(
@@ -1197,7 +1218,9 @@ the value was different - {2}.";
                "'User Json Email' is not a valid email address."]
            },
         });
+        #endregion 
 
+        #region Login
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         public void Login_user_should_return_success_with_token(
@@ -1348,6 +1371,39 @@ the value was different - {2}.";
         {
              { "invalid_error", ["Invalid credentials."] }
         });
+        #endregion
+        
+        #region Get Profile
+        [Theory]
+        [MemberData(nameof(RegisterValidData))]
+        public void Get_profile_should_return_success(
+         string fullName,
+         string email,
+         string password)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Get)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation($"api/v1.0/profile/{fullName}1")
+        )
+        .To<ProfileController>(c => c.Index($"{fullName}1"))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ProfileResponseEnvelope
+        {
+            ProfileJson = new ProfileResponseModel(
+                $"{fullName}1",
+                $"{fullName}1",
+                $"{fullName}1"
+            )
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(6, attributes.Count());
+        });
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
@@ -1396,57 +1452,6 @@ the value was different - {2}.";
                .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
              .ShouldReturn();
         }, string.Format(HttpRequestException.Replace(Environment.NewLine, ""), "api/v1.0/profile/incorrect_user format"));
-
-        [Theory]
-        [MemberData(nameof(RegisterValidData))]
-        public void Get_profile_should_return_success(
-         string fullName,
-         string email,
-         string password)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-          .WithMethod(HttpMethod.Get)
-          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-          .WithLocation($"api/v1.0/profile/{fullName}1")
-        )
-        .To<ProfileController>(c => c.Index($"{fullName}1"))
-        .Which(controller => controller
-          .WithData(StaticTestData.GetUsers(1, email, fullName, password)))
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new ProfileResponseEnvelope
-        {
-            ProfileJson = new ProfileResponseModel(
-                $"{fullName}1",
-                $"{fullName}1",
-                $"{fullName}1"
-            )
-        }))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(6, attributes.Count());
-        });
-
-        public static IEnumerable<object[]> RegisterValidData()
-        {
-            yield return new object[]
-            {
-            ValidMinUserNameLength,
-            //Must be valid email address
-            $"{ValidMinEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",
-            };
-
-            yield return new object[]
-            {
-             ValidMaxUserNameLength,
-             //Must be valid email address
-             $"{ValidMaxEmailLength}@a.bcde",
-             //Password must contain Upper case, lower case, number, special symbols
-             $"U!{ValidMaxPasswordLength}"
-            };
-        }
+        #endregion
     }
 }

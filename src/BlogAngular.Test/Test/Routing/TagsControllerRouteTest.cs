@@ -28,13 +28,46 @@ namespace BlogAngular.Test.Routing
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
         private static readonly string ValidMinNameLength = new('t', MinNameLength);
-        private static readonly string ValidMaxxNameLength = new('t', MaxNameLength - 1);
+        private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
         private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
-        private static readonly string ValidMaxxTitleLength = new('t', MaxTitleLength - 1);
+        private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
         private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
-        private static readonly string ValidMaxxDescriptionLength = new('t', MaxDescriptionLength - 1);
+        private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
 
+        public static IEnumerable<object[]> ValidData()
+        {
+            yield return new object[]
+            {
+            ValidMinUserNameLength,
+            //Must be valid email address
+            $"{ValidMinEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMinPasswordLength}",
+
+            ValidMinNameLength,
+
+            ValidMinTitleLength,
+            ValidMinTitleLength,
+            ValidMinDescriptionLength,
+            };
+
+            yield return new object[]
+            {
+            ValidMaxUserNameLength,
+            //Must be valid email address
+            $"{ValidMaxEmailLength}@a.bcde",
+            //Password must contain Upper case, lower case, number, special symbols
+            $"U!{ValidMaxPasswordLength}",
+
+            ValidMaxNameLength,
+
+            ValidMaxTitleLength,
+            ValidMaxTitleLength,
+            ValidMaxDescriptionLength,
+            };
+        }
+        #region Create Tag
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Create_tag_should_return_success_with_data(
@@ -402,14 +435,14 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/tags/create")
                .WithJsonBody(
                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{ValidMaxxNameLength}ab")
+                          $"{ValidMaxNameLength}ab")
                )
              )
              .To<TagsController>(c => c.Create(new()
              {
                  TagJson = new()
                  {
-                     Title = $"{ValidMaxxNameLength}ab"
+                     Title = $"{ValidMaxNameLength}ab"
                  }
              }))
              .Which(controller => controller
@@ -431,9 +464,65 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
+            { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
         });
 
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Create_tag_with_same_name_should_fail_with_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+             .Pipeline()
+             .ShouldMap(request => request
+               .WithMethod(HttpMethod.Post)
+               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+               .WithLocation("api/v1.0/tags/create")
+               .WithJsonBody(
+                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                          $"{name}1")
+               )
+             )
+             .To<TagsController>(c => c.Create(new()
+             {
+                 TagJson = new()
+                 {
+                     Title = $"{name}1"
+                 }
+             }))
+             .Which(controller => controller
+               .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                      email,
+                      fullName,
+                      password,
+                      name,
+                      title,
+                      slug,
+                      description,
+                      DateOnly.FromDateTime(DateTime.Today),
+                      false)))
+             .ShouldHave()
+             .ActionAttributes(attrs => attrs
+                  .RestrictingForHttpMethod(HttpMethod.Post)
+                  .RestrictingForAuthorizedRequests())
+             .AndAlso()
+             .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+          { "TagJson.Title", ["'Tag Json Title' must be unique."] },
+        });
+
+        #endregion
+
+        #region Edit Tag
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Edit_tag_should_return_success_with_data(
@@ -495,6 +584,65 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
+        public void Edit_same_tag_with_same_name_should_return_success_with_data(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Put)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/tags/edit/2")
+          .WithJsonBody(
+                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     $"{name}2")
+          )
+        )
+        .To<TagsController>(c => c.Edit(2, new()
+        {
+            TagJson = new()
+            {
+                Title = $"{name}2"
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(3,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Put)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagResponseEnvelope
+        {
+            TagJson = new()
+            {
+                Id = 2,
+                Title = $"{name}2"
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
         public void Edit_tag_with_one_char_should_return_validation_error(
          string fullName,
          string email,
@@ -543,7 +691,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] },
+            { "TagJson.Title", ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] },
         });
 
         [Theory]
@@ -567,14 +715,14 @@ namespace BlogAngular.Test.Routing
                .WithLocation("api/v1.0/tags/edit/2")
                .WithJsonBody(
                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{ValidMaxxNameLength}ab")
+                          $"{ValidMaxNameLength}ab")
                )
              )
              .To<TagsController>(c => c.Edit(2, new()
              {
                  TagJson = new()
                  {
-                     Title = $"{ValidMaxxNameLength}ab"
+                     Title = $"{ValidMaxNameLength}ab"
                  }
              }))
              .Which(controller => controller
@@ -596,7 +744,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
+            { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
         });
 
         [Theory]
@@ -701,65 +849,6 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Edit_same_tag_with_same_name_should_return_success_with_data(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-          .WithMethod(HttpMethod.Put)
-          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-          .WithLocation("api/v1.0/tags/edit/2")
-          .WithJsonBody(
-                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                     $"{name}2")
-          )
-        )
-        .To<TagsController>(c => c.Edit(2, new()
-        {
-            TagJson = new()
-            {
-                Title = $"{name}2"
-            }
-        }))
-        .Which(controller => controller
-          .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                 email,
-                 fullName,
-                 password,
-                 name,
-                 title,
-                 slug,
-                 description,
-                 DateOnly.FromDateTime(DateTime.Today),
-                 false)))
-        .ShouldHave()
-        .ActionAttributes(attrs => attrs
-             .RestrictingForHttpMethod(HttpMethod.Put)
-             .RestrictingForAuthorizedRequests())
-        .AndAlso()
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new TagResponseEnvelope
-        {
-            TagJson = new()
-            {
-                Id = 2,
-                Title = $"{name}2"
-            }
-        }))
-        .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.Equal(5, attributes.Count());
-        });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
         public void Edit_tag_with_same_name_should_fail_with_validation_error(
          string fullName,
          string email,
@@ -808,62 +897,11 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title", ["'Tag Json Title' must be unique."] },
+            { "TagJson.Title", ["'Tag Json Title' must be unique."] },
         });
+        #endregion
 
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Create_tag_with_same_name_should_fail_with_validation_error(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description)
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-               .WithMethod(HttpMethod.Post)
-               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-               .WithLocation("api/v1.0/tags/create")
-               .WithJsonBody(
-                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                          $"{name}1")
-               )
-             )
-             .To<TagsController>(c => c.Create(new()
-             {
-                 TagJson = new()
-                 {
-                     Title = $"{name}1"
-                 }
-             }))
-             .Which(controller => controller
-               .WithData(StaticTestData.GetArticlesTagsUsers(3,
-                      email,
-                      fullName,
-                      password,
-                      name,
-                      title,
-                      slug,
-                      description,
-                      DateOnly.FromDateTime(DateTime.Today),
-                      false)))
-             .ShouldHave()
-             .ActionAttributes(attrs => attrs
-                  .RestrictingForHttpMethod(HttpMethod.Post)
-                  .RestrictingForAuthorizedRequests())
-             .AndAlso()
-             .ShouldReturn();
-        }, new Dictionary<string, string[]>
-        {
-          { "TagJson.Title", ["'Tag Json Title' must be unique."] },
-        });
-
+        #region Delete Tag
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Delete_tag_should_return_success_with_tag_id(
@@ -985,7 +1023,9 @@ namespace BlogAngular.Test.Routing
                  Id = 1,
              }));
         }, string.Format(DifferenceExtendedException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/delete/a", "command", "TagDeleteCommand.Id", "1", "0"));
+        #endregion
 
+        #region Listing Tags
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_tags_with_limit_url_parameter_should_return_success_with_tag_list_with_limit(
@@ -1034,50 +1074,6 @@ namespace BlogAngular.Test.Routing
                   };
               })],
         }));
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_wrong_limit_and_offset_should_return_validation_error(
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string fullName,
-         string email,
-         string password,
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-         string name,
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string title,
-         string slug,
-         string description
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-         )
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
-             .Pipeline()
-             .ShouldMap(request => request
-                .WithMethod(HttpMethod.Get)
-                .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}")
-                .WithFormFields(new
-                {
-                    Limit = 0,
-                    Offset = -1
-                })
-             )
-             .To<TagsController>(c => c.Tags(new TagsQuery
-             {
-                 Limit = 0,
-                 Offset = -1
-             }))
-             .Which(controller => controller
-                 .WithData(StaticTestData.GetTags(5, name)))
-             .ShouldReturn();
-        }, new Dictionary<string, string[]>
-        {
-            { "Limit", ["'Limit' must be greater than '0'."] },
-            { "Offset",["'Offset' must be greater than '-1'."] }
-        });
-
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_tags_without_url_parameters_should_return_success_with_all_tags(
@@ -1121,7 +1117,7 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_wrong_header_authorization_should_return_success_with_all_tags1(
+        public void Listing_tags_with_wrong_header_authorization_should_return_success_with_all_tags(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -1161,37 +1157,90 @@ namespace BlogAngular.Test.Routing
               })],
         }));
 
-        public static IEnumerable<object[]> ValidData()
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_header_authorization_should_return_success_with_all_tags(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+         => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+           .WithLocation("api/v1.0/tags")
+           .WithFormFields(new { })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery { }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
         {
-            yield return new object[]
-            {
-            ValidMinUserNameLength,
-            //Must be valid email address
-            $"{ValidMinEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",
+            Total = 5,
+            Models = [.. Enumerable
+              .Range(1, 5)
+              .Select(i =>
+              {
+                  return new TagResponseModel
+                  {
+                      Id = i,
+                      Title = $"{name}{i}",
+                  };
+              })],
+        }));
 
-            ValidMinNameLength,
-
-            ValidMinTitleLength,
-            ValidMinTitleLength,
-            ValidMinDescriptionLength,
-            };
-
-            yield return new object[]
-            {
-            ValidMaxUserNameLength,
-            //Must be valid email address
-            $"{ValidMaxEmailLength}@a.bcde",
-            //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMaxPasswordLength}",
-
-            ValidMaxxNameLength,
-
-            ValidMaxxTitleLength,
-            ValidMaxxTitleLength,
-            ValidMaxxDescriptionLength,
-            };
-        }
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_wrong_limit_and_offset_should_return_validation_error(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+             .Pipeline()
+             .ShouldMap(request => request
+                .WithMethod(HttpMethod.Get)
+                .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}")
+                .WithFormFields(new
+                {
+                    Limit = 0,
+                    Offset = -1
+                })
+             )
+             .To<TagsController>(c => c.Tags(new TagsQuery
+             {
+                 Limit = 0,
+                 Offset = -1
+             }))
+             .Which(controller => controller
+                 .WithData(StaticTestData.GetTags(5, name)))
+             .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+            { "Limit", ["'Limit' must be greater than '0'."] },
+            { "Offset",["'Offset' must be greater than '-1'."] }
+        });
+        #endregion
     }
 }
