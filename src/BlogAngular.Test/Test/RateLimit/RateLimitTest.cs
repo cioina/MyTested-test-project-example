@@ -70,6 +70,7 @@ namespace BlogAngular.Test.RateLimit
             };
         }
 
+        #region Success Tests
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Login_user_with_whitelisted_public_route_and_zero_limit_should_return_success_with_token(
@@ -206,54 +207,49 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
+        public void Listing_tags_without_middleware_and_zero_rate_limit_should_return_success_with_all_tags(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
          string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string title,
          string slug,
          string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+            .WithHeaders(new Dictionary<string, string>
+            {
+                ["X-Real-IP"] = "20.8.8.0",
+                ["X-Real-LIMIT"] = "0"
+            })
+           .WithMethod(HttpMethod.Get)
+           .WithLocation("api/v1.0/tags")
+           .WithFormFields(new { })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery { }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
         {
-            MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-               .WithHeaders(new Dictionary<string, string>
-               {
-                   ["X-Real-IP"] = "1.8.8.0",
-                   ["X-Real-LIMIT"] = "0"
-               })
-              .WithMethod(HttpMethod.Get)
-              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
-                 .WithLocation("api/v1.0/tags")
-                 .WithFormFields(new { })
-              )
-            .To<TagsController>(c => c.Tags(new TagsQuery { }))
-            .Which(controller => controller
-              .WithData(db => db
-                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                   count: 5,
-
-                   email: email,
-                   userName: fullName,
-                   password: password,
-
-                   name: name,
-
-                   title: title,
-                   slug: slug,
-                   description: description,
-                   date: DateOnly.FromDateTime(DateTime.Today),
-                   published: false,
-
-                   dbContext: entities))));
-        }, new Dictionary<string, string[]>
-        {
-            { "RateLimitMiddlewareException", new[] { "Too many requests" } },
-        });
+            Total = 5,
+            Models = [.. Enumerable
+          .Range(1, 5)
+          .Select(i =>
+          {
+              return new TagResponseModel
+              {
+                  Id = i,
+                  Title = $"{name}{i}",
+              };
+          })],
+        }));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -330,78 +326,8 @@ namespace BlogAngular.Test.RateLimit
         [InlineData("ValidMinUserNameLength",
          //Must be valid email address
          "SecurityTokenRefreshException@email.com",
-          //Password must contain Upper case, lower case, number, special symbols
-          "!ValidMinPasswordLength",
-
-         "ValidMinNameLength",
-
-         "ValidMinTitleLength",
-         "ValidMinTitleLength",
-         "ValidMinDescriptionLength")]
-        public void Edit_tag_with_refresh_token_should_fail(
-         string fullName,
-         string email,
-         string password,
-         string name,
-         string title,
-         string slug,
-         string description
-         )
-        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
-            .Pipeline()
-            .ShouldMap(request => request
-               .WithHeaders(new Dictionary<string, string>
-               {
-                   ["X-Real-IP"] = "15.8.8.0",
-                   ["X-Real-LIMIT"] = "0"
-               })
-              .WithMethod(HttpMethod.Put)
-              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-              .WithLocation("api/v1.0/tags/edit/2")
-              .WithJsonBody(
-                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                         $"{name}4")
-              )
-            )
-            .To<TagsController>(c => c.Edit(2, new()
-            {
-                TagJson = new()
-                {
-                    Title = $"{name}4"
-                }
-            }))
-            .Which(controller => controller
-              .WithData(db => db
-                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                   count: 3,
-
-                   email: email,
-                   userName: fullName,
-                   password: password,
-
-                   name: name,
-
-                   title: title,
-                   slug: slug,
-                   description: description,
-                   date: DateOnly.FromDateTime(DateTime.Today),
-                   published: false,
-
-                   dbContext: entities))));
-        }, new Dictionary<string, string[]>
-        {
-            { "SecurityTokenRefreshException", new[] { "Security token must be refreshed" } },
-        });
-
-        [Theory]
-        [InlineData("ValidMinUserNameLength",
-         //Must be valid email address
-         "SecurityTokenRefreshException@email.com",
-          //Password must contain Upper case, lower case, number, special symbols
-          "!ValidMinPasswordLength",
+         //Password must contain Upper case, lower case, number, special symbols
+         "!ValidMinPasswordLength",
 
          "ValidMinNameLength",
 
@@ -476,6 +402,128 @@ namespace BlogAngular.Test.RateLimit
         {
             Assert.Equal(4, attributes.Count());
         });
+        #endregion
+
+        [Theory]
+        [InlineData("ValidMinUserNameLength",
+         //Must be valid email address
+         "SecurityTokenRefreshException@email.com",
+         //Password must contain Upper case, lower case, number, special symbols
+         "!ValidMinPasswordLength",
+
+         "ValidMinNameLength",
+
+         "ValidMinTitleLength",
+         "ValidMinTitleLength",
+         "ValidMinDescriptionLength")]
+        public void Edit_tag_with_refresh_token_should_fail(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+         )
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+            .Pipeline()
+            .ShouldMap(request => request
+               .WithHeaders(new Dictionary<string, string>
+               {
+                   ["X-Real-IP"] = "15.8.8.0",
+                   ["X-Real-LIMIT"] = "0"
+               })
+              .WithMethod(HttpMethod.Put)
+              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+              .WithLocation("api/v1.0/tags/edit/2")
+              .WithJsonBody(
+                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                         $"{name}4")
+              )
+            )
+            .To<TagsController>(c => c.Edit(2, new()
+            {
+                TagJson = new()
+                {
+                    Title = $"{name}4"
+                }
+            }))
+            .Which(controller => controller
+              .WithData(db => db
+                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                   count: 3,
+
+                   email: email,
+                   userName: fullName,
+                   password: password,
+
+                   name: name,
+
+                   title: title,
+                   slug: slug,
+                   description: description,
+                   date: DateOnly.FromDateTime(DateTime.Today),
+                   published: false,
+
+                   dbContext: entities))));
+        }, new Dictionary<string, string[]>
+        {
+            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+         )
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+            .Pipeline()
+            .ShouldMap(request => request
+               .WithHeaders(new Dictionary<string, string>
+               {
+                   ["X-Real-IP"] = "1.8.8.0",
+                   ["X-Real-LIMIT"] = "0"
+               })
+              .WithMethod(HttpMethod.Get)
+              .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
+                 .WithLocation("api/v1.0/tags")
+                 .WithFormFields(new { })
+              )
+            .To<TagsController>(c => c.Tags(new TagsQuery { }))
+            .Which(controller => controller
+              .WithData(db => db
+                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                   count: 5,
+
+                   email: email,
+                   userName: fullName,
+                   password: password,
+
+                   name: name,
+
+                   title: title,
+                   slug: slug,
+                   description: description,
+                   date: DateOnly.FromDateTime(DateTime.Today),
+                   published: false,
+
+                   dbContext: entities))));
+        }, new Dictionary<string, string[]>
+        {
+            { "RateLimitMiddlewareException", ["Too many requests"] },
+        });
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -512,54 +560,8 @@ namespace BlogAngular.Test.RateLimit
                 .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name)));
         }, new Dictionary<string, string[]>
         {
-            { "RateLimitMiddlewareException", new[] { "Too many requests" } },
+            { "RateLimitMiddlewareException", ["Too many requests"] },
         });
-
-        [Theory]
-        [MemberData(nameof(ValidData))]
-        public void Listing_tags_without_middleware_and_zero_rate_limit_should_return_success_with_all_tags(
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string fullName,
-         string email,
-         string password,
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-         string name,
-#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-         string title,
-         string slug,
-         string description
-#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-         )
-        => MyMvc
-        .Pipeline()
-        .ShouldMap(request => request
-            .WithHeaders(new Dictionary<string, string>
-            {
-                ["X-Real-IP"] = "20.8.8.0",
-                ["X-Real-LIMIT"] = "0"
-            })
-           .WithMethod(HttpMethod.Get)
-           .WithLocation("api/v1.0/tags")
-           .WithFormFields(new { })
-        )
-        .To<TagsController>(c => c.Tags(new TagsQuery { }))
-        .Which(controller => controller
-            .WithData(StaticTestData.GetTags(5, name)))
-        .ShouldReturn()
-        .ActionResult(result => result.Result(new TagsResponseEnvelope
-        {
-            Total = 5,
-            Models = Enumerable
-          .Range(1, 5)
-          .Select(i =>
-          {
-              return new TagResponseModel
-              {
-                  Id = i,
-                  Title = $"{name}{i}",
-              };
-          }).ToList(),
-        }));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -596,8 +598,7 @@ namespace BlogAngular.Test.RateLimit
                 .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name)));
         }, new Dictionary<string, string[]>
         {
-            { "MatchingRulesException", new[] { "Matching Rules Exception" } },
+            { "MatchingRulesException", ["Matching Rules Exception"] },
         });
-
     }
 }

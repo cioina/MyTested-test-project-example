@@ -17,7 +17,6 @@ using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
 
 namespace BlogAngular.Test.RateLimit
 {
-
     public class AsyncKeyedLockTest(ITestOutputHelper output)
     {
         private readonly ITestOutputHelper _output = output ?? throw new ArgumentNullException(nameof(output));
@@ -29,8 +28,8 @@ namespace BlogAngular.Test.RateLimit
             [InlineData("ValidMinUserNameLength",
              //Must be valid email address
              "ValidMinEmailLength@a.bcde",
-              //Password must contain Upper case, lower case, number, special symbols
-              "!ValidMinPasswordLength",
+             //Password must contain Upper case, lower case, number, special symbols
+             "!ValidMinPasswordLength",
 
              "ValidMinNameLength",
 
@@ -87,53 +86,53 @@ namespace BlogAngular.Test.RateLimit
                         }
 
                         AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-                         () =>
-                         {
-                             MyMvc
-                              .Pipeline()
-                              .ShouldMap(request => request
-                                 .WithHeaders(new Dictionary<string, string>
+                        () =>
+                        {
+                            MyMvc
+                             .Pipeline()
+                             .ShouldMap(request => request
+                                .WithHeaders(new Dictionary<string, string>
+                                {
+                                    ["X-Real-IP"] = $"26.8.{key}.0",
+                                    ["X-Real-LIMIT"] = "0"
+                                })
+                               .WithMethod(HttpMethod.Put)
+                               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+                               .WithLocation("api/v1.0/tags/edit/2")
+                               .WithJsonBody(
+                                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                                          $"{name}4")
+                               )
+                             )
+                             .To<TagsController>(c => c.Edit(2, new()
+                             {
+                                 TagJson = new()
                                  {
-                                     ["X-Real-IP"] = $"26.8.{key}.0",
-                                     ["X-Real-LIMIT"] = "0"
-                                 })
-                                .WithMethod(HttpMethod.Put)
-                                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
-                                .WithLocation("api/v1.0/tags/edit/2")
-                                .WithJsonBody(
-                                       string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-                                           $"{name}4")
-                                )
-                              )
-                              .To<TagsController>(c => c.Edit(2, new()
-                              {
-                                  TagJson = new()
-                                  {
-                                      Title = $"{name}4"
-                                  }
-                              }))
-                              .Which(controller => controller
-                                .WithData(db => db
-                                  .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
-                                     count: 3,
+                                     Title = $"{name}4"
+                                 }
+                             }))
+                             .Which(controller => controller
+                               .WithData(db => db
+                                 .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                                    count: 3,
 
-                                     email: email,
-                                     userName: fullName,
-                                     password: password,
+                                    email: email,
+                                    userName: fullName,
+                                    password: password,
 
-                                     name: name,
+                                    name: name,
 
-                                     title: title,
-                                     slug: slug,
-                                     description: description,
-                                     date: DateOnly.FromDateTime(DateTime.Today),
-                                     published: false,
+                                    title: title,
+                                    slug: slug,
+                                    description: description,
+                                    date: DateOnly.FromDateTime(DateTime.Today),
+                                    published: false,
 
-                                     dbContext: entities))));
-                         }, new Dictionary<string, string[]>
-                         {
-                                { "RateLimitMiddlewareException", ["Too many requests"] },
-                         });
+                                    dbContext: entities))));
+                        }, new Dictionary<string, string[]>
+                        {
+                           { "RateLimitMiddlewareException", ["Too many requests"] },
+                        });
 
                         const int delay = 10;
 
