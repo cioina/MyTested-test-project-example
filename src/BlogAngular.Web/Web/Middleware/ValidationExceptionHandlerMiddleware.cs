@@ -25,7 +25,7 @@ namespace BlogAngular.Web.Middleware
             }
         }
 
-        private static Task HandleExceptionAsync(HttpContext context, Exception exception)
+        private static async Task HandleExceptionAsync(HttpContext context, Exception exception)
         {
             var code = HttpStatusCode.InternalServerError;
 
@@ -69,7 +69,7 @@ namespace BlogAngular.Web.Middleware
             context.Response.ContentType = "application/json";
             context.Response.StatusCode = (int)code;
 
-            return context.Response.WriteAsync(result);
+            await context.Response.WriteAsync(result);
         }
 
         private static string SerializeObject(object obj)
