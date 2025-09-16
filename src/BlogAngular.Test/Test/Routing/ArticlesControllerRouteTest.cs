@@ -396,7 +396,7 @@ namespace BlogAngular.Test.Routing
         .ShouldReturn()
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
-            Total = 5,
+            Total = 4,
             Models = [.. Enumerable
              .Range(1, 4)
              .Select(i =>
@@ -482,12 +482,12 @@ namespace BlogAngular.Test.Routing
         .ShouldReturn()
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
-            Total = 5,
+            Total = 4,
             Models = [.. Enumerable
            .Range(1, 4)
            .Select(i =>
            {
-               var j = 6 - i;
+               var j = 6 - i - 1;
                return new ArticleResponseModel
                {
                    Id = j,
@@ -518,6 +518,57 @@ namespace BlogAngular.Test.Routing
 
                };
            })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_not_published_ascending_without_tag_filter_should_return_success_with_all_articles(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
+                 string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""published"": false, ""createdAtAsc"": true }}}}")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = true,
+                Published = false,
+                Tags = null,
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 0,
+            Models = [],
         }));
 
         [Theory]
@@ -601,6 +652,71 @@ namespace BlogAngular.Test.Routing
           .WithMethod(HttpMethod.Post)
           .WithLocation("api/v1.0/articles")
           .WithJsonBody(
+                 string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""published"": true, ""createdAtAsc"": false }}}}")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = false,
+                Published = true,
+                Tags = null,
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 5,
+            Models = [.. Enumerable
+             .Range(1, 4)
+             .Select(i =>
+             {
+                 var j = 6 - i;
+                 return new ArticleResponseModel
+                 {
+                     Id = j,
+                     Title = $"{title}{j}",
+                     Slug = $"{slug}{j}",
+                     Description = $"{description}{j}",
+                     Published = true,
+                     CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
+                 };
+             })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_without_create_at_asc_without_tag_filter_should_return_success_with_all_articles(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
                  string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""published"": true }}}}")
           )
         )
@@ -648,6 +764,71 @@ namespace BlogAngular.Test.Routing
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
                  };
              })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_without_create_at_asc_without_published_without_tag_filter_should_return_success_with_all_articles(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
+                 string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0 }}}}")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = null,
+                Published = null,
+                Tags = null,
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 5,
+            Models = [.. Enumerable
+                     .Range(1, 4)
+                     .Select(i =>
+                     {
+                         var j = 6 - i;
+                         return new ArticleResponseModel
+                         {
+                             Id = j,
+                             Title = $"{title}{j}",
+                             Slug = $"{slug}{j}",
+                             Description = $"{description}{j}",
+                             Published = true,
+                             CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(j))),
+                         };
+                     })],
         }));
 
         [Theory]
@@ -758,7 +939,7 @@ namespace BlogAngular.Test.Routing
         .ShouldReturn()
         .ActionResult(result => result.Result(new ArticlesResponseEnvelope
         {
-            Total = 5,
+            Total = 4,
             Models = [.. Enumerable
              .Range(1, 4)
              .Select(i =>
@@ -793,6 +974,62 @@ namespace BlogAngular.Test.Routing
 
                  };
              })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_all_articles_ascending_with_offset_with_tag_filter_should_return_success_with_article_list(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/articles/all")
+          .WithJsonBody(
+                string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 4, ""tags"": [{0},{1},{2}], ""published"": true}}}}", 1, 2, 3)
+          )
+        )
+        .To<ArticlesController>(c => c.All(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = null,
+                Published = true,
+                Tags = Enumerable
+                       .Range(1, 3)
+                       .Select(i => i).ToList(),
+                Limit = 4,
+                Offset = 4,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+              .RestrictingForHttpMethod(HttpMethod.Post)
+              .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 4,
+            Models = [],
         }));
 
         [Fact]
@@ -1614,7 +1851,7 @@ namespace BlogAngular.Test.Routing
         #region Get Article
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Get_article_should_return_success_with_data(
+        public void Get_article_with_tags_should_return_success_with_data(
          string fullName,
          string email,
          string password,
@@ -1679,6 +1916,61 @@ namespace BlogAngular.Test.Routing
                                return r;
                            })],
 
+            }
+        }))
+        .AndAlso()
+        .ShouldPassForThe<ActionAttributes>(attributes =>
+        {
+            Assert.Equal(5, attributes.Count());
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Get_article_without_tags_should_return_success_with_data(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Get)
+          .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
+          .WithLocation("api/v1.0/articles/details/5")
+        )
+        .To<ArticlesController>(c => c.Details(new()
+        {
+            Id = 5,
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 false)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs
+             .RestrictingForHttpMethod(HttpMethod.Get)
+             .RestrictingForAuthorizedRequests())
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticleResponseEnvelope
+        {
+            ArticleJson = new()
+            {
+                Id = 5,
+                Title = $"{title}5",
+                Slug = $"{slug}5",
+                Description = $"{description}5",
+                CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(5)))
             }
         }))
         .AndAlso()

@@ -137,7 +137,7 @@ the value was different - {2}.";
         {
             Assert.Equal(5, attributes.Count());
         });
-        
+
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         public void Update_user_name_only_should_return_success_with_token(
@@ -1372,7 +1372,7 @@ the value was different - {2}.";
              { "invalid_error", ["Invalid credentials."] }
         });
         #endregion
-        
+
         #region Get Profile
         [Theory]
         [MemberData(nameof(RegisterValidData))]
