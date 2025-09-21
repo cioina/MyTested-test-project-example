@@ -553,13 +553,31 @@
             "x-position": 2
           },
           {
+            "name": "TitleDes",
+            "in": "query",
+            "schema": {
+              "type": "boolean",
+              "nullable": true
+            },
+            "x-position": 3
+          },
+          {
+            "name": "Title",
+            "in": "query",
+            "schema": {
+              "type": "string",
+              "nullable": true
+            },
+            "x-position": 4
+          },
+          {
             "name": "version",
             "in": "path",
             "required": true,
             "schema": {
               "type": "string"
             },
-            "x-position": 3
+            "x-position": 5
           }
         ],
         "responses": {
@@ -841,6 +859,10 @@
           },
           "published": {
             "type": "boolean",
+            "nullable": true
+          },
+          "title": {
+            "type": "string",
             "nullable": true
           },
           "limit": {

@@ -18,21 +18,21 @@ namespace BlogAngular.Test.Routing
 {
     public class TagsControllerRouteTest
     {
-        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength);
+        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength - 1);
         private static readonly string ValidMaxUserNameLength = new('t', MaxUserNameLength - 1);
 
-        private static readonly string ValidMinEmailLength = new('t', MinEmailLength);
+        private static readonly string ValidMinEmailLength = new('t', MinEmailLength - 1);
         private static readonly string ValidMaxEmailLength = new('t', MaxEmailLength - 8);
 
         private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
-        private static readonly string ValidMinNameLength = new('t', MinNameLength);
+        private static readonly string ValidMinNameLength = new('t', MinNameLength - 1);
         private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
-        private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
+        private static readonly string ValidMinTitleLength = new('t', MinTitleLength - 1);
         private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
-        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
+        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength - 1);
         private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
 
         public static IEnumerable<object[]> ValidData()
@@ -184,7 +184,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "is_in_role_error", ["Cannot find role Administrator"] },
+           { "is_in_role_error", ["Cannot find role Administrator"] },
         });
 
         [Theory]
@@ -464,7 +464,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
+           { "TagJson.Title", ["The length of 'Tag Json Title' must be 420 characters or fewer. You entered 421 characters."] },
         });
 
         [Theory]
@@ -517,7 +517,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "TagJson.Title", ["'Tag Json Title' must be unique."] },
+           { "TagJson.Title", ["'Tag Json Title' must be unique."] },
         });
 
         #endregion
@@ -1028,6 +1028,142 @@ namespace BlogAngular.Test.Routing
         #region Listing Tags
         [Theory]
         [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_upper_case_title_url_parameter_should_return_success_with_tag_list_with_limit(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+         => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithLocation($"api/v1.0/tags?Title=T1")
+           .WithFormFields(new
+           {
+               Title = "T1"
+           })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery
+        {
+            Title = "T1"
+        }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 0,
+            Models = [],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_title_url_parameter_should_return_success_with_tag_list_with_limit(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+         => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithLocation($"api/v1.0/tags?Title=t1")
+           .WithFormFields(new
+           {
+               Title = "t1"
+           })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery
+        {
+            Title = "t1"
+        }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 1,
+            Models = [.. Enumerable
+                      .Range(1, 1)
+                      .Select(i =>
+                      {
+                          return new TagResponseModel
+                          {
+                              Id = i,
+                              Title = $"{name}{i}"
+                          };
+                      })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_title_des_url_parameter_should_return_success_with_tag_list_with_limit(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string fullName,
+         string email,
+         string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+         string title,
+         string slug,
+         string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+         )
+         => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+           .WithMethod(HttpMethod.Get)
+           .WithLocation($"api/v1.0/tags?Limit={4}&Offset={0}&TitleDes=true")
+           .WithFormFields(new
+           {
+               Limit = 4,
+               Offset = 0,
+               TitleDes = true
+           })
+        )
+        .To<TagsController>(c => c.Tags(new TagsQuery
+        {
+            Limit = 4,
+            Offset = 0,
+            TitleDes = true
+        }))
+        .Which(controller => controller
+            .WithData(StaticTestData.GetTags(5, name)))
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new TagsResponseEnvelope
+        {
+            Total = 5,
+            Models = [.. Enumerable
+              .Range(1, 4)
+              .Select(i =>
+              {
+                  return new TagResponseModel
+                  {
+                      Id = 6 - i,
+                      Title = $"{name}{ 6 - i}"
+                  };
+              })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
         public void Listing_tags_with_limit_url_parameter_should_return_success_with_tag_list_with_limit(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
@@ -1074,6 +1210,7 @@ namespace BlogAngular.Test.Routing
                   };
               })],
         }));
+
         [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_tags_without_url_parameters_should_return_success_with_all_tags(
@@ -1201,6 +1338,52 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
+        public void Listing_tags_with_max_title_should_return_validation_error(
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+          string fullName,
+          string email,
+          string password,
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+          string name,
+#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
+          string title,
+          string slug,
+          string description
+#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
+          )
+         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+         () =>
+         {
+             MyMvc
+              .Pipeline()
+              .ShouldMap(request => request
+                 .WithMethod(HttpMethod.Get)
+                 .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}&Title={ValidMaxNameLength}ab")
+                 .WithFormFields(new
+                 {
+                     Limit = 0,
+                     Offset = -1,
+                     Title = $"{ValidMaxNameLength}ab"
+                 })
+              )
+              .To<TagsController>(c => c.Tags(new TagsQuery
+              {
+                  Limit = 0,
+                  Offset = -1,
+                  Title = $"{ValidMaxNameLength}ab"
+              }))
+              .Which(controller => controller
+                  .WithData(StaticTestData.GetTags(5, name)))
+              .ShouldReturn();
+         }, new Dictionary<string, string[]>
+         {
+            { "Title", ["The length of 'Title' must be 420 characters or fewer. You entered 421 characters."] },
+            { "Limit", ["'Limit' must be greater than '0'."] },
+            { "Offset", ["'Offset' must be greater than '-1'."] }
+         });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
         public void Listing_tags_with_wrong_limit_and_offset_should_return_validation_error(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
@@ -1221,25 +1404,27 @@ namespace BlogAngular.Test.Routing
              .Pipeline()
              .ShouldMap(request => request
                 .WithMethod(HttpMethod.Get)
-                .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}")
+                .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}&Title=t1")
                 .WithFormFields(new
                 {
                     Limit = 0,
-                    Offset = -1
+                    Offset = -1,
+                    Title = "t1"
                 })
              )
              .To<TagsController>(c => c.Tags(new TagsQuery
              {
                  Limit = 0,
-                 Offset = -1
+                 Offset = -1,
+                 Title = "t1"
              }))
              .Which(controller => controller
                  .WithData(StaticTestData.GetTags(5, name)))
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "Limit", ["'Limit' must be greater than '0'."] },
-            { "Offset",["'Offset' must be greater than '-1'."] }
+           { "Limit", ["'Limit' must be greater than '0'."] },
+           { "Offset",["'Offset' must be greater than '-1'."] }
         });
         #endregion
     }

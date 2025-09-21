@@ -20,21 +20,21 @@ namespace BlogAngular.Test.RateLimit
 {
     public class RateLimitRouteTest
     {
-        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength);
+        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength - 1);
         private static readonly string ValidMaxUserNameLength = new('t', MaxUserNameLength - 1);
 
-        private static readonly string ValidMinEmailLength = new('t', MinEmailLength);
+        private static readonly string ValidMinEmailLength = new('t', MinEmailLength - 1);
         private static readonly string ValidMaxEmailLength = new('t', MaxEmailLength - 8);
 
         private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
-        private static readonly string ValidMinNameLength = new('t', MinNameLength);
+        private static readonly string ValidMinNameLength = new('t', MinNameLength - 1);
         private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
-        private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
+        private static readonly string ValidMinTitleLength = new('t', MinTitleLength - 1);
         private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
-        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
+        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength - 1);
         private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
 
         public static IEnumerable<object[]> ValidData()

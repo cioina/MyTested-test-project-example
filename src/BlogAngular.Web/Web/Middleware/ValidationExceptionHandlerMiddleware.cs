@@ -63,11 +63,21 @@ namespace BlogAngular.Web.Middleware
 
                 result = SerializeObject(
                     new ErrorListResult(exception.GetType().Name, [error])
-                    );
+                );
             }
 
-            context.Response.ContentType = "application/json";
-            context.Response.StatusCode = (int)code;
+            try
+            {
+                context.Response.ContentType = "application/json";
+                context.Response.StatusCode = (int)code;
+            }
+            catch (Exception ex)
+            {
+                result = SerializeObject(
+                    new ErrorListResult(ex.GetType().Name,
+                    ["System.InvalidOperationException: The response headers cannot be modified because the response has already started. Try again!"])
+                );
+            }
 
             await context.Response.WriteAsync(result);
         }

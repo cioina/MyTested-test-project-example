@@ -51,10 +51,10 @@ the value was different - {2}.";
 
     public class IdentityControllerRouteTest
     {
-        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength);
+        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength - 1);
         private static readonly string ValidMaxUserNameLength = new('t', MaxUserNameLength - 1);
 
-        private static readonly string ValidMinEmailLength = new('t', MinEmailLength);
+        private static readonly string ValidMinEmailLength = new('t', MinEmailLength - 1);
         private static readonly string ValidMaxEmailLength = new('t', MaxEmailLength - 8);
 
         private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);

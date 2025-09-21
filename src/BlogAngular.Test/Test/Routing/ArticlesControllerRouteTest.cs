@@ -19,21 +19,21 @@ namespace BlogAngular.Test.Routing
 {
     public class ArticlesControllerRouteTest
     {
-        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength);
+        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength - 1);
         private static readonly string ValidMaxUserNameLength = new('t', MaxUserNameLength - 1);
 
-        private static readonly string ValidMinEmailLength = new('t', MinEmailLength);
+        private static readonly string ValidMinEmailLength = new('t', MinEmailLength - 1);
         private static readonly string ValidMaxEmailLength = new('t', MaxEmailLength - 8);
 
         private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);
         private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
 
-        private static readonly string ValidMinNameLength = new('t', MinNameLength);
+        private static readonly string ValidMinNameLength = new('t', MinNameLength - 1);
         private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
 
-        private static readonly string ValidMinTitleLength = new('t', MinTitleLength);
+        private static readonly string ValidMinTitleLength = new('t', MinTitleLength - 1);
         private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
-        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength);
+        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength - 1);
         private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
 
         public static IEnumerable<object[]> ValidData()
@@ -349,6 +349,93 @@ namespace BlogAngular.Test.Routing
         #region Listing Articles
         [Theory]
         [MemberData(nameof(ValidData))]
+        public void Listing_articles_contains_title_ascending_with_tag_filter_should_return_success_with_article_list(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
+                string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""tags"": [{0},{1},{2}], ""published"": true, ""createdAtAsc"": true, ""title"": ""{3}""}}}}", 1, 2, 3, $"{title}1")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = true,
+                Published = true,
+                Title = $"{title}1",
+                Tags = Enumerable
+                       .Range(1, 3)
+                       .Select(i => i).ToList(),
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 1,
+            Models = [.. Enumerable
+             .Range(1, 1)
+             .Select(i =>
+             {
+                 return new ArticleResponseModel
+                 {
+                     Id = i,
+                     Title = $"{title}{i}",
+                     Slug = $"{slug}{i}",
+                     Description = $"{description}{i}",
+                     Published = true,
+                     CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
+                     TagList = [.. Enumerable
+                                .Range(1, 3)
+                                .Select(i =>
+                                {
+                                    int r = 0;
+                                    switch (i)
+                                    {
+                                        case 1:
+                                            r = 5;
+                                            break;
+                                        case 2:
+                                            r = 4;
+                                            break;
+                                        case 3:
+                                            r = 3;
+                                            break;
+                                    }
+                                    return r;
+                                })],
+
+                 };
+             })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
         public void Listing_articles_ascending_with_tag_filter_should_return_success_with_article_list(
          string fullName,
          string email,
@@ -522,7 +609,56 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_articles_not_published_ascending_without_tag_filter_should_return_success_with_all_articles(
+        public void Listing_articles_with_case_sensitive_title_should_return_success_with_empty(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
+                 string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""title"": ""T1""  }}}}")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                Title = "T1",
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 0,
+            Models = [],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_not_published_ascending_without_tag_filter_should_return_success_with_empty(
          string fullName,
          string email,
          string password,
@@ -634,6 +770,72 @@ namespace BlogAngular.Test.Routing
                      CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                  };
              })],
+        }));
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_contains_title_ascending_without_tag_filter_should_return_success_with_all_articles(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => MyMvc
+        .Pipeline()
+        .ShouldMap(request => request
+          .WithMethod(HttpMethod.Post)
+          .WithLocation("api/v1.0/articles")
+          .WithJsonBody(
+                 string.Format(@"{{""filter"":{{""limit"": 4, ""offset"": 0, ""published"": true, ""createdAtAsc"": true, ""title"": ""{0}"" }}}}", $"{title}1")
+          )
+        )
+        .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+        {
+            ArticleTagsJson = new()
+            {
+                CreatedAtAsc = true,
+                Published = true,
+                Title = $"{title}1",
+                Tags = null,
+                Limit = 4,
+                Offset = 0,
+            }
+        }))
+        .Which(controller => controller
+          .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                 email,
+                 fullName,
+                 password,
+                 name,
+                 title,
+                 slug,
+                 description,
+                 DateOnly.FromDateTime(DateTime.Today),
+                 true)))
+        .ShouldHave()
+        .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+        .AndAlso()
+        .ShouldReturn()
+        .ActionResult(result => result.Result(new ArticlesResponseEnvelope
+        {
+            Total = 1,
+            Models =
+              [.. Enumerable
+                     .Range(1, 1)
+                     .Select(i =>
+                     {
+                         return new ArticleResponseModel
+                         {
+                             Id = i,
+                             Title = $"{title}{i}",
+                             Slug = $"{slug}{i}",
+                             Description = $"{description}{i}",
+                             Published = true,
+                             CreatedAt = DateOnly.FromDateTime(DateTime.Today).ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
+                         };
+                     })],
         }));
 
         [Theory]
@@ -833,7 +1035,7 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_articles_with_wrong_limit_and_offset_should_return_validation_error(
+        public void Listing_articles_with_title_ending_with_space_should_return_validation_error(
          string fullName,
          string email,
          string password,
@@ -850,7 +1052,7 @@ namespace BlogAngular.Test.Routing
              .WithMethod(HttpMethod.Post)
              .WithLocation("api/v1.0/articles")
              .WithJsonBody(
-                    string.Format(@"{{""filter"":{{""limit"": 0, ""offset"": -1, ""published"": true }}}}")
+                    string.Format(@"{{""filter"":{{""limit"": 0, ""offset"": -1, ""published"": true, ""title"": ""{0}""}}}}", $"{ValidMaxTitleLength} ")
              )
            )
            .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
@@ -859,6 +1061,7 @@ namespace BlogAngular.Test.Routing
                {
                    CreatedAtAsc = null,
                    Published = true,
+                   Title = $"{ValidMaxTitleLength} ",
                    Tags = null,
                    Limit = 0,
                    Offset = -1,
@@ -881,8 +1084,177 @@ namespace BlogAngular.Test.Routing
            .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
-            { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
+           { "ArticleTagsJson.Title", ["The specified condition was not met for 'Article Tags Json Title'."] },
+           { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
+           { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_with_title_starting_with_space_should_return_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+           .Pipeline()
+           .ShouldMap(request => request
+             .WithMethod(HttpMethod.Post)
+             .WithLocation("api/v1.0/articles")
+             .WithJsonBody(
+                    string.Format(@"{{""filter"":{{""limit"": 0, ""offset"": -1, ""published"": true, ""title"": "" ""}}}}")
+             )
+           )
+           .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+           {
+               ArticleTagsJson = new()
+               {
+                   CreatedAtAsc = null,
+                   Published = true,
+                   Title = " ",
+                   Tags = null,
+                   Limit = 0,
+                   Offset = -1,
+               }
+           }))
+           .Which(controller => controller
+             .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                    email,
+                    fullName,
+                    password,
+                    name,
+                    title,
+                    slug,
+                    description,
+                    DateOnly.FromDateTime(DateTime.Today),
+                    true)))
+           .ShouldHave()
+           .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+           .AndAlso()
+           .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+           { "ArticleTagsJson.Title", ["The specified condition was not met for 'Article Tags Json Title'."] },
+           { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
+           { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_with_min_title_and_wrong_limit_and_offset_should_return_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+           .Pipeline()
+           .ShouldMap(request => request
+             .WithMethod(HttpMethod.Post)
+             .WithLocation("api/v1.0/articles")
+             .WithJsonBody(
+                    string.Format(@"{{""filter"":{{""limit"": 0, ""offset"": -1, ""published"": true, ""title"": """"}}}}")
+             )
+           )
+           .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+           {
+               ArticleTagsJson = new()
+               {
+                   CreatedAtAsc = null,
+                   Published = true,
+                   Title = "",
+                   Tags = null,
+                   Limit = 0,
+                   Offset = -1,
+               }
+           }))
+           .Which(controller => controller
+             .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                    email,
+                    fullName,
+                    password,
+                    name,
+                    title,
+                    slug,
+                    description,
+                    DateOnly.FromDateTime(DateTime.Today),
+                    true)))
+           .ShouldHave()
+           .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+           .AndAlso()
+           .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+           { "ArticleTagsJson.Title", ["The length of 'Article Tags Json Title' must be at least 1 characters. You entered 0 characters."] },
+           { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
+           { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
+        });
+
+        [Theory]
+        [MemberData(nameof(ValidData))]
+        public void Listing_articles_with_max_title_and_wrong_limit_and_offset_should_return_validation_error(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description)
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+           .Pipeline()
+           .ShouldMap(request => request
+             .WithMethod(HttpMethod.Post)
+             .WithLocation("api/v1.0/articles")
+             .WithJsonBody(
+                    string.Format(@"{{""filter"":{{""limit"": 0, ""offset"": -1, ""published"": true, ""title"": ""{0}""}}}}", $"{ValidMaxTitleLength}ab")
+             )
+           )
+           .To<ArticlesController>(c => c.Articles(new ArticleTagsListingCommand
+           {
+               ArticleTagsJson = new()
+               {
+                   CreatedAtAsc = null,
+                   Published = true,
+                   Title = $"{ValidMaxTitleLength}ab",
+                   Tags = null,
+                   Limit = 0,
+                   Offset = -1,
+               }
+           }))
+           .Which(controller => controller
+             .WithData(StaticTestData.GetArticlesTagsUsers(5,
+                    email,
+                    fullName,
+                    password,
+                    name,
+                    title,
+                    slug,
+                    description,
+                    DateOnly.FromDateTime(DateTime.Today),
+                    true)))
+           .ShouldHave()
+           .ActionAttributes(attrs => attrs.RestrictingForHttpMethod(HttpMethod.Post))
+           .AndAlso()
+           .ShouldReturn();
+        }, new Dictionary<string, string[]>
+        {
+           { "ArticleTagsJson.Title", ["The length of 'Article Tags Json Title' must be 320 characters or fewer. You entered 321 characters."] },
+           { "ArticleTagsJson.Limit", ["'Article Tags Json Limit' must be greater than '0'."] },
+           { "ArticleTagsJson.Offset", ["'Article Tags Json Offset' must be greater than '-1'."] }
         });
         #endregion
 
@@ -978,7 +1350,7 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_all_articles_ascending_with_offset_with_tag_filter_should_return_success_with_article_list(
+        public void Listing_all_articles_ascending_with_offset_with_tag_filter_should_return_success_with_empty(
          string fullName,
          string email,
          string password,
