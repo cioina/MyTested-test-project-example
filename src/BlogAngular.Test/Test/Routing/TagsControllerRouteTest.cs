@@ -1028,7 +1028,7 @@ namespace BlogAngular.Test.Routing
         #region Listing Tags
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_upper_case_title_url_parameter_should_return_success_with_tag_list_with_limit(
+        public void Listing_tags_with_upper_case_title_url_parameter_should_return_success_with_tag_list_empty(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -1404,25 +1404,26 @@ namespace BlogAngular.Test.Routing
              .Pipeline()
              .ShouldMap(request => request
                 .WithMethod(HttpMethod.Get)
-                .WithLocation($"api/v1.0/tags?Limit={0}&Offset={-1}&Title=t1")
+                .WithLocation($"api/v1.0/tags?Limit=0&Offset=-1&Title=%20t")
                 .WithFormFields(new
                 {
                     Limit = 0,
                     Offset = -1,
-                    Title = "t1"
+                    Title = " t"
                 })
              )
              .To<TagsController>(c => c.Tags(new TagsQuery
              {
                  Limit = 0,
                  Offset = -1,
-                 Title = "t1"
+                 Title = " t"
              }))
              .Which(controller => controller
                  .WithData(StaticTestData.GetTags(5, name)))
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
+           { "Title", ["The specified condition was not met for 'Title'."] },
            { "Limit", ["'Limit' must be greater than '0'."] },
            { "Offset",["'Offset' must be greater than '-1'."] }
         });
