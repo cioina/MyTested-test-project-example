@@ -563,7 +563,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "is_in_role_error", ["Cannot find role Administrator"] }
+           { "is_in_role_error", [$"Cannot find role {AdministratorRoleName}"] }
         });
 
         [Theory]
@@ -898,7 +898,7 @@ the value was different - {2}.";
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-          { "is_in_role_error", ["Cannot find role Administrator"] }
+          { "is_in_role_error", [$"Cannot find role {AdministratorRoleName}"] }
         });
 
         [Theory]

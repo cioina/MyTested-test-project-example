@@ -184,7 +184,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-           { "is_in_role_error", ["Cannot find role Administrator"] },
+           { "is_in_role_error", [$"Cannot find role {AdministratorRoleName}"] },
         });
 
         [Theory]
