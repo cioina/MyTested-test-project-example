@@ -475,6 +475,76 @@ namespace BlogAngular.Test.RateLimit
         });
 
         [Theory]
+        [InlineData("ValidMinUserNameLength",
+         //Must be valid email address
+         "ValidEmail@email.com",
+         //Password must contain Upper case, lower case, number, special symbols
+         "!ValidMinPasswordLength",
+
+         "ValidMinNameLength",
+
+         "ValidMinTitleLength",
+         "ValidMinTitleLength",
+         "ValidMinDescriptionLength")]
+        public void Edit_tag_with_valid_token_and_fake_ip_should_fail(
+         string fullName,
+         string email,
+         string password,
+         string name,
+         string title,
+         string slug,
+         string description
+         )
+        => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
+        () =>
+        {
+            MyMvc
+            .Pipeline()
+            .ShouldMap(request => request
+               .WithHeaders(new Dictionary<string, string>
+               {
+                   ["X-Real-IP"] = "16.8.8.0",
+                   ["X-Real-LIMIT"] = "0"
+               })
+              .WithMethod(HttpMethod.Put)
+              .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, AdministratorRoleName, "0.0.0.0"))
+              .WithLocation("api/v1.0/tags/edit/2")
+              .WithJsonBody(
+                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                         $"{name}4")
+              )
+            )
+            .To<TagsController>(c => c.Edit(2, new()
+            {
+                TagJson = new()
+                {
+                    Title = $"{name}4"
+                }
+            }))
+            .Which(controller => controller
+              .WithData(db => db
+                .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
+                   count: 3,
+
+                   email: email,
+                   userName: fullName,
+                   password: password,
+
+                   name: name,
+
+                   title: title,
+                   slug: slug,
+                   description: description,
+                   date: DateOnly.FromDateTime(DateTime.Today),
+                   published: false,
+
+                   dbContext: entities))));
+        }, new Dictionary<string, string[]>
+        {
+            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
+        });
+
+        [Theory]
         [MemberData(nameof(ValidData))]
         public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
          string fullName,
