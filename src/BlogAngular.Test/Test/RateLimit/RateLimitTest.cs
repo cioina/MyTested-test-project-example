@@ -140,6 +140,7 @@ namespace BlogAngular.Test.RateLimit
 
         [Theory]
         [MemberData(nameof(ValidData))]
+        //See "ClientWhitelist" config
         public void Edit_tag_with_whitelisted_client_id_and_zero_limit_on_private_route_should_return_success_with_data(
          string fullName,
          string email,
@@ -288,19 +289,15 @@ namespace BlogAngular.Test.RateLimit
           .WithData(db => db
             .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
                count: 3,
-
                email: email,
                userName: fullName,
                password: password,
-
                name: name,
-
                title: title,
                slug: slug,
                description: description,
                date: DateOnly.FromDateTime(DateTime.Today),
                published: false,
-
                dbContext: entities))))
         .ShouldHave()
         .ActionAttributes(attrs => attrs
@@ -323,17 +320,17 @@ namespace BlogAngular.Test.RateLimit
         });
 
         [Theory]
-        [InlineData("ValidMinUserNameLength",
+        [InlineData(
+         "ValidMinUserNameLength",
          //Must be valid email address
          "SecurityTokenRefreshException@email.com",
          //Password must contain Upper case, lower case, number, special symbols
          "!ValidMinPasswordLength",
-
          "ValidMinNameLength",
-
          "ValidMinTitleLength",
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
+        //This has a special email
         public void Login_with_password_with_refresh_token_and_whitelisted_private_route_should_return_success_with_token(
          string fullName,
          string email,
@@ -405,17 +402,17 @@ namespace BlogAngular.Test.RateLimit
         #endregion
 
         [Theory]
-        [InlineData("ValidMinUserNameLength",
+        [InlineData(
+         "ValidMinUserNameLength",
          //Must be valid email address
          "SecurityTokenRefreshException@email.com",
          //Password must contain Upper case, lower case, number, special symbols
          "!ValidMinPasswordLength",
-
          "ValidMinNameLength",
-
          "ValidMinTitleLength",
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
+        //This has a special email
         public void Edit_tag_with_refresh_token_should_fail(
          string fullName,
          string email,
@@ -455,37 +452,33 @@ namespace BlogAngular.Test.RateLimit
               .WithData(db => db
                 .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
                    count: 3,
-
                    email: email,
                    userName: fullName,
                    password: password,
-
                    name: name,
-
                    title: title,
                    slug: slug,
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-
                    dbContext: entities))));
         }, new Dictionary<string, string[]>
         {
-            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
+           { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
         });
 
         [Theory]
-        [InlineData("ValidMinUserNameLength",
+        [InlineData(
+         "ValidMinUserNameLength",
          //Must be valid email address
          "ValidEmail@email.com",
          //Password must contain Upper case, lower case, number, special symbols
          "!ValidMinPasswordLength",
-
          "ValidMinNameLength",
-
          "ValidMinTitleLength",
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
+        //In case of valid token and changed IP address, the token should refresh
         public void Edit_tag_with_valid_token_and_fake_ip_should_fail(
          string fullName,
          string email,
@@ -525,27 +518,24 @@ namespace BlogAngular.Test.RateLimit
               .WithData(db => db
                 .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
                    count: 3,
-
                    email: email,
                    userName: fullName,
                    password: password,
-
                    name: name,
-
                    title: title,
                    slug: slug,
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-
                    dbContext: entities))));
         }, new Dictionary<string, string[]>
         {
-            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
+           { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
         });
 
         [Theory]
         [MemberData(nameof(ValidData))]
+        //See "ClientWhitelist" config
         public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
          string fullName,
          string email,
@@ -576,23 +566,19 @@ namespace BlogAngular.Test.RateLimit
               .WithData(db => db
                 .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
                    count: 5,
-
                    email: email,
                    userName: fullName,
                    password: password,
-
                    name: name,
-
                    title: title,
                    slug: slug,
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-
                    dbContext: entities))));
         }, new Dictionary<string, string[]>
         {
-            { "RateLimitMiddlewareException", ["Too many requests"] },
+           { "RateLimitMiddlewareException", ["Too many requests"] },
         });
 
         [Theory]

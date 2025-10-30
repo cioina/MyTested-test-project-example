@@ -25,14 +25,13 @@ namespace BlogAngular.Test.RateLimit
         public class One(ITestOutputHelper output) : AsyncKeyedLockTest(output)
         {
             [Theory]
-            [InlineData("ValidMinUserNameLength",
+            [InlineData(
+             "ValidMinUserNameLength",
              //Must be valid email address
              "ValidMinEmailLength@a.bcde",
              //Password must contain Upper case, lower case, number, special symbols
              "!ValidMinPasswordLength",
-
              "ValidMinNameLength",
-
              "ValidMinTitleLength",
              "ValidMinTitleLength",
              "ValidMinDescriptionLength", 50, 35, 5, 35)]
@@ -115,19 +114,15 @@ namespace BlogAngular.Test.RateLimit
                                .WithData(db => db
                                  .WithEntities(entities => StaticTestData.GetAllWithRateLimitMiddleware(
                                     count: 3,
-
                                     email: email,
                                     userName: fullName,
                                     password: password,
-
                                     name: name,
-
                                     title: title,
                                     slug: slug,
                                     description: description,
                                     date: DateOnly.FromDateTime(DateTime.Today),
                                     published: false,
-
                                     dbContext: entities))));
                         }, new Dictionary<string, string[]>
                         {
@@ -224,15 +219,15 @@ namespace BlogAngular.Test.RateLimit
                         {
                             Total = 5,
                             Models = [.. Enumerable
-                          .Range(1, 5)
-                          .Select(i =>
-                          {
-                              return new TagResponseModel
-                              {
-                                  Id = i,
-                                  Title = $"name{i}"
-                              };
-                          })],
+                             .Range(1, 5)
+                             .Select(i =>
+                             {
+                                 return new TagResponseModel
+                                 {
+                                     Id = i,
+                                     Title = $"name{i}"
+                                 };
+                             })],
                         }));
 
                         const int delay = 10;

@@ -100,19 +100,15 @@ namespace BlogAngular.Test.Routing
           .WithData(db => db
             .WithEntities(entities => StaticTestData.GetArticlesTagsUsersWithRole(
                count: 3,
-
                email: email,
                userName: fullName,
                password: password,
-
                name: name,
-
                title: title,
                slug: slug,
                description: description,
                date: DateOnly.FromDateTime(DateTime.Today),
                published: false,
-
                dbContext: entities))))
         .ShouldHave()
         .ActionAttributes(attrs => attrs
@@ -237,49 +233,8 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-            { "user_error", ["Cannot find user by Id."] },
+           { "user_error", ["Cannot find user by Id."] },
         });
-
-        //    [Theory]
-        //    [MemberData(nameof(ValidData))]
-        //    public void EXPERIMENTAL_Create_tag_with_wrong_ip_should_fail1(
-        //#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-        //    string fullName,
-        //#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-        //    string email,
-        //#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-        //    string password,
-        //#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-        //    string name,
-        //#pragma warning disable xUnit1026 // Theory methods should use all of their parameters
-        //    string title,
-        //    string slug,
-        //    string description
-        //#pragma warning restore xUnit1026 // Theory methods should use all of their parameters
-        //     )
-        //     => Test.AssertException<MyTested.AspNetCore.Mvc.Exceptions.RouteAssertionException>(
-        //     () =>
-        //     {
-        //         MyMvc
-        //          .Pipeline()
-        //          .ShouldMap(request => request
-        //            .WithMethod(HttpMethod.Post)
-        //            .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, AdministratorRoleName, "0.0.0.0"))
-        //            .WithLocation("api/v1.0/tags/create")
-        //            .WithJsonBody(
-        //                   string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
-        //                       $"{name}4")
-        //            )
-        //          )
-        //          .To<TagsController>(c => c.Create(new()
-        //          {
-        //              TagJson = new()
-        //              {
-        //                  Title = $"{name}4"
-        //              }
-        //          }));
-
-        //     }, string.Format(HeaderAuthorizationException.Replace(Environment.NewLine, ""), "/api/v1.0/tags/create", "Create", "TagsController"));
 
         [Theory]
         [MemberData(nameof(ValidData))]
@@ -411,7 +366,7 @@ namespace BlogAngular.Test.Routing
              .ShouldReturn();
         }, new Dictionary<string, string[]>
         {
-         { "TagJson.Title",  ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] } ,
+          { "TagJson.Title",  ["The length of 'Tag Json Title' must be at least 2 characters. You entered 1 characters."] } ,
         });
 
         [Theory]
@@ -1384,7 +1339,7 @@ namespace BlogAngular.Test.Routing
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_wrong_limit_and_offset_should_return_validation_error(
+        public void Listing_tags_with_wrong_limit_and_offset_and_tittle_should_return_validation_error(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
