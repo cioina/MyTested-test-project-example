@@ -4,14 +4,48 @@ using BlogAngular.Application.Blog.Tags.Commands.Delete;
 using BlogAngular.Application.Blog.Tags.Commands.Edit;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Common;
+//using BlogAngular.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Builder;
+//using Microsoft.AspNetCore.Http;
+//using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Routing;
+//using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Threading.Tasks;
-
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
 
 namespace BlogAngular.Web.Features
 {
+    //public class TagsController : EndpointGroupBase
+    //{
+    //    public override string GroupName => "tags";
+    //    public override void Map(RouteGroupBuilder groupBuilder)
+    //    {
+    //        groupBuilder.MapGetIndex(Tags);
+    //        groupBuilder.MapPost(Create, nameof(Create)).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
+    //        groupBuilder.MapPut(Edit, nameof(Edit) + PathSeparator + Id).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
+    //        groupBuilder.MapDelete(Delete, nameof(Delete) + PathSeparator + Id).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
+    //    }
+    //    //https://github.com/dotnet/aspnetcore/issues/55719
+    //    public async Task<ActionResult<TagsResponseEnvelope>> Tags(
+    //        [AsParameters] TagsQuery query)
+    //        => await this.Send(query);
+
+    //    public async Task<ActionResult<TagResponseEnvelope>> Create(
+    //        [FromBody] TagCreateCommand command)
+    //        => await this.Send(command);
+
+    //    public async Task<ActionResult<TagResponseEnvelope>> Edit(
+    //        [FromRoute] int id,
+    //        [FromBody] TagEditCommand command)
+    //        => await this.Send(command.SetId(id));
+
+    //    public async Task<ActionResult<int>> Delete(
+    //        [FromBody] TagDeleteCommand command)
+    //        => await this.Send(command);
+    //}
+
     public class TagsController : ApiController
     {
         [HttpGet]
