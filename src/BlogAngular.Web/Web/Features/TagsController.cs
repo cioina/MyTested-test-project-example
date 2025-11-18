@@ -6,12 +6,12 @@ using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Common;
 //using BlogAngular.Web.Infrastructure;
 using Microsoft.AspNetCore.Authorization;
+//using Microsoft.AspNetCore.Authorization.Infrastructure;
 //using Microsoft.AspNetCore.Builder;
 //using Microsoft.AspNetCore.Http;
-//using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Routing;
-//using Microsoft.Extensions.FileSystemGlobbing.Internal;
+//using System.Security.Claims;
 using System.Threading.Tasks;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
 
@@ -22,10 +22,14 @@ namespace BlogAngular.Web.Features
     //    public override string GroupName => "tags";
     //    public override void Map(RouteGroupBuilder groupBuilder)
     //    {
+    //        var authorizationPolicy = new AuthorizationPolicy([new DenyAnonymousAuthorizationRequirement(),
+    //            new ClaimsAuthorizationRequirement(ClaimTypes.NameIdentifier, null),
+    //            new RolesAuthorizationRequirement([AdministratorRoleName])], [Bearer]);
+
     //        groupBuilder.MapGetIndex(Tags);
-    //        groupBuilder.MapPost(Create, nameof(Create)).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
-    //        groupBuilder.MapPut(Edit, nameof(Edit) + PathSeparator + Id).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
-    //        groupBuilder.MapDelete(Delete, nameof(Delete) + PathSeparator + Id).RequireAuthorization(new AuthorizeAttribute { Roles = AdministratorRoleName });
+    //        groupBuilder.MapPost(Create, nameof(Create)).RequireAuthorization([BearerPolicy]);
+    //        groupBuilder.MapPut(Edit, nameof(Edit) + PathSeparator + Id).RequireAuthorization(authorizationPolicy);
+    //        groupBuilder.MapDelete(Delete, nameof(Delete) + PathSeparator + Id).RequireAuthorization(authorizationPolicy);
     //    }
     //    //https://github.com/dotnet/aspnetcore/issues/55719
     //    public async Task<ActionResult<TagsResponseEnvelope>> Tags(

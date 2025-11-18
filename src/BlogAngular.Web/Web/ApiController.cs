@@ -33,5 +33,9 @@ namespace BlogAngular.Web
         protected Task<ActionResult> Send(
             IRequest<Result> request)
             => this.Mediator.Send(request).ToActionResult();
+
+        protected Task<ActionResult<TResult>> Send<TResult>(IMediator sender,
+            IRequest<Result<TResult>> request)
+            => sender.Send(request).ToActionResult();
     }
 }
