@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Routing;
 
 namespace BlogAngular.Web.Infrastructure
 {
-    public abstract class EndpointGroupBase: ControllerBase
+    public abstract class EndpointGroupBase : ControllerBase
     {
         protected const string Id = "{id}";
         protected const string PathSeparator = "/";

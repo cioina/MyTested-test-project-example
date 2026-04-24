@@ -12,28 +12,28 @@ namespace BlogAngular.Web.Infrastructure
         public static RouteHandlerBuilder MapGetIndex(this IEndpointRouteBuilder builder, Delegate handler)
         {
             return builder.MapGet("", handler);
-               // .RequireCors(options => options
-               //     .WithHeaders(
-               //         "Content-Type",
-               //         "X-Auth-Token",
-               //         "Origin",
-               //         "Authorization")
-               //     .WithMethods(
-               //         "POST",
-               //         "GET",
-               //         "OPTIONS",
-               //         "PUT",
-               //         "PATCH",
-               //         "DELETE")
-               //     .WithExposedHeaders(
-               //         "Cache-Control",
-               //         "Content-Language",
-               //         "Content-Type",
-               //         "Expires",
-               //         "Last-Modified",
-               //         "Pragma")
-               //     .AllowAnyOrigin()
-               //);
+            // .RequireCors(options => options
+            //     .WithHeaders(
+            //         "Content-Type",
+            //         "X-Auth-Token",
+            //         "Origin",
+            //         "Authorization")
+            //     .WithMethods(
+            //         "POST",
+            //         "GET",
+            //         "OPTIONS",
+            //         "PUT",
+            //         "PATCH",
+            //         "DELETE")
+            //     .WithExposedHeaders(
+            //         "Cache-Control",
+            //         "Content-Language",
+            //         "Content-Type",
+            //         "Expires",
+            //         "Last-Modified",
+            //         "Pragma")
+            //     .AllowAnyOrigin()
+            //);
         }
 
         public static RouteHandlerBuilder MapGet(this IEndpointRouteBuilder builder, Delegate handler, [StringSyntax("Route")] string pattern = "")
