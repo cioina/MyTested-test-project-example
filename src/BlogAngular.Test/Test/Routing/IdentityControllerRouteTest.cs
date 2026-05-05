@@ -316,7 +316,7 @@ the value was different - {2}.";
 
         [Theory]
         [MemberData(nameof(RegisterValidData))]
-        public void Update_user_with_malformated_authorization_header_should_fail(
+        public void Update_user_with_malformed_authorization_header_should_fail(
          string fullName,
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string email,
@@ -737,7 +737,7 @@ the value was different - {2}.";
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         //TODO: Test this in browser
-        public void Update_user_with_malformated_data_should_fail(
+        public void Update_user_with_malformed_data_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
@@ -1267,7 +1267,7 @@ the value was different - {2}.";
         [Theory]
         [MemberData(nameof(RegisterValidData))]
         //In browser, it returns 422 with a validation error: userJson.Email 'User Json Email' must not be empty.
-        public void Login_user_with_malformated_data_should_fail(
+        public void Login_user_with_malformed_data_should_fail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
