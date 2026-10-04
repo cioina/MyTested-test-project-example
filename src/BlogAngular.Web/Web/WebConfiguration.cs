@@ -1,4 +1,5 @@
-﻿using BlogAngular.Application.Common.Contracts;
+﻿using Asp.Versioning;
+using BlogAngular.Application.Common.Contracts;
 using BlogAngular.Application.Common.Models;
 using BlogAngular.Web.Services;
 using FluentValidation;
@@ -26,7 +27,12 @@ namespace BlogAngular.Web
                 })
                 .AddNewtonsoftJson();
 
-            services.AddApiVersioning();
+            services.AddApiVersioning().AddMvc();
+            services.AddApiVersioning(options =>
+            {
+                // API versioning by URL segment (api/v1/users)
+                options.ApiVersionReader = new UrlSegmentApiVersionReader();
+            });
 
             return services;
         }

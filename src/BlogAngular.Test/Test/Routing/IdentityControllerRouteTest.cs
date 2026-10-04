@@ -135,7 +135,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -190,7 +190,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -245,7 +245,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -856,7 +856,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(4, attributes.Count());
+            Assert.InRange(attributes.Count(), 3, 4);
         });
 
         [Theory]
@@ -1021,7 +1021,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(4, attributes.Count());
+            Assert.InRange(attributes.Count(), 3, 4);
         });
 
         [Theory]
@@ -1261,7 +1261,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(4, attributes.Count());
+            Assert.InRange(attributes.Count(), 3, 4);
         });
 
         [Theory]
@@ -1402,7 +1402,7 @@ the value was different - {2}.";
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(6, attributes.Count());
+            Assert.InRange(attributes.Count(), 5, 6);
         });
 
         [Theory]

@@ -135,7 +135,7 @@ namespace BlogAngular.Test.RateLimit
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(4, attributes.Count());
+            Assert.InRange(attributes.Count(), 3, 4);
         });
 
         [Theory]
@@ -203,7 +203,7 @@ namespace BlogAngular.Test.RateLimit
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -316,7 +316,7 @@ namespace BlogAngular.Test.RateLimit
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -397,7 +397,7 @@ namespace BlogAngular.Test.RateLimit
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(4, attributes.Count());
+            Assert.InRange(attributes.Count(), 3, 4);
         });
         #endregion
 

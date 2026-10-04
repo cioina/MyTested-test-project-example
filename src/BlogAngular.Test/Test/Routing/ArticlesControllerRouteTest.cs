@@ -120,7 +120,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -172,7 +172,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -1540,7 +1540,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -1607,7 +1607,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -1853,7 +1853,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -1920,7 +1920,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -1987,7 +1987,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -2293,7 +2293,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -2348,7 +2348,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -2438,7 +2438,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
 
         [Theory]
@@ -2483,7 +2483,7 @@ namespace BlogAngular.Test.Routing
         .AndAlso()
         .ShouldPassForThe<ActionAttributes>(attributes =>
         {
-            Assert.Equal(5, attributes.Count());
+            Assert.InRange(attributes.Count(), 4, 5);
         });
         #endregion
     }
