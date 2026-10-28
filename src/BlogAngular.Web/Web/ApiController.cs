@@ -1,7 +1,7 @@
 ﻿using Asp.Versioning;
 using BlogAngular.Application.Common.Models;
 using BlogAngular.Web.Extensions;
-using MediatR;
+using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
 using System.Threading.Tasks;
@@ -25,18 +25,18 @@ namespace BlogAngular.Web
 
         protected Task<ActionResult<TResult>> Send<TResult>(
             IRequest<TResult> request)
-            => this.Mediator.Send(request).ToActionResult();
+            => Mediator.Send(request).AsTask().ToActionResult();
 
         protected Task<ActionResult<TResult>> Send<TResult>(
             IRequest<Result<TResult>> request)
-            => this.Mediator.Send(request).ToActionResult();
+            => Mediator.Send(request).AsTask().ToActionResult();
 
         protected Task<ActionResult> Send(
             IRequest<Result> request)
-            => this.Mediator.Send(request).ToActionResult();
+            => Mediator.Send(request).AsTask().ToActionResult();
 
-        protected Task<ActionResult<TResult>> Send<TResult>(IMediator sender,
+        static protected Task<ActionResult<TResult>> Send<TResult>(IMediator sender,
             IRequest<Result<TResult>> request)
-            => sender.Send(request).ToActionResult();
+            => sender.Send(request).AsTask().ToActionResult();
     }
 }

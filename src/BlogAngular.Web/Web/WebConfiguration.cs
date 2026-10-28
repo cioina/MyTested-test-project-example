@@ -27,12 +27,10 @@ namespace BlogAngular.Web
                 })
                 .AddNewtonsoftJson();
 
-            services.AddApiVersioning().AddMvc();
             services.AddApiVersioning(options =>
             {
-                // API versioning by URL segment (api/v1/users)
                 options.ApiVersionReader = new UrlSegmentApiVersionReader();
-            });
+            }).AddMvc();
 
             return services;
         }
