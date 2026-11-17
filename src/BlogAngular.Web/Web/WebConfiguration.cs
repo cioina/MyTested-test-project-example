@@ -1,4 +1,4 @@
-﻿using Asp.Versioning;
+using Asp.Versioning;
 using BlogAngular.Application.Common.Contracts;
 using BlogAngular.Application.Common.Models;
 using BlogAngular.Web.Services;
@@ -12,25 +12,24 @@ namespace BlogAngular.Web
         public static IServiceCollection AddWebComponents(
             this IServiceCollection services)
         {
-            services
+            _ = services
                 .AddScoped<ICurrentUser, CurrentUserService>()
                 .AddValidatorsFromAssemblyContaining<Result>()
                 .AddControllers(options => options.EnableEndpointRouting = false)
                 .ConfigureApiBehaviorOptions(options =>
-                {
-                    options.SuppressModelStateInvalidFilter = true;
-                    options.SuppressMapClientErrors = true;
+                  {
+                      options.SuppressModelStateInvalidFilter = true;
+                      options.SuppressMapClientErrors = true;
 
-                    options.DisableImplicitFromServicesParameters = true;
-                    options.SuppressConsumesConstraintForFormFileParameters = true;
+                      options.DisableImplicitFromServicesParameters = true;
+                      options.SuppressConsumesConstraintForFormFileParameters = true;
 
-                })
+                  })
                 .AddNewtonsoftJson();
 
-            services.AddApiVersioning(options =>
-            {
-                options.ApiVersionReader = new UrlSegmentApiVersionReader();
-            }).AddMvc();
+            _ = services
+                .AddApiVersioning(options => options.ApiVersionReader = new UrlSegmentApiVersionReader())
+                .AddMvc();
 
             return services;
         }

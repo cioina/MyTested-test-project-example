@@ -1,8 +1,8 @@
-﻿using BlogAngular.Application.Common.Exceptions;
-using BlogAngular.Application.Common.Models;
-using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using BlogAngular.Application.Common.Exceptions;
+using BlogAngular.Application.Common.Models;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogAngular.Web.Extensions
 {

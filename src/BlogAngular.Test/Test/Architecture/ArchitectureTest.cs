@@ -1,4 +1,4 @@
-﻿using BlogAngular.Application;
+using BlogAngular.Application;
 using BlogAngular.Domain;
 using BlogAngular.Infrastructure;
 using NetArchTest.Rules;
@@ -9,7 +9,7 @@ namespace BlogAngular.Test.Architecture
     public class ArchitectureTest
     {
         [Fact]
-        public void Domain_should_not_have_any_dependencies()
+        public void DomainShouldNotHaveAnyDependencies()
         {
             var application = typeof(ApplicationConfiguration).Assembly.GetName().Name;
             var infrastructure = typeof(InfrastructureConfiguration).Assembly.GetName().Name;
@@ -29,7 +29,7 @@ namespace BlogAngular.Test.Architecture
         }
 
         [Fact]
-        public void Infrastructure_should_depend_on_domain()
+        public void InfrastructureShouldDependOnDomain()
         {
             var domain = typeof(DomainConfiguration).Assembly.GetName().Name;
 

@@ -1,7 +1,7 @@
-﻿using BlogAngular.Application.Common.Contracts;
-using Microsoft.AspNetCore.Http;
 using System;
 using System.Security.Claims;
+using BlogAngular.Application.Common.Contracts;
+using Microsoft.AspNetCore.Http;
 
 namespace BlogAngular.Web.Services
 {

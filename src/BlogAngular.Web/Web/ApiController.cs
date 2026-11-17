@@ -1,10 +1,10 @@
-﻿using Asp.Versioning;
+using System.Threading.Tasks;
+using Asp.Versioning;
 using BlogAngular.Application.Common.Models;
 using BlogAngular.Web.Extensions;
 using Mediator;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.DependencyInjection;
-using System.Threading.Tasks;
 
 namespace BlogAngular.Web
 {
@@ -13,13 +13,11 @@ namespace BlogAngular.Web
     [Route("api/v{version:apiVersion}/[controller]")]
     public abstract class ApiController : ControllerBase
     {
-        protected const string Id = "{id}";
-        protected const string PathSeparator = "/";
-
-        private IMediator? mediator;
+        protected const string ID = "{id}";
+        protected const string PATHSEPARATOR = "/";
 
         protected IMediator Mediator
-            => this.mediator ??= this.HttpContext
+            => field ??= this.HttpContext
                 .RequestServices
                 .GetRequiredService<IMediator>();
 
@@ -35,7 +33,7 @@ namespace BlogAngular.Web
             IRequest<Result> request)
             => Mediator.Send(request).AsTask().ToActionResult();
 
-        static protected Task<ActionResult<TResult>> Send<TResult>(IMediator sender,
+        protected static Task<ActionResult<TResult>> Send<TResult>(IMediator sender,
             IRequest<Result<TResult>> request)
             => sender.Send(request).AsTask().ToActionResult();
     }

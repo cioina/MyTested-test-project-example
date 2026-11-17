@@ -1,23 +1,23 @@
-﻿using BlogAngular.Application.Common.Exceptions;
+using System;
+using System.Net;
+using System.Threading.Tasks;
+using BlogAngular.Application.Common.Exceptions;
 using BlogAngular.Application.Common.Models;
 using Microsoft.AspNetCore.Http;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace BlogAngular.Web.Middleware
 {
     public class ValidationExceptionHandlerMiddleware(RequestDelegate next)
     {
-        private readonly RequestDelegate next = next;
+        private readonly RequestDelegate _next = next;
 
         public async Task InvokeAsync(HttpContext context)
         {
             try
             {
-                await this.next(context);
+                await this._next(context);
             }
             catch (Exception ex)
             {

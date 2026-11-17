@@ -1,17 +1,14 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
-
+<Project Sdk="Microsoft.NET.Sdk">
+  
   <PropertyGroup>
     <Description>Blog for ASP.NET Core framework.</Description>
     <AssemblyTitle>BlogAngular.Web</AssemblyTitle>
-    <VersionPrefix>9.0.0</VersionPrefix>
-    <TargetFramework>net10.0</TargetFramework>
-    <LangVersion>latest</LangVersion>
-    <NoWarn>$(NoWarn);CS1591</NoWarn>
-    <Nullable>enable</Nullable>
+    <VersionPrefix>10.0.0</VersionPrefix>
+    <NoWarn>$(NoWarn);CS1591;IDE0161;IDE0003;IDE0048;CA1859</NoWarn>
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
     <GenerateDocumentationFile>fale</GenerateDocumentationFile>
     <AssemblyName>BlogAngular.Web</AssemblyName>
-    <AssemblyOriginatorKeyFile>../../../MyTested/tools/Key.snk</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyFile>../../vendor/AsyncKeyedLock/AsyncKeyedLock.snk</AssemblyOriginatorKeyFile>
     <SignAssembly>true</SignAssembly>
     <PublicSign Condition=" '$(OS)' != 'Windows_NT' ">true</PublicSign>
     <PackageId>BlogAngular.Web</PackageId>
@@ -50,13 +47,12 @@
 
 
   <ItemGroup>
-	<PackageReference Include="Asp.Versioning.Mvc" Version="10.2.1" />
-    <PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
-    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" Version="10.0.14" />
+	<PackageReference Include="Asp.Versioning.Mvc" />
+	<PackageReference Include="FluentValidation.DependencyInjectionExtensions" />
+    <PackageReference Include="Microsoft.AspNetCore.Mvc.NewtonsoftJson" />
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Mediator\src\Mediator\Mediator.csproj" />
     <ProjectReference Include="..\BlogAngular.Application\BlogAngular.Application.csproj" />
   </ItemGroup>
 

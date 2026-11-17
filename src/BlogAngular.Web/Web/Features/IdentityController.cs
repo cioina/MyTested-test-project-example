@@ -1,11 +1,10 @@
-﻿using BlogAngular.Application.Identity.Commands.Common;
+using System.Threading.Tasks;
+using BlogAngular.Application.Identity.Commands.Common;
 using BlogAngular.Application.Identity.Commands.Login;
 using BlogAngular.Application.Identity.Commands.Register;
 using BlogAngular.Application.Identity.Commands.Update;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
-
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
 
 namespace BlogAngular.Web.Features

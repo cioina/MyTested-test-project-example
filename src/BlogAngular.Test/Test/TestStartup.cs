@@ -6,9 +6,6 @@ namespace BlogAngular.Test
 {
     public class TestStartup(IConfiguration configuration, IWebHostEnvironment environment) : Startup.Startup(configuration, environment)
     {
-        public void ConfigureTestServices(IServiceCollection services)
-        {
-            base.ConfigureServices(services);
-        }
+        public void ConfigureTestServices(IServiceCollection services) => ConfigureServices(services);
     }
 }

@@ -1,4 +1,8 @@
-﻿using BlogAngular.Application.Blog.Common;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Commands.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Application.Identity.Commands.Common;
@@ -7,9 +11,6 @@ using BlogAngular.Application.Identity.Commands.Update;
 using BlogAngular.Test.Data;
 using BlogAngular.Web.Features;
 using MyTested.AspNetCore.Mvc;
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Xunit;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Article;
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
@@ -20,60 +21,60 @@ namespace BlogAngular.Test.RateLimit
 {
     public class RateLimitRouteTest
     {
-        private static readonly string ValidMinUserNameLength = new('t', MinUserNameLength - 1);
-        private static readonly string ValidMaxUserNameLength = new('t', MaxUserNameLength - 1);
+        private static readonly string VALID_MIN_USER_NAME_LENGTH = new('t', MinUserNameLength - 1);
+        private static readonly string VALID_MAX_USER_NAME_LENGTH = new('t', MaxUserNameLength - 1);
 
-        private static readonly string ValidMinEmailLength = new('t', MinEmailLength - 1);
-        private static readonly string ValidMaxEmailLength = new('t', MaxEmailLength - 8);
+        private static readonly string VALID_MIN_EMAIL_LENGTH = new('t', MinEmailLength - 1);
+        private static readonly string VALID_MAX_EMAIL_LENGTH = new('t', MaxEmailLength - 8);
 
-        private static readonly string ValidMinPasswordLength = new('t', MinPasswordLength - 3);
-        private static readonly string ValidMaxPasswordLength = new('t', MaxPasswordLength - 3);
+        private static readonly string VALID_MIN_PASSWORD_LENGTH = new('t', MinPasswordLength - 3);
+        private static readonly string VALID_MAX_PASSWORD_LENGTH = new('t', MaxPasswordLength - 3);
 
-        private static readonly string ValidMinNameLength = new('t', MinNameLength - 1);
-        private static readonly string ValidMaxNameLength = new('t', MaxNameLength - 1);
+        private static readonly string VALID_MIN_NAME_LENGTH = new('t', MinNameLength - 1);
+        private static readonly string VALID_MAX_NAME_LENGTH = new('t', MaxNameLength - 1);
 
-        private static readonly string ValidMinTitleLength = new('t', MinTitleLength - 1);
-        private static readonly string ValidMaxTitleLength = new('t', MaxTitleLength - 1);
-        private static readonly string ValidMinDescriptionLength = new('t', MinDescriptionLength - 1);
-        private static readonly string ValidMaxDescriptionLength = new('t', MaxDescriptionLength - 1);
+        private static readonly string VALID_MIN_TITLE_LENGTH = new('t', MinTitleLength - 1);
+        private static readonly string VALID_MAX_TITLE_LENGTH = new('t', MaxTitleLength - 1);
+        private static readonly string VALID_MIN_DESCRIPTION_LENGTH = new('t', MinDescriptionLength - 1);
+        private static readonly string VALID_MAX_DESCRIPTION_LENGTH = new('t', MaxDescriptionLength - 1);
 
         public static IEnumerable<object[]> ValidData()
         {
             yield return new object[]
             {
-            ValidMinUserNameLength,
+            VALID_MIN_USER_NAME_LENGTH,
             //Must be valid email address
-            $"{ValidMinEmailLength}@a.bcde",
+            $"{VALID_MIN_EMAIL_LENGTH}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMinPasswordLength}",
+            $"U!{VALID_MIN_PASSWORD_LENGTH}",
 
-            ValidMinNameLength,
+            VALID_MIN_NAME_LENGTH,
 
-            ValidMinTitleLength,
-            ValidMinTitleLength,
-            ValidMinDescriptionLength,
+            VALID_MIN_TITLE_LENGTH,
+            VALID_MIN_TITLE_LENGTH,
+            VALID_MIN_DESCRIPTION_LENGTH,
             };
 
             yield return new object[]
             {
-            ValidMaxUserNameLength,
+            VALID_MAX_USER_NAME_LENGTH,
             //Must be valid email address
-            $"{ValidMaxEmailLength}@a.bcde",
+            $"{VALID_MAX_EMAIL_LENGTH}@a.bcde",
             //Password must contain Upper case, lower case, number, special symbols
-            $"U!{ValidMaxPasswordLength}",
+            $"U!{VALID_MAX_PASSWORD_LENGTH}",
 
-            ValidMaxNameLength,
+            VALID_MAX_NAME_LENGTH,
 
-            ValidMaxTitleLength,
-            ValidMaxTitleLength,
-            ValidMaxDescriptionLength,
+            VALID_MAX_TITLE_LENGTH,
+            VALID_MAX_TITLE_LENGTH,
+            VALID_MAX_DESCRIPTION_LENGTH,
             };
         }
 
         #region Success Tests
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Login_user_with_whitelisted_public_route_and_zero_limit_should_return_success_with_token(
+        public void LoginUserWithWhitelistedPublicRouteAndZeroLimitShouldReturnSuccessWithToken(
          string fullName,
          string email,
          string password,
@@ -95,7 +96,7 @@ namespace BlogAngular.Test.RateLimit
           .WithMethod(HttpMethod.Post)
           .WithLocation("api/v1.0/identity/login")
           .WithJsonBody(
-              string.Format(@"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
+              string.Format(CultureInfo.InvariantCulture, @"{{""user"":{{""email"":""{0}"",""password"":""{1}""}}}}",
                   $"{email}1",
                   $"{password}1"
               ))
@@ -133,15 +134,12 @@ namespace BlogAngular.Test.RateLimit
             }
         }))
         .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.InRange(attributes.Count(), 3, 4);
-        });
+        .ShouldPassForThe<ActionAttributes>(attributes => Assert.InRange(attributes.Count(), 3, 4));
 
         [Theory]
         [MemberData(nameof(ValidData))]
         //See "ClientWhitelist" config
-        public void Edit_tag_with_whitelisted_client_id_and_zero_limit_on_private_route_should_return_success_with_data(
+        public void EditTagWithWhitelistedClientIdAndZeroLimitOnPrivateRouteShouldReturnSuccessWithData(
          string fullName,
          string email,
          string password,
@@ -161,7 +159,7 @@ namespace BlogAngular.Test.RateLimit
           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole("ClientWhitelist@email.com", 1))
           .WithLocation("api/v1.0/tags/edit/2")
           .WithJsonBody(
-                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                 string.Format(CultureInfo.InvariantCulture, @"{{""tag"":{{""title"": ""{0}"" }}}}",
                      $"{name}4")
           )
         )
@@ -201,14 +199,11 @@ namespace BlogAngular.Test.RateLimit
             }
         }))
         .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.InRange(attributes.Count(), 4, 5);
-        });
+        .ShouldPassForThe<ActionAttributes>(attributes => Assert.InRange(attributes.Count(), 4, 5));
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_without_middleware_and_zero_rate_limit_should_return_success_with_all_tags(
+        public void ListingTagsWithoutMiddlewareAndZeroRateLimitShouldReturnSuccessWithAllTags(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -242,19 +237,16 @@ namespace BlogAngular.Test.RateLimit
             Total = 5,
             Models = [.. Enumerable
           .Range(1, 5)
-          .Select(i =>
-          {
-              return new TagResponseModel
+          .Select(i => new TagResponseModel
               {
                   Id = i,
                   Title = $"{name}{i}",
-              };
-          })],
+              })],
         }));
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Edit_tag_with_whitelisted_ip_address_and_zero_limit_should_return_success_with_data(
+        public void EditTagWithWhitelistedIpAddressAndZeroLimitShouldReturnSuccessWithData(
          string fullName,
          string email,
          string password,
@@ -274,7 +266,7 @@ namespace BlogAngular.Test.RateLimit
           .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
           .WithLocation("api/v1.0/tags/edit/2")
           .WithJsonBody(
-                 string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                 string.Format(CultureInfo.InvariantCulture, @"{{""tag"":{{""title"": ""{0}"" }}}}",
                      $"{name}4")
           )
         )
@@ -314,10 +306,7 @@ namespace BlogAngular.Test.RateLimit
             }
         }))
         .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.InRange(attributes.Count(), 4, 5);
-        });
+        .ShouldPassForThe<ActionAttributes>(attributes => Assert.InRange(attributes.Count(), 4, 5));
 
         [Theory]
         [InlineData(
@@ -331,7 +320,7 @@ namespace BlogAngular.Test.RateLimit
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
         //This has a special email
-        public void Login_with_password_with_refresh_token_and_whitelisted_private_route_should_return_success_with_token(
+        public void LoginWithPasswordWithRefreshTokenAndWhitelistedPrivateRouteShouldReturnSuccessWithToken(
          string fullName,
          string email,
          string password,
@@ -352,7 +341,7 @@ namespace BlogAngular.Test.RateLimit
            .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
            .WithLocation("api/v1.0/identity")
            .WithJsonBody(
-                string.Format(@"{{""user"":{{""password"":""{0}""}}}}",
+                string.Format(CultureInfo.InvariantCulture, @"{{""user"":{{""password"":""{0}""}}}}",
                     $"{password}1"
                 )
            )
@@ -395,10 +384,7 @@ namespace BlogAngular.Test.RateLimit
             }
         }))
         .AndAlso()
-        .ShouldPassForThe<ActionAttributes>(attributes =>
-        {
-            Assert.InRange(attributes.Count(), 3, 4);
-        });
+        .ShouldPassForThe<ActionAttributes>(attributes => Assert.InRange(attributes.Count(), 3, 4));
         #endregion
 
         [Theory]
@@ -413,7 +399,7 @@ namespace BlogAngular.Test.RateLimit
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
         //This has a special email
-        public void Edit_tag_with_refresh_token_should_fail(
+        public void EditTagWithRefreshTokenShouldFail(
          string fullName,
          string email,
          string password,
@@ -423,9 +409,7 @@ namespace BlogAngular.Test.RateLimit
          string description
          )
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
+        () => MyMvc
             .Pipeline()
             .ShouldMap(request => request
                .WithHeaders(new Dictionary<string, string>
@@ -437,7 +421,7 @@ namespace BlogAngular.Test.RateLimit
               .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
               .WithLocation("api/v1.0/tags/edit/2")
               .WithJsonBody(
-                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     string.Format(CultureInfo.InvariantCulture, @"{{""tag"":{{""title"": ""{0}"" }}}}",
                          $"{name}4")
               )
             )
@@ -461,8 +445,7 @@ namespace BlogAngular.Test.RateLimit
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-                   dbContext: entities))));
-        }, new Dictionary<string, string[]>
+                   dbContext: entities)))), new Dictionary<string, string[]>
         {
            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
         });
@@ -479,7 +462,7 @@ namespace BlogAngular.Test.RateLimit
          "ValidMinTitleLength",
          "ValidMinDescriptionLength")]
         //In case of valid token and changed IP address, the token should refresh
-        public void Edit_tag_with_valid_token_and_fake_ip_should_fail(
+        public void EditTagWithValidTokenAndFakeIpShouldFail(
          string fullName,
          string email,
          string password,
@@ -489,9 +472,7 @@ namespace BlogAngular.Test.RateLimit
          string description
          )
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
+        () => MyMvc
             .Pipeline()
             .ShouldMap(request => request
                .WithHeaders(new Dictionary<string, string>
@@ -503,7 +484,7 @@ namespace BlogAngular.Test.RateLimit
               .WithHeaderAuthorization(StaticTestData.GetJwtBearerWithRole(email, 1, AdministratorRoleName, "0.0.0.0"))
               .WithLocation("api/v1.0/tags/edit/2")
               .WithJsonBody(
-                     string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                     string.Format(CultureInfo.InvariantCulture, @"{{""tag"":{{""title"": ""{0}"" }}}}",
                          $"{name}4")
               )
             )
@@ -527,8 +508,7 @@ namespace BlogAngular.Test.RateLimit
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-                   dbContext: entities))));
-        }, new Dictionary<string, string[]>
+                   dbContext: entities)))), new Dictionary<string, string[]>
         {
            { "SecurityTokenRefreshException", ["Security token must be refreshed"] },
         });
@@ -536,7 +516,7 @@ namespace BlogAngular.Test.RateLimit
         [Theory]
         [MemberData(nameof(ValidData))]
         //See "ClientWhitelist" config
-        public void Listing_tags_with_whitelisted_client_id_and_zero_limit_on_public_route_should_fail(
+        public void ListingTagsWithWhitelistedClientIdAndZeroLimitOnPublicRouteShouldFail(
          string fullName,
          string email,
          string password,
@@ -546,9 +526,7 @@ namespace BlogAngular.Test.RateLimit
          string description
          )
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
+        () => MyMvc
             .Pipeline()
             .ShouldMap(request => request
                .WithHeaders(new Dictionary<string, string>
@@ -575,15 +553,14 @@ namespace BlogAngular.Test.RateLimit
                    description: description,
                    date: DateOnly.FromDateTime(DateTime.Today),
                    published: false,
-                   dbContext: entities))));
-        }, new Dictionary<string, string[]>
+                   dbContext: entities)))), new Dictionary<string, string[]>
         {
            { "RateLimitMiddlewareException", ["Too many requests"] },
         });
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_middleware_and_zero_rate_limit_should_fail(
+        public void ListingTagsWithMiddlewareAndZeroRateLimitShouldFail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -597,9 +574,7 @@ namespace BlogAngular.Test.RateLimit
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
+        () => MyMvc
             .Pipeline()
             .ShouldMap(request => request
                .WithHeaders(new Dictionary<string, string>
@@ -613,15 +588,14 @@ namespace BlogAngular.Test.RateLimit
             )
             .To<TagsController>(c => c.Tags(new TagsQuery { }))
             .Which(controller => controller
-                .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name)));
-        }, new Dictionary<string, string[]>
+                .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name))), new Dictionary<string, string[]>
         {
             { "RateLimitMiddlewareException", ["Too many requests"] },
         });
 
         [Theory]
         [MemberData(nameof(ValidData))]
-        public void Listing_tags_with_special_case_ip_address_should_fail(
+        public void ListingTagsWithSpecialCaseIpAddressShouldFail(
 #pragma warning disable xUnit1026 // Theory methods should use all of their parameters
          string fullName,
          string email,
@@ -635,9 +609,7 @@ namespace BlogAngular.Test.RateLimit
 #pragma warning restore xUnit1026 // Theory methods should use all of their parameters
          )
         => AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-        () =>
-        {
-            MyMvc
+        () => MyMvc
             .Pipeline()
             .ShouldMap(request => request
                .WithHeaders(new Dictionary<string, string>
@@ -651,8 +623,7 @@ namespace BlogAngular.Test.RateLimit
             )
             .To<TagsController>(c => c.Tags(new TagsQuery { }))
             .Which(controller => controller
-                .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name)));
-        }, new Dictionary<string, string[]>
+                .WithData(StaticTestData.GetTagsWithRateLimitMiddleware(5, name))), new Dictionary<string, string[]>
         {
             { "MatchingRulesException", ["Matching Rules Exception"] },
         });

@@ -1,4 +1,12 @@
-﻿using AspNetCoreRateLimit;
+using System;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Security.Claims;
+using System.Text;
+using System.Threading;
+using System.Threading.Tasks;
+using AspNetCoreRateLimit;
 using BlogAngular.Application.Common;
 using BlogAngular.Domain.Blog.Models;
 using BlogAngular.Infrastructure.Identity;
@@ -11,14 +19,6 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.JsonWebTokens;
 using Microsoft.IdentityModel.Tokens;
 using MyTested.AspNetCore.Mvc.Internal.Services;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-
 using static BlogAngular.Domain.Common.Models.ModelConstants.Identity;
 
 namespace BlogAngular.Test.Data
@@ -27,13 +27,13 @@ namespace BlogAngular.Test.Data
     {
         private class MiddlewareResult
         {
-            public const int NoResult = 0;
-            public const int GoodResult = 1;
-            public const int RateLimitMiddlewareException = -1;
-            public const int SecurityTokenRefreshException = -2;
-            public const int MatchingRulesException = -3;
+            public const int NO_RESULT = 0;
+            public const int GOOD_RESULT = 1;
+            public const int RATE_LIMIT_MIDDLEWARE_EXCEPTION = -1;
+            public const int SECURITY_TOKEN_REFRESH_EXCEPTION = -2;
+            public const int MATCHING_RULES_EXCEPTION = -3;
         }
-        class Worker
+        private class Worker
         {
             private volatile bool _shouldStop;
             public EventWaitHandle? WaitHandleExternal;
@@ -43,18 +43,15 @@ namespace BlogAngular.Test.Data
                 while (!_shouldStop)
                 {
                     Thread.Sleep(2000);
-                    WaitHandleExternal!.Set();
+                    _ = WaitHandleExternal!.Set();
                 }
             }
-            public void RequestStop()
-            {
-                _shouldStop = true;
-            }
+            public void RequestStop() => _shouldStop = true;
         }
 
         public static async Task<int> InvokeIpRateLimitMiddleware()
         {
-            int result = MiddlewareResult.NoResult;
+            var result = MiddlewareResult.NO_RESULT;
 
             if (TestServiceProvider.Current.GetService(typeof(IMiddlewareFactory)) is IMiddlewareFactory middlewareFactory)
             {
@@ -82,11 +79,11 @@ namespace BlogAngular.Test.Data
                                  {
                                      if (policy.IpRules.TryAdd(ip!, new IpRateLimitPolicy
                                      {
-                                         Ip = ip,
+                                         Ip = ip!,
                                          Rules = [.. new RateLimitRule[] {
                                                new() {
                                                    Endpoint = $"*:{httpContext.Request.Path}",
-                                                   Limit = int.Parse(limit!),
+                                                   Limit = int.Parse(limit!, CultureInfo.InvariantCulture),
                                                    Period = "5m" }}]
                                      }))
                                      {
@@ -96,7 +93,7 @@ namespace BlogAngular.Test.Data
                              }
 
                              await middleware.InvokeAsync(httpContext, TestServiceProvider.Current.GetService<RequestDelegate>()!);
-                             result = MiddlewareResult.GoodResult;
+                             result = MiddlewareResult.GOOD_RESULT;
                          });
                     }
                     catch (Exception exception)
@@ -104,13 +101,13 @@ namespace BlogAngular.Test.Data
                         switch (exception)
                         {
                             case RateLimitMiddlewareException:
-                                result = MiddlewareResult.RateLimitMiddlewareException;
+                                result = MiddlewareResult.RATE_LIMIT_MIDDLEWARE_EXCEPTION;
                                 break;
                             case SecurityTokenRefreshException:
-                                result = MiddlewareResult.SecurityTokenRefreshException;
+                                result = MiddlewareResult.SECURITY_TOKEN_REFRESH_EXCEPTION;
                                 break;
                             case MatchingRulesException:
-                                result = MiddlewareResult.MatchingRulesException;
+                                result = MiddlewareResult.MATCHING_RULES_EXCEPTION;
                                 break;
                         }
                     }
@@ -128,25 +125,25 @@ namespace BlogAngular.Test.Data
         {
             switch (code)
             {
-                case MiddlewareResult.RateLimitMiddlewareException:
+                case MiddlewareResult.RATE_LIMIT_MIDDLEWARE_EXCEPTION:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
                         { "RateLimitMiddlewareException", ["Too many requests"] }
                     });
 
-                case MiddlewareResult.SecurityTokenRefreshException:
+                case MiddlewareResult.SECURITY_TOKEN_REFRESH_EXCEPTION:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
                         { "SecurityTokenRefreshException", ["Security token must be refreshed"] }
                     });
-                case MiddlewareResult.MatchingRulesException:
+                case MiddlewareResult.MATCHING_RULES_EXCEPTION:
                     throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
                         { "MatchingRulesException", ["Matching Rules Exception"] }
                     });
 
                 default:
-                    if (code != MiddlewareResult.GoodResult)
+                    if (code != MiddlewareResult.GOOD_RESULT)
                     {
                         throw new MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException(new Dictionary<string, string[]>
                     {
@@ -161,14 +158,14 @@ namespace BlogAngular.Test.Data
         string email,
         int i)
         {
-            EventWaitHandle _waitHandle = new AutoResetEvent(false);
+            EventWaitHandle waitHandle = new AutoResetEvent(false);
             Worker workerObject = new()
             {
-                WaitHandleExternal = _waitHandle
+                WaitHandleExternal = waitHandle
             };
             Thread workerThread = new(workerObject.DoWork);
             workerThread.Start();
-            _waitHandle.WaitOne();
+            _ = waitHandle.WaitOne();
             var result = CreateJwtBearer($"{email}{i}", Guid.NewGuid().ToString(), DateTime.UtcNow.AddSeconds(1), AdministratorRoleName, "0.0.0.1");
             workerObject.RequestStop();
 
@@ -177,26 +174,17 @@ namespace BlogAngular.Test.Data
 
         public static string GetJwtBearerWithIncorrectKey(
             string email,
-            int i)
-        {
-            return CreateJwtBearer($"{email}{i}", Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
-        }
+            int i) => CreateJwtBearer($"{email}{i}", Guid.NewGuid().ToString(), DateTime.UtcNow.AddMinutes(1), AdministratorRoleName, "0.0.0.1");
 
         public static string GetJwtBearerAdministratorRole(
             string email,
-            int i)
-        {
-            return GetJwtBearerWithRole(email, i, AdministratorRoleName, null);
-        }
+            int i) => GetJwtBearerWithRole(email, i, AdministratorRoleName, null);
 
         public static string GetJwtBearerWithRole(
             string email,
             int i,
             string role,
-            string? ipAddress)
-        {
-            return GetJwtBearerWithRoleAndExpires(email, i, role, ipAddress, null);
-        }
+            string? ipAddress) => GetJwtBearerWithRoleAndExpires(email, i, role, ipAddress, null);
 
         public static string GetJwtBearerWithRoleAndExpires(
         string email,
@@ -227,7 +215,7 @@ namespace BlogAngular.Test.Data
         string role,
         string ipAddress)
         {
-            var key = Encoding.ASCII.GetBytes(secret.PadRight((256 / 8), '\0'));
+            var key = Encoding.ASCII.GetBytes(secret.PadRight(256 / 8, '\0'));
 
             var tokenDescriptor = new SecurityTokenDescriptor
             {
@@ -276,7 +264,7 @@ namespace BlogAngular.Test.Data
                              $"{userName}{i}"
                          );
 
-                    userManager.AddPasswordAsync(user, $"{password}{i}");
+                    _ = userManager.AddPasswordAsync(user, $"{password}{i}");
 
                     return user;
 
@@ -285,17 +273,11 @@ namespace BlogAngular.Test.Data
 
         public static IEnumerable<object> GetTags(
         int count,
-        string name)
-        {
-            return Enumerable
+        string name) => Enumerable
                  .Range(1, count)
-                 .Select(i =>
-                 {
-                     return new Tag(
+                 .Select(i => new Tag(
                          $"{name}{i}"
-                     );
-                 }).ToList();
-        }
+                     )).ToList();
 
         public static IEnumerable<object> GetTagsWithRateLimitMiddleware(
         int count,
@@ -325,17 +307,14 @@ namespace BlogAngular.Test.Data
             var articles =
             Enumerable
                  .Range(1, count)
-                 .Select(i =>
-                 {
-                     return new Article(
+                 .Select(i => new Article(
                          $"{title}{i}",
                          $"{slug}{i}",
                          $"{description}{i}",
                          date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                          published
 
-                     );
-                 }).ToList();
+                     )).ToList();
 
             var result = new List<object>();
             result.AddRange(GetUsers(count, email, userName, password));
@@ -363,21 +342,21 @@ namespace BlogAngular.Test.Data
                               $"{userName}{i}"
                           );
 
-                     userManager.AddPasswordAsync(user!, $"{password}{i}");
+                     _ = userManager.AddPasswordAsync(user!, $"{password}{i}");
 
                      return user;
 
                  }).ToList();
 
             dbContext.AddRange(users);
-            dbContext.SaveChanges();
+            _ = dbContext.SaveChanges();
 
             var roleManager = TestServiceProvider.Current.GetService<RoleManager<IdentityRole>>()!;
             var adminRoleExists = roleManager.RoleExistsAsync(AdministratorRoleName);
             if (!adminRoleExists.Result && roleManager.SupportsRoleClaims)
             {
                 var adminRole = new IdentityRole(AdministratorRoleName);
-                roleManager.CreateAsync(adminRole);
+                _ = roleManager.CreateAsync(adminRole);
             }
 
             return Enumerable
@@ -385,7 +364,7 @@ namespace BlogAngular.Test.Data
              .Select(async i =>
              {
                  var user = await userManager.FindByEmailAsync($"{email}{i}");
-                 await userManager.AddToRoleAsync(user!, AdministratorRoleName);
+                 _ = await userManager.AddToRoleAsync(user!, AdministratorRoleName);
 
                  return user;
              }).ToList();
@@ -407,24 +386,21 @@ namespace BlogAngular.Test.Data
         bool published,
         DbContext dbContext)
         {
-            GetUsersWithRole(count, email, userName, password, dbContext);
+            _ = GetUsersWithRole(count, email, userName, password, dbContext);
 
             dbContext.AddRange(Enumerable
                  .Range(1, count)
-                 .Select(i =>
-                 {
-                     return new Article(
+                 .Select(i => new Article(
                          $"{title}{i}",
                          $"{slug}{i}",
                          $"{description}{i}",
                          date.ToDateTime(TimeOnly.FromDateTime(DateTime.Today.AddSeconds(i))),
                          published
 
-                     );
-                 }).ToList());
+                     )).ToList());
             dbContext.AddRange(GetTags(count, name));
 
-            dbContext.SaveChanges();
+            _ = dbContext.SaveChanges();
         }
 
         public static void GetAllWithRateLimitMiddleware(

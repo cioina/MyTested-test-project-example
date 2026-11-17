@@ -1,6 +1,6 @@
-﻿using BlogAngular.Application.Common.Version;
-using Microsoft.AspNetCore.Mvc;
 using System.Threading.Tasks;
+using BlogAngular.Application.Common.Version;
+using Microsoft.AspNetCore.Mvc;
 
 namespace BlogAngular.Web.Features
 {

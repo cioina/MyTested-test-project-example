@@ -1,18 +1,18 @@
-﻿using AsyncKeyedLock;
+using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Globalization;
+using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using AsyncKeyedLock;
 using BlogAngular.Application.Blog.Common;
 using BlogAngular.Application.Blog.Tags.Queries.Listing;
 using BlogAngular.Test.Data;
 using BlogAngular.Web.Features;
 using FluentAssertions;
 using MyTested.AspNetCore.Mvc;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
-using System.Threading.Tasks;
 using Xunit;
-using Xunit.Abstractions;
 using static MyTested.AspNetCore.Mvc.Test.Setups.Test;
 
 namespace BlogAngular.Test.RateLimit
@@ -60,14 +60,14 @@ namespace BlogAngular.Test.RateLimit
 
                 await Task.WhenAll(threads);
 
-                peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
-                peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
+                _ = peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
+                _ = peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
 
                 _output.WriteLine("Peak parallelism was " + peakParallelism);
 
                 async Task OccupyTheLockALittleBit(int key)
                 {
-                    using (await _keyedLocker.LockAsync(key.ToString()))
+                    using (await _keyedLocker.LockAsync(key.ToString(CultureInfo.InvariantCulture)))
                     {
                         var incrementedCurrentParallelism = Interlocked.Increment(ref currentParallelism);
 
@@ -85,9 +85,7 @@ namespace BlogAngular.Test.RateLimit
                         }
 
                         AssertValidationErrorsException<MyTested.AspNetCore.Mvc.Exceptions.ValidationErrorsAssertionException>(
-                        () =>
-                        {
-                            MyMvc
+                        () => MyMvc
                              .Pipeline()
                              .ShouldMap(request => request
                                 .WithHeaders(new Dictionary<string, string>
@@ -99,7 +97,7 @@ namespace BlogAngular.Test.RateLimit
                                .WithHeaderAuthorization(StaticTestData.GetJwtBearerAdministratorRole(email, 1))
                                .WithLocation("api/v1.0/tags/edit/2")
                                .WithJsonBody(
-                                      string.Format(@"{{""tag"":{{""title"": ""{0}"" }}}}",
+                                      string.Format(CultureInfo.InvariantCulture, @"{{""tag"":{{""title"": ""{0}"" }}}}",
                                           $"{name}4")
                                )
                              )
@@ -123,8 +121,7 @@ namespace BlogAngular.Test.RateLimit
                                     description: description,
                                     date: DateOnly.FromDateTime(DateTime.Today),
                                     published: false,
-                                    dbContext: entities))));
-                        }, new Dictionary<string, string[]>
+                                    dbContext: entities)))), new Dictionary<string, string[]>
                         {
                            { "RateLimitMiddlewareException", ["Too many requests"] },
                         });
@@ -147,7 +144,7 @@ namespace BlogAngular.Test.RateLimit
                             throw ex;
                         }
 
-                        Interlocked.Decrement(ref currentParallelism);
+                        _ = Interlocked.Decrement(ref currentParallelism);
                     }
                 }
             }
@@ -175,14 +172,14 @@ namespace BlogAngular.Test.RateLimit
 
                 await Task.WhenAll(threads);
 
-                peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
-                peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
+                _ = peakParallelism.Should().BeLessThanOrEqualTo(maxParallelism);
+                _ = peakParallelism.Should().BeGreaterThanOrEqualTo(minParallelism);
 
                 _output.WriteLine("Peak parallelism was " + peakParallelism);
 
                 async Task OccupyTheLockALittleBit(int key)
                 {
-                    using (await _keyedLocker.LockAsync(key.ToString()))
+                    using (await _keyedLocker.LockAsync(key.ToString(CultureInfo.InvariantCulture)))
                     {
                         var incrementedCurrentParallelism = Interlocked.Increment(ref currentParallelism);
 
@@ -199,7 +196,7 @@ namespace BlogAngular.Test.RateLimit
                                 $"Task #{currentTaskId} acquired a lock using key ${key} but another thread is also still running using this key!");
                         }
 
-                        MyMvc
+                        _ = MyMvc
                         .Pipeline()
                         .ShouldMap(request => request
                            .WithHeaders(new Dictionary<string, string>
@@ -220,14 +217,11 @@ namespace BlogAngular.Test.RateLimit
                             Total = 5,
                             Models = [.. Enumerable
                              .Range(1, 5)
-                             .Select(i =>
-                             {
-                                 return new TagResponseModel
+                             .Select(i => new TagResponseModel
                                  {
                                      Id = i,
                                      Title = $"name{i}"
-                                 };
-                             })],
+                                 })],
                         }));
 
                         const int delay = 10;
@@ -248,7 +242,7 @@ namespace BlogAngular.Test.RateLimit
                             throw ex;
                         }
 
-                        Interlocked.Decrement(ref currentParallelism);
+                        _ = Interlocked.Decrement(ref currentParallelism);
                     }
                 }
             }
