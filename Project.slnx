@@ -1,0 +1,45 @@
+<Solution>
+    <Folder Name="/Ardalis/">
+        <Project Path="../DotNetVendors/Ardalis/Specification/src/Ardalis.Specification.EntityFrameworkCore/Ardalis.Specification.EntityFrameworkCore.csproj" />
+        <Project Path="../DotNetVendors/Ardalis/Specification/src/Ardalis.Specification/Ardalis.Specification.csproj" />
+        <Project Path="../DotNetVendors/GuardClauses/src/GuardClauses/GuardClauses.csproj" />
+    </Folder>
+    <Folder Name="/config/">
+        <File Path="Directory.Packages.props" />
+        <File Path="Directory.Build.props" />
+        <File Path="global.json" />
+        <File Path=".editorconfig" />
+        <File Path="NuGet.config" />
+        <File Path=".gitignore" />
+    </Folder>
+    <Folder Name="/docs/">
+        <File Path="docs/appsettings.json" />
+        <File Path="docs/migrations.sql" />
+        <File Path="docs/README.md" />
+        <File Path="docs/web.config" />
+    </Folder>
+    <Folder Name="/Mediator/">
+        <Project Path="../Mediator/src/Mediator.SourceGenerator/Mediator.SourceGenerator.csproj" />
+        <Project Path="../Mediator/src/Mediator/Mediator.csproj" />
+    </Folder>
+    <Folder Name="/NetArchTest/">
+        <Project Path="../DotNetVendors/NetArchTest/src/NetArchTest.Rules/NetArchTest.Rules.csproj" />
+    </Folder>
+    <Folder Name="/Scrutor/">
+        <Project Path="../DotNetVendors/Scrutor/src/Scrutor/Scrutor.csproj" />
+    </Folder>
+    <Folder Name="/src/">
+        <Project Path="src/BlogAngular.Application/BlogAngular.Application.csproj" />
+        <Project Path="src/BlogAngular.Domain/BlogAngular.Domain.csproj" />
+        <Project Path="src/BlogAngular.Infrastructure/BlogAngular.Infrastructure.csproj" />
+        <Project Path="src/BlogAngular.Startup/BlogAngular.Startup.csproj" />
+        <Project Path="src/BlogAngular.Web/BlogAngular.Web.csproj" />
+    </Folder>
+    <Folder Name="/tests/">
+        <Project Path="tests/BlogAngular.Test/BlogAngular.Test.csproj" />
+    </Folder>
+    <Folder Name="/vendor/">
+        <Project Path="vendor/AspNetCoreRateLimit/src/AspNetCoreRateLimit/AspNetCoreRateLimit.csproj" />
+        <Project Path="vendor/AsyncKeyedLock/src/AsyncKeyedLock/AsyncKeyedLock.csproj" />
+    </Folder>
+</Solution>
